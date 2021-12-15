@@ -32,7 +32,7 @@ cFe0            =  0.15;                % Fe-FeS fertile component fraction ([Wt
 cSi0            =  0.52;                % Si system fertile component fraction [Wt% SiO2]
 
 % set parameters
-dc              =  0.001;              % amplitude of random noise
+dc              =  0.01;              % amplitude of random noise
 
 % set phase diagram parameters
 %   Fertile   ||  Refractory
@@ -57,7 +57,7 @@ dEntrFe  = 500;
 
 SOL.T0          =  1200;                % reference/top potential temperature [C]
 SOL.T1          =  1200;            	% bottom potential temperature (if different from top) [C]
-SOL.dT          =  100;                 % temperature perturbation amplitude [C]
+SOL.dT          =  1;                   % temperature perturbation amplitude [C]
 SOL.rT          =  NUM.D/6;             % radius of hot plume [m]
 SOL.zT          =  NUM.D*0.5;           % z-position of hot plume [m]
 SOL.xT          =  NUM.L/2;             % x-position of hot plume [m]
@@ -123,11 +123,11 @@ ADVN = 'fromm';
 % NUM.AdvnScheme  = 'third upwind';
 % NUM.AdvnScheme  = 'flxdiv'
 TINY  = 1e-16;
-NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.restol    	= 1e-3;     % residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-6;
-NUM.maxit       = 5;
+NUM.restol    	= 1e-4;     % residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-7;
+NUM.maxit       = 10;
 NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
 
 %% start model

@@ -115,7 +115,29 @@ colorbar
 axis ij image
 title('\phi_{Fe}^s')
 
-figure(3) % plot phase segregation
+figure(3) % plot phase fractions
+subplot(2,2,1);
+imagesc(NUM.xP,NUM.zP,fSil);
+colorbar
+axis ij image
+title('f_{Si}^l')
+subplot(2,2,2);
+imagesc(NUM.xP,NUM.zP,fSis);
+colorbar
+axis ij image
+title('f_{Si}^s')
+subplot(2,2,3);
+imagesc(NUM.xP,NUM.zP,fFel);
+colorbar
+axis ij image
+title('f_{Fe}^l')
+subplot(2,2,4);
+imagesc(NUM.xP,NUM.zP,fFes);
+colorbar
+axis ij image
+title('f_{Fe}^s')
+
+figure(4) % plot phase segregation
 subplot(2,2,1);
 imagesc(NUM.xW,NUM.zW,phiFes+phiFel+phiSis+phiSil);
 colorbar
@@ -123,24 +145,24 @@ axis ij image
 title('total phi')
 
 subplot(2,2,2);
-imagesc(NUM.xP,NUM.zP,segSis);
+imagesc(NUM.xP,NUM.zP,-segSis);
 colorbar
 axis ij image
 title('v_{\Delta, Si}^s')
 
 subplot(2,2,3);
-imagesc(NUM.xP,NUM.zP,segFel);
+imagesc(NUM.xP,NUM.zP,-segFel);
 colorbar
 axis ij image
 title('v_{\Delta, Fe}^l')
 
 subplot(2,2,4);
-imagesc(NUM.xP,NUM.zP,segFes);
+imagesc(NUM.xP,NUM.zP,-segFes);
 colorbar
 axis ij image
 title('v_{\Delta, Fe}^s')
 
-figure(4)
+figure(5)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,xFe)
 colorbar
@@ -165,7 +187,7 @@ colorbar
 axis ij image
 title('X_{Si}')
 
-figure(5)
+figure(6)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,MAT.rhoSil)
 colorbar
@@ -190,7 +212,7 @@ colorbar
 axis ij image
 title('\rho_{Fe}^s')
 
-figure(6)
+figure(7)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,clSi)
 colorbar

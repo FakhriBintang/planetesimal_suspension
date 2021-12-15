@@ -81,10 +81,10 @@ diff_CFe(2:end-1,2:end-1) = (- ddz(qCFez(:,2:end-1),NUM.h) ...                 %
 dCFedt      = -advn_CFe + diff_CFe + zeros(size(CFe));
 
 if NUM.step>0   
-    SOL.H       = Ho + (NUM.theta.*dHdt + (1-NUM.theta).*dHdto).*NUM.dt;
-    CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto).*NUM.dt;
-    CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto).*NUM.dt;
-    XFe = XFeo + (NUM.theta.*dXdt   + (1-NUM.theta).*dXdto)  .*NUM.dt;
+    SOL.H       = Ho + (NUM.theta.*dHdt + (1-NUM.theta).*dHdto).*NUM.dt;  SOL.H([1 end],:) = SOL.H([2 end-1],:);  SOL.H(:,[1 end]) = SOL.H(:,[2 end-1]);
+    CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto).*NUM.dt;    CSi([1 end],:) = CSi([2 end-1],:);  CSi(:,[1 end]) = CSi(:,[2 end-1]);
+    CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto).*NUM.dt;    CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);
+    XFe = XFeo + (NUM.theta.*dXdt   + (1-NUM.theta).*dXdto)  .*NUM.dt;    XFe([1 end],:) = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
 
 XSi         = MAT.rhot - XFe;
 xFe         = XFe./MAT.rhot;    xSi     = 1-xFe;

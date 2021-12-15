@@ -70,7 +70,7 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 % z-RHS vector
 
-rr = zeros(size(ii)) - PHY.gz(2:end-1,2:end-1).*( (MAT.rhot(2:end-2,2:end-1)+MAT.rhot(3:end-1,2:end-1))/2 - rhoRef);
+rr = zeros(size(ii)) + PHY.gz(2:end-1,2:end-1).*( (MAT.rhot(2:end-2,2:end-1)+MAT.rhot(3:end-1,2:end-1))/2 - rhoRef);
 
 IR = [IR; ii(:)];  RR = [RR; rr(:)];
 
@@ -279,6 +279,6 @@ SOL.UP(:,2:end-1) = SOL.U(:,1:end-1)+SOL.U(:,2:end)./2;
 SOL.WP(2:end-1,:) = SOL.W(1:end-1,:)+SOL.W(2:end,:)./2;
 
 figure(10)
-semilogy(iter, -log10(resnorm/resnorm0), 'o')
+semilogy(iter, -log10(resnorm/resnorm0), 'ko')
 hold on
 % 
