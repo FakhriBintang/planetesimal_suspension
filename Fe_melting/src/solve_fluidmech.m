@@ -271,14 +271,14 @@ S = LL\RR;  % update solution
 
 % Read out solution
 % map solution vector to 2D arrays
-SOL.W  = full(reshape(S(NUM.MapW(:))        ,NUM.nzW, NUM.nxW   ));                      % matrix z-velocity
-SOL.U  = full(reshape(S(NUM.MapU(:))        , NUM.nzU   ,NUM.nxU));                      % matrix x-velocity
-SOL.P  = full(reshape(S(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   )).*Pscale;              % matrix dynamic pressure
+SOL.W  = alpha.*SOL.W + (1-alpha).*full(reshape(S(NUM.MapW(:))        ,NUM.nzW, NUM.nxW   ));                      % matrix z-velocity
+SOL.U  = alpha.*SOL.U + (1-alpha).*full(reshape(S(NUM.MapU(:))        , NUM.nzU   ,NUM.nxU));                      % matrix x-velocity
+SOL.P  = alpha.*SOL.P + (1-alpha).*full(reshape(S(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   )).*Pscale;              % matrix dynamic pressure
 
 SOL.UP(:,2:end-1) = SOL.U(:,1:end-1)+SOL.U(:,2:end)./2;
 SOL.WP(2:end-1,:) = SOL.W(1:end-1,:)+SOL.W(2:end,:)./2;
 
 figure(10)
-semilogy(iter, -log10(resnorm/resnorm0), 'ko')
+plot(iter, log10(resnorm), 'ko')
 hold on
 % 

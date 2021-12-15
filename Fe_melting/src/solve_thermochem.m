@@ -89,11 +89,11 @@ if NUM.step>0
 XSi         = MAT.rhot - XFe;
 xFe         = XFe./MAT.rhot;    xSi     = 1-xFe;
 % convert chemistry to concentrations (equation 9)
-cSi         = CSi./XSi./MAT.rhot;
-cFe         = CFe./XFe./MAT.rhot;
+cSi         = alpha.*cSi + (1-alpha).*CSi./XSi./MAT.rhot;
+cFe         = alpha.*cFe + (1-alpha).*CFe./XFe./MAT.rhot;
 end
 % enthalpy/equilibrium method update chemistry
-SOL.T = SOL.H./(MAT.rhoCpt + XSi.*fSil.*dEntrSi + XFe.*fFel.*dEntrFe);
+SOL.T = alpha.*SOL.T + (1-alpha).*SOL.H./(MAT.rhoCpt + XSi.*fSil.*dEntrSi + XFe.*fFel.*dEntrFe);
 
 
 [fFes,csFe,clFe]     = equilibrium((SOL.T+To)./2,(cFe+cFeo)./2,(SOL.Pt+Pto)./2,TFe1,TFe2,cphsFe1,cphsFe2,...

@@ -57,7 +57,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 %         % report convergence
 %         report;
 % output
-        if iter==1; resnorm0 = resnorm; end
+        if iter==0; resnorm0 = resnorm; end
         iter = iter+1;
 %             end
     end
