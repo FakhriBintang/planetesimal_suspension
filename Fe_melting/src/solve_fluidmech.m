@@ -237,8 +237,8 @@ RP(indP(np,np),:) = 0;
 
 
 %% assemble global coefficient matrix and right-hand side vector
-Pscale = geomean(MAT.Eta(:))/(NUM.h^2);
-LL =  [KV          Pscale.*GG  ; ...
+Pscale = geomean(MAT.Eta(:))/NUM.h;
+LL =  [-KV         Pscale.*GG  ; ...
        Pscale.*DD  Pscale.*KP  ];
 
 RR = [RV; RP.*Pscale];
