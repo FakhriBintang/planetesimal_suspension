@@ -167,25 +167,25 @@ subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,xFe)
 colorbar
 axis ij image
-title('Fe wt fraction')
+title('x_{Fe} [wt]')
 
 subplot(2,2,2)
 imagesc(NUM.xP,NUM.zP,xSi)
 colorbar
 axis ij image
-title('Si wt fraction')
+title('x_{Si} [wt]')
 
 subplot(2,2,3)
-imagesc(NUM.xP,NUM.zP,XFe)
+imagesc(NUM.xP,NUM.zP,cFe)
 colorbar
 axis ij image
-title('X_{Fe}')
+title('c_{Fe} [wt]')
 
 subplot(2,2,4)
-imagesc(NUM.xP,NUM.zP,XSi)
+imagesc(NUM.xP,NUM.zP,cSi)
 colorbar
 axis ij image
-title('X_{Si}')
+title('c_{Si} [wt]')
 
 figure(6)
 subplot(2,2,1)

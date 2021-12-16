@@ -62,7 +62,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 %             end
     end
     
-    if ~mod(NUM.step,round(2*RUN.nop/NUM.CFL))
+    if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;   
     end
     

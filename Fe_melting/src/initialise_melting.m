@@ -121,10 +121,10 @@ SOL.Pt = (xFe.*PHY.rhoFes + xSi.*PHY.rhoSis).*NUM.ZP.*PHY.gzP;
                                   perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
 fFel = 1-fFes; fSil = 1-fSis;
 
-MAT.rhoSis = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);
-MAT.rhoSil = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);
-MAT.rhoFes = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);
-MAT.rhoFel = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);
+MAT.rhoSis = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(csSi-cphsSi1));  
+MAT.rhoSil = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(clSi-cphsSi1));
+MAT.rhoFes = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(csFe-cphsFe1));  
+MAT.rhoFel = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(clFe-cphsFe1));
 
 MAT.rhot   = 1./ (xFe.*fFes./MAT.rhoFes + xFe.*fFel./MAT.rhoFel + xSi.*fSis./MAT.rhoSis + xSi.*fSil./MAT.rhoSil);
 
@@ -133,9 +133,10 @@ phiFel     = xFe.* fFel .* MAT.rhot ./ MAT.rhoFel;
 phiSis     = xSi.* fSis .* MAT.rhot ./ MAT.rhoSis;
 phiSil     = xSi.* fSil .* MAT.rhot ./ MAT.rhoSil; 
 
-XFe = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;
- SOL.Pt = (XFe.*(fFes.*PHY.rhoFes + fFel.*PHY.rhoFel)...
-        +  XSi.*(fSis.*PHY.rhoSis + fSil.*PHY.rhoSil)).*NUM.ZP.*PHY.gzP;
+XFe     = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;
+rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
+SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
+
 
 
 % % loop for P-dependent equilibrium to be added later on
@@ -169,11 +170,11 @@ XFe = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;
 % 
 % end
 
-rhoref  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
-rhoCpt  = (XFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
-        +  XSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
-SOL.H   =  SOL.T.*(XFe.*(fFel.*dEntrSi) + XSi.*(fSil.*dEntrSi) +rhoCpt);
-CFe     =  cFe.*XFe.*MAT.rhot;   CSi     =  cSi.*XSi.*MAT.rhot;   % component densities
+rhoCpt  = (MAT.rhot.*xFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
+        +  MAT.rhot.*xSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
+SOL.H   =  SOL.T.*(MAT.rhot.*xFe.*(fFel.*dEntrSi) + MAT.rhot.*xSi.*(fSil.*dEntrSi) +rhoCpt);
+CFe     =  MAT.rhot.*cFe.*xFe;   
+CSi     =  MAT.rhot.*cSi.*xSi;   % component densities
 
 
 %% setup deformation property arrays

@@ -4,10 +4,10 @@ tic;  % start clock on update
 
 %% convert weight to volume fraction
 %% update T and chemical-dependent density
-MAT.rhoSis              = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);  
-MAT.rhoSil              = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);
-MAT.rhoFes              = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);  
-MAT.rhoFel              = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);
+MAT.rhoSis              = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(csSi-cphsSi1));  
+MAT.rhoSil              = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(clSi-cphsSi1));
+MAT.rhoFes              = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(csFe-cphsFe1));  
+MAT.rhoFel              = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(clFe-cphsFe1));
 
 MAT.rhot   = 1./ (xFe.*fFes./MAT.rhoFes + xFe.*fFel./MAT.rhoFel + xSi.*fSis./MAT.rhoSis + xSi.*fSil./MAT.rhoSil);
 
@@ -70,11 +70,11 @@ MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
 
 %% other bulk thermochemical properties
 % Update pressure
-SOL.Pt = MAT.rhot.*PHY.gzP.*NUM.ZP + SOL.P;
+% rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
+SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
-rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
-MAT.rhoCpt  = (XFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
-            +  XSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
+MAT.rhoCpt  = (MAT.rhot.*xFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
+            +  MAT.rhot.*xSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
 MAT.kT      = PHY.kTFe.*(phiFes + phiFel)...
             + PHY.kTSi.*(phiSis + phiSil);
 
@@ -114,49 +114,52 @@ UlFe        = SOL.U;
 WsFe        = SOL.W + segFes;
 UsFe        = SOL.U;
 % if ~mod(NUM.step,round(2*RUN.nup/NUM.CFL))                          % only update deformation when fluid mechanics solved
-    %% update physical time step
-    VR                  = abs([SOL.U(:);SOL.W(:)]);                         % reference velocity
-    dtadvR              = NUM.h/2/max(VR);
-    VSis                = abs([SOL.U(:);SOL.W(:)+segSis(:)]);              % silicate crystal velocity
-    dtadvSis            = NUM.h/2/max(VSis);                                  % 
-    VFes                = abs([SOL.U(:);SOL.W(:)+segFes(:)]);              % Fe solid velocity
-    dtadvFes            = NUM.h/2/max(VFes);                                  % 
-    VFel                = abs([SOL.U(:);SOL.W(:)+segFel(:)]);              % Fe solid velocity
-    dtadvFel            = NUM.h/2/max(VFel);                                  % 
-    
-    dtadvn              = min([dtadvR dtadvSis dtadvFes dtadvFel]);                               % Stable timestep for advection
-    
-    kappa               = MAT.kT./rhoCpt;
-    kappa               = kappa(:);
-    dtdiff              = (NUM.h/2)^2 / max(kappa);            % stable time step for T diffusion
-    
-    NUM.dt              = NUM.CFL * min(dtdiff,dtadvn);                     % fraction of minimum stable time step
-    if dtdiff<dtadvn 
-    disp('diffusion regime')
-    else
-    disp('advection regime')
-    end
 
 % end
 
 % update velocity divergence
-Div_V(2:end-1,2:end-1) =...
-    ddz(SOL.W(:,2:end-1),NUM.h) ...                           % get velocity divergence
+Div_V(2:end-1,2:end-1) = ddz(SOL.W(:,2:end-1),NUM.h) ...                   % get velocity divergence
                        + ddx(SOL.U(2:end-1,:),NUM.h);
 Div_V([1 end],:) = Div_V([2 end-1],:);                                     % apply boundary conditions
 Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
 
 % update volume source
-Div_rhov =  + advection(MAT.rhoSis.*phiSis,0.*SOL.U,segSis,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhoFes.*phiFes,0.*SOL.U,segFes,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhoFel.*phiFel,0.*SOL.U,segFel,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhot          ,   SOL.U,SOL.W ,NUM.h,NUM.h,ADVN,'flx');
+Div_rhov =  + advection(MAT.rhot.*xSi.*fSis,0.*SOL.U,segSis  ,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*xSi.*fSil,0.*SOL.U,0.*SOL.W,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*xFe.*fFes,0.*SOL.U,segFes  ,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*xFe.*fFel,0.*SOL.U,segFel  ,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot           ,   SOL.U,   SOL.W,NUM.h,NUM.h,ADVN,'flx');
 
-VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V + Div_rhoVo)/2)./(MAT.rhot/2);
+% VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V + Div_rhoVo)/2)./(MAT.rhot/2);
+VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V))./MAT.rhot;
 
 dVoldt = mean(mean(VolSrc(2:end-1,2:end-1)));
 VolSrc = VolSrc - dVoldt;
 
+
+%% update physical time step
+VR                  = abs([SOL.U(:);SOL.W(:)]);                         % reference velocity
+dtadvR              = NUM.h/2/max(VR);
+VSis                = abs([SOL.U(:);SOL.W(:)+segSis(:)]);              % silicate crystal velocity
+dtadvSis            = NUM.h/2/max(VSis);                                  %
+VFes                = abs([SOL.U(:);SOL.W(:)+segFes(:)]);              % Fe solid velocity
+dtadvFes            = NUM.h/2/max(VFes);                                  %
+VFel                = abs([SOL.U(:);SOL.W(:)+segFel(:)]);              % Fe solid velocity
+dtadvFel            = NUM.h/2/max(VFel);                                  %
+
+dtadvn              = min([dtadvR dtadvSis dtadvFes dtadvFel]);                               % Stable timestep for advection
+
+kappa               = MAT.kT./rhoCpt;
+kappa               = kappa(:);
+dtdiff              = (NUM.h/2)^2 / max(kappa);            % stable time step for T diffusion
+
+NUM.dt              = NUM.CFL * min(dtdiff,dtadvn);                     % fraction of minimum stable time step
+if dtdiff<dtadvn
+    disp('diffusion regime')
+else
+    disp('advection regime')
+end
+    
 %     %% update strain-rate components
 %     % get volumetric strain-rate (velocity divergence)
 %     DEF.ups(2:end-1,2:end-1) = diff(SOL.U(2:end-1,:),1,2)./NUM.h ...
