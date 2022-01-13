@@ -97,11 +97,11 @@ SOL.T = alpha.*SOL.T + (1-alpha).*SOL.H./(MAT.rhoCpt + MAT.rhot.*xSi.*fSil.*dEnt
 
 
 [fFes,csFe,clFe]     = equilibrium((SOL.T+To)./2,(cFe+cFeo)./2,(SOL.Pt+Pto)./2,TFe1,TFe2,cphsFe1,cphsFe2,...
-    perTFe,perCsFe,perClFe,clap,PhDgFe,TINY);
-
+    perTSi,perCsFe,perClFe,clap,PhDgFe,TINY);
 [fSis,csSi,clSi]     = equilibrium((SOL.T+To)./2,(cSi+cSio)./2,(SOL.Pt+Pto)./2,TSi1,TSi2,cphsSi1,cphsSi2,...
     perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
 fFel = 1-fFes; fSil = 1-fSis;
+
 
 
 % %check outputs

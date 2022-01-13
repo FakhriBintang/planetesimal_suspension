@@ -137,8 +137,24 @@ XFe     = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;
 rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
 SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
-
-
+% fh8 = figure(8); clf;
+% TT = linspace(TSi1,TSi2,1e3);
+% cc = [linspace(cphsSi2,(perCsSi+perClSi)/2,round((perTSi-TSi1)./(TSi2-TSi1)*1e3)),linspace((perCsSi+perClSi)/2,cphsSi1,round((perTSi-TSi2)./(TSi1-TSi2)*1e3))];
+% [~,CCxSi,CClSi]     = equilibrium(TT,cc,0.*TT,TSi1,TSi2,cphsSi1,cphsSi2,...
+%                                   perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
+% 
+% TT2 = linspace(TFe1,TFe2,1000);
+% cc2 = linspace(cphsFe2,cphsFe1,length(TT2));
+% % cc2 = [linspace(cphsFe2,(perCsFe+perClFe)/2,round((perTFe-TFe1)./(TFe2-TFe1)*1e3)),linspace((perCsFe+perClFe)/2,cphsFe1,round((perTFe-TFe2)./(TFe1-TFe2)*1e3))];
+% [~,CCxFe,CClFe]     = equilibrium(TT2,cc2,0.*TT2,TFe1,TFe2,cphsFe1,cphsFe2,...
+%                                   perTFe,perCsFe,perClFe,clap,PhDgFe,TINY);
+% subplot(1,2,1)
+% plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
+% plot(CClSi,TT,'k-','LineWidth',2);
+% 
+% subplot(1,2,2)
+% plot(CCxFe,TT2,'r-','LineWidth',2); axis tight; hold on; box on;
+% plot(CClFe,TT2,'b-','LineWidth',2);
 % % loop for P-dependent equilibrium to be added later on
 % % start loop to solve P, T and phi nonlinearities
 % % initial boussineq approximation

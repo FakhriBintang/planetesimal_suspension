@@ -28,7 +28,7 @@ NUM.h           =  NUM.D/NUM.N;         % spacing of x coordinates
 %% set thermochemical parameters
 % set initial fractions
 xFe0            =  0.3;                 % Fe-FeS system fraction
-cFe0            =  0.15;                % Fe-FeS fertile component fraction ([Wt% S], maximum 0.35 for pure FeS
+cFe0            =  0.2;                % Fe-FeS fertile component fraction ([Wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.52;                % Si system fertile component fraction [Wt% SiO2]
 
 % set parameters
@@ -37,7 +37,7 @@ dc              =  0.001;              % amplitude of random noise
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 TFe1    = 1000; TFe2    = 1500;  % iron system melting limits
-TSi1    = 1000; TSi2    = 1750;  % Silicate system melting limits
+TSi1    = 750; TSi2    = 1750;  % Silicate system melting limits
 cphsSi1 = 0.36; cphsSi2 = 0.72;  % silicate system limits
 cphsFe1 = 0   ; cphsFe2 = 0.35;  % iron system limits
 perClSi  =  0.54;                % peritectic liquidus composition [wt SiO2]
@@ -46,8 +46,10 @@ perTSi   =  1100;                 % peritectic temperature
 PhDgSi   =  4.0;                 % Phase diagram curvature factor (> 1)
 perClFe  =  0.35;                % peritectic liquidus composition [wt SiO2]
 perCsFe  =  0.35;                % peritectic solidus  composition [wt SiO2]
-perTFe   =  750;                 % peritectic temperature
-PhDgFe   =  3.0;                 % Phase diagram curvature factor (> 1)
+% perClFe  =  0;                % peritectic liquidus composition [wt S]
+% perCsFe  =  0;                % peritectic solidus  composition [wt S]
+perTFe   =  1000;                 % peritectic temperature
+PhDgFe   =  2.0;                 % Phase diagram curvature factor (> 1)
 clap     =  0;
 % clap     =  1e-7;                % Clapeyron slope for P-dependence of melting T [degC/Pa]
 dEntrSi  = 300;                  % entropy of fusion

@@ -17,8 +17,8 @@ cm1 = max(TINY,min(1-TINY,          perCm .*erf((1.0+PhDg/10).*(1   -T)./(1-perT
 cm2 = max(TINY,min(1-TINY, perCm+(1-perCm).*erf((0.9+PhDg/10).*(perT-T)./(  perT))./erf((0.9+PhDg/10))));
 
 cmq = zeros(size(T));
-cmq(T>=perT) = cm1(T>=perT);
-cmq(T< perT) = cm2(T< perT);
+cmq(T>perT) = cm1(T>perT);
+cmq(T<= perT) = cm2(T<= perT);
 
 cxq = min(c,cphs0 + cxq.*(cphs1-cphs0));
 cmq = max(c,cphs0 + cmq.*(cphs1-cphs0));
