@@ -10,12 +10,9 @@ if RUN.plot
     xq = round(NUM.N/10/2)+1:round(NUM.N/10):NUM.nxP;  % x-indexes for quiver plots
     zq = round(NUM.N/10/2)+1:round(NUM.N/10):NUM.nxP;  % z-indexes for quiver plots
     
-    fh1 = figure(1); clf;
-    
-    fh2 = figure(2); clf; colormap(cm2)
-    
-    fh3 = figure(3); clf;
-    
+
+    %% plot velocity and temperature solutions
+    fh1  = figure(1); clf
     figure(1)
     subplot(2,3,1)
     imagesc(NUM.xU,NUM.zU,SOL.U); hold on;
@@ -32,48 +29,28 @@ if RUN.plot
     axis ij equal tight;
     colorbar
     title('v_z^*-velocity [ms^-^1]')
-    
-%     subplot(2,3,3)
-%     imagesc(NUM.xP,NUM.zP,log10(SOL.Stokes)); hold on;
-% %     imagesc(NUM.xP,NUM.zP,SOL.Stokes); hold on;
-%     quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
-%     colormap(subplot(2,3,3),cm2)
-%     axis ij equal tight;
-%     colorbar
-%     title('log particle settling velocity')
 
     subplot(2,3,3)
     imagesc(NUM.xP,NUM.zP,SOL.P); hold on;
-%     quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
     colormap(subplot(2,3,3),cm2)
     axis ij equal tight;
     colorbar
     title('dynamic pressure [Pa]')
     
     Tplot = SOL.T;
-%     Tplot(NUM.PHI<=0) = NaN;
     subplot(2,3,4)
     imagesc(NUM.xP,NUM.zP,SOL.T);
     colormap(subplot(2,3,4),flipud(cm1))
     axis ij equal tight;
     colorbar
     title('Temperature [C]')
-    
-%     Rhoplot = MAT.Rho;
-%     Rhoplot(NUM.PHI<=0) = NaN;
+
     subplot(2,3,5);
     imagesc(NUM.xP,NUM.zP,MAT.rhot);
     colormap(subplot(2,3,5),cm1)
     axis ij equal tight;
     colorbar
     title('bulk density [kgm^-^3]')
-    
-%     subplot(2,3,6);
-%     imagesc(NUM.xP,NUM.zP,MAT.rhoSil.*phiSil + MAT.rhoSis.*phiSis + MAT.rhoFel.*phiFel +MAT.rhoFes.*phiFes);
-%     colormap(subplot(2,3,6),cm1)
-%     axis ij equal tight;
-%     colorbar
-%     title('bulk density phi method [kgm^-^3]')
     
     subplot(2,3,6);
     imagesc(NUM.xP,NUM.zP,MAT.Eta);
@@ -93,6 +70,8 @@ if RUN.plot
 %     
 % figure(2); imagesc(SOL.phi(end-9:end,:)); colormap(cm1); colorbar
 
+%% plot phase vol fractions
+fh2 = figure(2); clf;
 figure(2) % plot phase fractions
 subplot(2,2,1);
 imagesc(NUM.xP,NUM.zP,phiSil);
@@ -115,28 +94,32 @@ colorbar
 axis ij image
 title('\phi_{Fe}^s')
 
+%% plot phase 
+fh3 = figure(3); clf
 figure(3) % plot phase fractions
 subplot(2,2,1);
 imagesc(NUM.xP,NUM.zP,fSil);
 colorbar
 axis ij image
-title('f_{Si}^l')
+title('f_{Si}^l [wt]')
 subplot(2,2,2);
 imagesc(NUM.xP,NUM.zP,fSis);
 colorbar
 axis ij image
-title('f_{Si}^s')
+title('f_{Si}^s [wt]')
 subplot(2,2,3);
 imagesc(NUM.xP,NUM.zP,fFel);
 colorbar
 axis ij image
-title('f_{Fe}^l')
+title('f_{Fe}^l [wt]')
 subplot(2,2,4);
 imagesc(NUM.xP,NUM.zP,fFes);
 colorbar
 axis ij image
-title('f_{Fe}^s')
+title('f_{Fe}^s [wt]')
 
+%% plot phase segregation
+fh4 = figure(4); clf
 figure(4) % plot phase segregation
 subplot(2,2,1);
 imagesc(NUM.xW,NUM.zW,phiFes+phiFel+phiSis+phiSil);
@@ -162,6 +145,8 @@ colorbar
 axis ij image
 title('v_{\Delta, Fe}^s')
 
+%% plot system fractions and chemical solutions
+fh5 = figure(5); clf
 figure(5)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,xFe)
@@ -187,6 +172,8 @@ colorbar
 axis ij image
 title('c_{Si} [wt]')
 
+%% plot phase densities 
+fh6 = figure(6); clf
 figure(6)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,MAT.rhoSil)
@@ -212,6 +199,8 @@ colorbar
 axis ij image
 title('\rho_{Fe}^s')
 
+%% plot chemical phase compositions
+fh7 = figure(7); clf
 figure(7)
 subplot(2,2,1)
 imagesc(NUM.xP,NUM.zP,clSi)
@@ -236,9 +225,36 @@ imagesc(NUM.xP,NUM.zP,csFe)
 colorbar
 axis ij image
 title('c_{Fe}^s')
-
-
+%% plot Partial densities and 
 fh8 = figure(8); clf;
+figure(8)
+subplot(2,2,1)
+imagesc(NUM.xP,NUM.zP,CFe)
+colorbar
+axis ij image
+title('C_{Fe} ')
+
+subplot(2,2,2)
+imagesc(NUM.xP,NUM.zP,CSi)
+colorbar
+axis ij image
+title('C_{Si} ')
+
+subplot(2,2,3)
+imagesc(NUM.xP,NUM.zP,XFe)
+colorbar
+axis ij image
+title('X_{Fe}')
+
+subplot(2,2,4)
+imagesc(NUM.xP,NUM.zP,XSi)
+colorbar
+axis ij image
+title('X_{Si}')
+
+
+%% plot phase diagrams
+fh9 = figure(9); clf;
 TT = linspace(TSi1,TSi2,1e3);
 cc = [linspace(cphsSi2,(perCsSi+perClSi)/2,round((perTSi-TSi1)./(TSi2-TSi1)*1e3)),linspace((perCsSi+perClSi)/2,cphsSi1,round((perTSi-TSi2)./(TSi1-TSi2)*1e3))];
 [~,CCxSi,CClSi]     = equilibrium(TT,cc,0.*TT,TSi1,TSi2,cphsSi1,cphsSi2,...
@@ -266,7 +282,7 @@ drawnow;
     
 end
 
-% save output
+%% save output
 if RUN.save
     % print figure
     name = ['../out/',RUN.ID,'/',RUN.ID,'_fig',num2str(RUN.frame)];

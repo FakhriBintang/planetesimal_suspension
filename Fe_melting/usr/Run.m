@@ -29,7 +29,7 @@ NUM.h           =  NUM.D/NUM.N;         % spacing of x coordinates
 % set initial fractions
 xFe0            =  0.3;                 % Fe-FeS system fraction
 cFe0            =  0.2;                % Fe-FeS fertile component fraction ([Wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.52;                % Si system fertile component fraction [Wt% SiO2]
+cSi0            =  0.56;                % Si system fertile component fraction [Wt% SiO2]
 
 % set parameters
 dc              =  0.001;              % amplitude of random noise
@@ -37,7 +37,7 @@ dc              =  0.001;              % amplitude of random noise
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 TFe1    = 1000; TFe2    = 1500;  % iron system melting limits
-TSi1    = 750; TSi2    = 1750;  % Silicate system melting limits
+TSi1    = 750;  TSi2    = 1750;  % Silicate system melting limits
 cphsSi1 = 0.36; cphsSi2 = 0.72;  % silicate system limits
 cphsFe1 = 0   ; cphsFe2 = 0.35;  % iron system limits
 perClSi  =  0.54;                % peritectic liquidus composition [wt SiO2]
@@ -126,10 +126,10 @@ ADVN = 'fromm';
 % NUM.AdvnScheme  = 'third upwind';
 % NUM.AdvnScheme  = 'flxdiv'
 TINY  = 1e-16;
-NUM.CFL         = 0.25;   	% Courant number to limit physical time step
+NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.restol    	= 1e-4;     % residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-7;
+NUM.abstol      = 1e-4;
 NUM.maxit       = 15;
 alpha           = 0.5;
 NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
