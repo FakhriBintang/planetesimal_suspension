@@ -278,7 +278,7 @@ SOL.P  = full(reshape(S(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   )).*Psca
 SOL.UP(:,2:end-1) = SOL.U(:,1:end-1)+SOL.U(:,2:end)./2;
 SOL.WP(2:end-1,:) = SOL.W(1:end-1,:)+SOL.W(2:end,:)./2;
 
-figure(10)
+figure(100)
 plot(iter, log10(resnorm), 'ko')
 hold on
 % 

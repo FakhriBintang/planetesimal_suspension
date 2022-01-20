@@ -15,18 +15,18 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr \n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr);
     
-    figure(10);clf
+    figure(100);clf
     
     % store previous solutions
     MAT.rhoo = MAT.rhot;
     Ho                  = SOL.H;     % store previous temperature solution
     To                  = SOL.T;
-    cFeo                = cFe;
-    cSio                = cSi;
-    CSio                = CSi;
-    CFeo                = CFe;
+    cFeo                = CHM.cFe;
+    cSio                = CHM.cSi;
+    CSio                = CHM.CSi;
+    CFeo                = CHM.CFe;
     dHdto               = dHdt;  % store previous rate of change
-    XFeo                = XFe;
+    XFeo                = CHM.XFe;
     dXdto               = dXdt;
     dCSidto             = dCSidt;
     dCFedto             = dCFedt;
@@ -61,6 +61,10 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         iter = iter+1;
 %             end
     end
+
+    % update mass error
+    MassErr = MassErr - dVoldt.*NUM.dt;
+
     
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;   

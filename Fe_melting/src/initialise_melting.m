@@ -89,7 +89,8 @@ S               = [SOL.W(:);SOL.U(:);SOL.P(:)];             % Solution matrix
 pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
 switch SOL.Ttype
     case 'constant'     % constant temperature
-        SOL.T  = zeros(NUM.nzP,NUM.nxP) + SOL.T0;
+        SOL.T  = zeros(NUM.nzP,NUM.nxP) + SOL.T1;
+        SOL.T(1,:) = SOL.T0;
     case 'linear'       % linear temperature gradient with depth
         SOL.T  = SOL.T0 + abs(NUM.ZP+pert)./NUM.D.*(SOL.T1-SOL.T0);
     case 'gaussian'     % constant temperature with gaussian plume
@@ -107,47 +108,49 @@ end
 % SOL.T(:,[1 end]) = SOL.T(:,[2 end-1]);
 
 % set initial component weight fraction [kg/kg]
-cFe                 = cFe0 + dc.*rp; % Fe component
-cSi                 = cSi0 + dc.*rp; % Si component
-xFe                 = xFe0 + dc.*rp; % Fe system
-xSi                 = 1 - xFe;
+CHM.cFe                 = CHM.cFe0 + dc.*rp; % Fe component
+CHM.cSi                 = CHM.cSi0 + dc.*rp; % Si component
+CHM.xFe                 = CHM.xFe0 + dc.*rp; % Fe system
+% CHM.xFe(1:15,:)         = CHM.xFe(1:15,:) +0.05
+CHM.xSi                 = 1 - CHM.xFe;
+
 % estimate pressure from estimated wt%
-SOL.Pt = (xFe.*PHY.rhoFes + xSi.*PHY.rhoSis).*NUM.ZP.*PHY.gzP;
+SOL.Pt = (CHM.xFe.*PHY.rhoFes + CHM.xSi.*PHY.rhoSis).*NUM.ZP.*PHY.gzP;
 
 % output crystal fraction and fertile solid and liquid concentrations
-[fFes,csFe,clFe]     = equilibrium(SOL.T,cFe,SOL.Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
-                                  perTSi,perCsFe,perClFe,clap,PhDgFe,TINY);
-[fSis,csSi,clSi]     = equilibrium(SOL.T,cSi,SOL.Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
-                                  perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
-fFel = 1-fFes; fSil = 1-fSis;
+[CHM.fFes,CHM.csFe,CHM.clFe]     = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                  CHM.perTSi,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+[CHM.fSis,CHM.csSi,CHM.clSi]     = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+                                  CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
 
-MAT.rhoSis = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(csSi-cphsSi1));  
-MAT.rhoSil = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(clSi-cphsSi1));
-MAT.rhoFes = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(csFe-cphsFe1));  
-MAT.rhoFel = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(clFe-cphsFe1));
+MAT.rhoSis = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(CHM.csSi-CHM.cphsSi1));  
+MAT.rhoSil = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(CHM.clSi-CHM.cphsSi1));
+MAT.rhoFes = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(CHM.csFe-CHM.cphsFe1));  
+MAT.rhoFel = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(CHM.clFe-CHM.cphsFe1));
 
-MAT.rhot   = 1./ (xFe.*fFes./MAT.rhoFes + xFe.*fFel./MAT.rhoFel + xSi.*fSis./MAT.rhoSis + xSi.*fSil./MAT.rhoSil);
+MAT.rhot   = 1./ (CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
 
-phiFes     = xFe.* fFes .* MAT.rhot ./ MAT.rhoFes;
-phiFel     = xFe.* fFel .* MAT.rhot ./ MAT.rhoFel;
-phiSis     = xSi.* fSis .* MAT.rhot ./ MAT.rhoSis;
-phiSil     = xSi.* fSil .* MAT.rhot ./ MAT.rhoSil; 
+SOL.phiFes     = CHM.xFe.* CHM.fFes .* MAT.rhot ./ MAT.rhoFes;
+SOL.phiFel     = CHM.xFe.* CHM.fFel .* MAT.rhot ./ MAT.rhoFel;
+SOL.phiSis     = CHM.xSi.* CHM.fSis .* MAT.rhot ./ MAT.rhoSis;
+SOL.phiSil     = CHM.xSi.* CHM.fSil .* MAT.rhot ./ MAT.rhoSil; 
 
-XFe     = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;
+CHM.XFe     = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;
 rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
 SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
 % fh8 = figure(8); clf;
-% TT = linspace(TSi1,TSi2,1e3);
-% cc = [linspace(cphsSi2,(perCsSi+perClSi)/2,round((perTSi-TSi1)./(TSi2-TSi1)*1e3)),linspace((perCsSi+perClSi)/2,cphsSi1,round((perTSi-TSi2)./(TSi1-TSi2)*1e3))];
-% [~,CCxSi,CClSi]     = equilibrium(TT,cc,0.*TT,TSi1,TSi2,cphsSi1,cphsSi2,...
-%                                   perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
+% TT = linspace(CHM.TSi1,CHM.TSi2,1e3);
+% cc = [linspace(CHM.cphsSi2,(CHM.perCsSi+CHM.perClSi)/2,round((CHM.perTSi-CHM.TSi1)./(CHM.TSi2-CHM.TSi1)*1e3)),linspace((CHM.perCsSi+CHM.perClSi)/2,CHM.cphsSi1,round((CHM.perTSi-CHM.TSi2)./(CHM.TSi1-CHM.TSi2)*1e3))];
+% [~,CCxSi,CClSi]     = equilibrium(TT,cc,0.*TT,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+%                                   CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
 % 
-% TT2 = linspace(TFe1,TFe2,1000);
-% cc2 = linspace(cphsFe2,cphsFe1,length(TT2));
-% % cc2 = [linspace(cphsFe2,(perCsFe+perClFe)/2,round((perTFe-TFe1)./(TFe2-TFe1)*1e3)),linspace((perCsFe+perClFe)/2,cphsFe1,round((perTFe-TFe2)./(TFe1-TFe2)*1e3))];
-% [~,CCxFe,CClFe]     = equilibrium(TT2,cc2,0.*TT2,TFe1,TFe2,cphsFe1,cphsFe2,...
-%                                   perTFe,perCsFe,perClFe,clap,PhDgFe,TINY);
+% TT2 = linspace(CHM.TFe1,CHM.TFe2,1000);
+% cc2 = linspace(CHM.cphsFe2,CHM.cphsFe1,length(TT2));
+% % cc2 = [linspace(CHM.cphsFe2,(CHM.perCsFe+CHM.perClFe)/2,round((CHM.perTFe-CHM.TFe1)./(CHM.TFe2-CHM.TFe1)*1e3)),linspace((CHM.perCsFe+CHM.perClFe)/2,CHM.cphsFe1,round((CHM.perTFe-CHM.TFe2)./(CHM.TFe1-CHM.TFe2)*1e3))];
+% [~,CCxFe,CClFe]     = equilibrium(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+%                                   CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
 % subplot(1,2,1)
 % plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
 % plot(CClSi,TT,'k-','LineWidth',2);
@@ -158,39 +161,39 @@ SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 % % loop for P-dependent equilibrium to be added later on
 % % start loop to solve P, T and phi nonlinearities
 % % initial boussineq approximation
-% phiFes = xFe.*fFes; phiFel = xFe.*fFel; phiSis = xSi.*fSis; phiSil = xSi.*fSil;
-% MAT.rhot = MAT.rhoSil.*phiSil + MAT.rhoSis.*phiSis + MAT.rhoFel.*phiFel +MAT.rhoFes.*phiFes;
+% SOL.phiFes = CHM.xFe.*CHM.fFes; SOL.phiFel = CHM.xFe.*CHM.fFel; SOL.phiSis = CHM.xSi.*CHM.fSis; SOL.phiSil = CHM.xSi.*CHM.fSil;
+% MAT.rhot = MAT.rhoSil.*SOL.phiSil + MAT.rhoSis.*SOL.phiSis + MAT.rhoFel.*SOL.phiFel +MAT.rhoFes.*SOL.phiFes;
 % for i = 1:10
-% [fFes,csFe,clFe]     = equilibrium(SOL.T,cFe,SOL.Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
-%                                   perTSi,perCsFe,perClFe,clap,PhDgFe,TINY);
-% [fSis,csSi,clSi]     = equilibrium(SOL.T,cSi,SOL.Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
-%                                   perTSi,perCsSi,perClSi,clap,PhDgSi,TINY);
-% fFel = 1-fFes; fSil = 1-fSis;
+% [CHM.fFes,CHM.csFe,CHM.clFe]     = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+%                                   CHM.perTSi,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+% [CHM.fSis,CHM.csSi,CHM.clSi]     = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+%                                   CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+% CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
 % 
-% phiFesi = phiFes; phiFeli = phiFel; phiSisi = phiSis; phiSili = phiSil;
-% phiFes = max(TINY,min(1-TINY, xFe.*fFes.*MAT.rhot./MAT.rhoFes ))./(phiFes+phiFel+phiSis+phiSil);
-% phiFel = max(TINY,min(1-TINY, xFe.*fFel.*MAT.rhot./MAT.rhoFel ))./(phiFes+phiFel+phiSis+phiSil);
-% phiSis = max(TINY,min(1-TINY, xSi.*fSis.*MAT.rhot./MAT.rhoSis ))./(phiFes+phiFel+phiSis+phiSil);
-% phiSil = max(TINY,min(1-TINY, xSi.*fSil.*MAT.rhot./MAT.rhoSil ))./(phiFes+phiFel+phiSis+phiSil);
+% SOL.phiFesi = SOL.phiFes; SOL.phiFeli = SOL.phiFel; SOL.phiSisi = SOL.phiSis; SOL.phiSili = SOL.phiSil;
+% SOL.phiFes = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFes.*MAT.rhot./MAT.rhoFes ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiFel = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFel.*MAT.rhot./MAT.rhoFel ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiSis = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSis.*MAT.rhot./MAT.rhoSis ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiSil = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSil.*MAT.rhot./MAT.rhoSil ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
 % 
-% MAT.rhot                = phiFes.*MAT.rhoFes...
-%                         + phiFel.*MAT.rhoFel...
-%                         + phiSis.*MAT.rhoSis...
-%                         + phiSil.*MAT.rhoSil;
+% MAT.rhot                = SOL.phiFes.*MAT.rhoFes...
+%                         + SOL.phiFel.*MAT.rhoFel...
+%                         + SOL.phiSis.*MAT.rhoSis...
+%                         + SOL.phiSil.*MAT.rhoSil;
 %                     
-% XFe = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;                    
+% CHM.XFe = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;                    
 %                     
-% SOL.Pt = (XFe.*(fFes.*PHY.rhoFes + fFel.*PHY.rhoFel)...
-%        +  XSi.*(fSis.*PHY.rhoSis + fSil.*PHY.rhoSil)).*NUM.ZP.*PHY.gzP;
+% SOL.Pt = (CHM.XFe.*(CHM.fFes.*PHY.rhoFes + CHM.fFel.*PHY.rhoFel)...
+%        +  CHM.XSi.*(CHM.fSis.*PHY.rhoSis + CHM.fSil.*PHY.rhoSil)).*NUM.ZP.*PHY.gzP;
 %    
 % 
 % end
 
-rhoCpt  = (MAT.rhot.*xFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
-        +  MAT.rhot.*xSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
-SOL.H   =  SOL.T.*(MAT.rhot.*xFe.*(fFel.*dEntrSi) + MAT.rhot.*xSi.*(fSil.*dEntrSi) +rhoCpt);
-CFe     =  MAT.rhot.*cFe.*xFe;   
-CSi     =  MAT.rhot.*cSi.*xSi;   % component densities
+rhoCpt  = (MAT.rhot.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...
+        +  MAT.rhot.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
+SOL.H   =  SOL.T.*(MAT.rhot.*CHM.xFe.*(CHM.fFel.*CHM.dEntrSi) + MAT.rhot.*CHM.xSi.*(CHM.fSil.*CHM.dEntrSi) +rhoCpt);
+CHM.CFe     =  MAT.rhot.*CHM.cFe.*CHM.xFe;   
+CHM.CSi     =  MAT.rhot.*CHM.cSi.*CHM.xSi;   % component densities
 
 
 %% setup deformation property arrays
@@ -230,6 +233,9 @@ NUM.time  = 0;      % initialise time count
 NUM.step  = 0;      % initialise time step count
 up2date;
 
+Mass0       = sum(sum(MAT.rhot(2:end-1,2:end-1)));
+MassErr     = 0;
+sumH0       = sum(sum(SOL.H(2:end-1,2:end-1)));
 
 %% output initial condition
 % output;

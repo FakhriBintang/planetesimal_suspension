@@ -4,44 +4,44 @@ tic;  % start clock on update
 
 %% convert weight to volume fraction
 %% update T and chemical-dependent density
-MAT.rhoSis              = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(csSi-cphsSi1));  
-MAT.rhoSil              = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(clSi-cphsSi1));
-MAT.rhoFes              = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(csFe-cphsFe1));  
-MAT.rhoFel              = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(clFe-cphsFe1));
+MAT.rhoSis              = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(CHM.csSi-CHM.cphsSi1));  
+MAT.rhoSil              = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*(CHM.clSi-CHM.cphsSi1));
+MAT.rhoFes              = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(CHM.csFe-CHM.cphsFe1));  
+MAT.rhoFel              = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*(CHM.clFe-CHM.cphsFe1));
 
-MAT.rhot   = 1./ (xFe.*fFes./MAT.rhoFes + xFe.*fFel./MAT.rhoFel + xSi.*fSis./MAT.rhoSis + xSi.*fSil./MAT.rhoSil);
+MAT.rhot   = 1./ (CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
 
-phiFes     = xFe.* fFes .* MAT.rhot ./ MAT.rhoFes;
-phiFel     = xFe.* fFel .* MAT.rhot ./ MAT.rhoFel;
-phiSis     = xSi.* fSis .* MAT.rhot ./ MAT.rhoSis;
-phiSil     = xSi.* fSil .* MAT.rhot ./ MAT.rhoSil; 
+SOL.phiFes     = CHM.xFe.* CHM.fFes .* MAT.rhot ./ MAT.rhoFes;
+SOL.phiFel     = CHM.xFe.* CHM.fFel .* MAT.rhot ./ MAT.rhoFel;
+SOL.phiSis     = CHM.xSi.* CHM.fSis .* MAT.rhot ./ MAT.rhoSis;
+SOL.phiSil     = CHM.xSi.* CHM.fSil .* MAT.rhot ./ MAT.rhoSil; 
 
 % MAT.rhoSis              = PHY.rhoSis.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);  
 % MAT.rhoSil              = PHY.rhoSil.*(1 - MAT.aTSi.*(SOL.T-SOL.T0) - PHY.gammaSi.*cSi);
 % MAT.rhoFes              = PHY.rhoFes.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);  
 % MAT.rhoFel              = PHY.rhoFel.*(1 - MAT.aTFe.*(SOL.T-SOL.T0) - PHY.gammaFe.*cFe);
 % for loop = 1:5
-% % fFel = 1-fFes; fSil = 1-fSis;
+% % CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
 % 
-% phiFes = max(TINY,min(1-TINY, xFe.*fFes.*MAT.rhot./MAT.rhoFes ))./(phiFes+phiFel+phiSis+phiSil);
-% phiFel = max(TINY,min(1-TINY, xFe.*fFel.*MAT.rhot./MAT.rhoFel ))./(phiFes+phiFel+phiSis+phiSil);
-% phiSis = max(TINY,min(1-TINY, xSi.*fSis.*MAT.rhot./MAT.rhoSis ))./(phiFes+phiFel+phiSis+phiSil);
-% phiSil = max(TINY,min(1-TINY, xSi.*fSil.*MAT.rhot./MAT.rhoSil ))./(phiFes+phiFel+phiSis+phiSil);
+% SOL.phiFes = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFes.*MAT.rhot./MAT.rhoFes ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiFel = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFel.*MAT.rhot./MAT.rhoFel ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiSis = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSis.*MAT.rhot./MAT.rhoSis ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
+% SOL.phiSil = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSil.*MAT.rhot./MAT.rhoSil ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
 % 
-% MAT.rhot                = phiFes.*MAT.rhoFes...
-%                         + phiFel.*MAT.rhoFel...
-%                         + phiSis.*MAT.rhoSis...
-%                         + phiSil.*MAT.rhoSil;
+% MAT.rhot                = SOL.phiFes.*MAT.rhoFes...
+%                         + SOL.phiFel.*MAT.rhoFel...
+%                         + SOL.phiSis.*MAT.rhoSis...
+%                         + SOL.phiSil.*MAT.rhoSil;
 % % figure(200); 
-% % subplot(2,1,1); imagesc(phiFel+phiFes+phiSil+phiSis); colorbar; title('phisum')
+% % subplot(2,1,1); imagesc(SOL.phiFel+SOL.phiFes+SOL.phiSil+SOL.phiSis); colorbar; title('phisum')
 % % subplot(2,1,2); imagesc(MAT.rhot); colorbar
 % % drawnow
-% % XFe = MAT.rhot.*xFe; XSi = MAT.rhot.*xSi;        
+% % CHM.XFe = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;        
 % end
 
 % update viscosity
-MAT.EtaS                = (1-phiFes./0.5).^(-2)...  % iron crystal suspension
-                        .*(1-phiSis./0.5).^(-2);    % silicate crystal suspension
+MAT.EtaS                = (1-SOL.phiFes./0.5).^(-2)...  % iron crystal suspension
+                        .*(1-SOL.phiSis./0.5).^(-2);    % silicate crystal suspension
 % MAT.Mu                  = -4.13 +3703./(SOL.T-761.7);   % T-dependent melt viscosity
 MAT.Eta                 = MAT.Eta0.*MAT.EtaS;           % mixture viscosity
 % MAT.Eta                 = MAT.Mu.*MAT.EtaS;           % mixture viscosity
@@ -73,10 +73,10 @@ MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
 % rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
 SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
-MAT.rhoCpt  = (MAT.rhot.*xFe.*(fFes.*PHY.CpFes + fFel.*PHY.CpFel)...
-            +  MAT.rhot.*xSi.*(fSis.*PHY.CpSis + fSil.*PHY.CpSil));
-MAT.kT      = PHY.kTFe.*(phiFes + phiFel)...
-            + PHY.kTSi.*(phiSis + phiSil);
+MAT.rhoCpt  = (MAT.rhot.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...
+            +  MAT.rhot.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
+MAT.kT      = PHY.kTFe.*(SOL.phiFes + SOL.phiFel)...
+            + PHY.kTSi.*(SOL.phiSis + SOL.phiSil);
 
 %% calculate stokes settling velocity  
 if SOL.BCSeg==2; sds = -1;      % no slip
@@ -124,10 +124,10 @@ Div_V([1 end],:) = Div_V([2 end-1],:);                                     % app
 Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
 
 % update volume source
-Div_rhov =  + advection(MAT.rhot.*xSi.*fSis,0.*SOL.U,segSis  ,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhot.*xSi.*fSil,0.*SOL.U,0.*SOL.W,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhot.*xFe.*fFes,0.*SOL.U,segFes  ,NUM.h,NUM.h,ADVN,'flx') ...
-            + advection(MAT.rhot.*xFe.*fFel,0.*SOL.U,segFel  ,NUM.h,NUM.h,ADVN,'flx') ...
+Div_rhov =  + advection(MAT.rhot.*CHM.xSi.*CHM.fSis,0.*SOL.U,segSis  ,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*CHM.xSi.*CHM.fSil,0.*SOL.U,0.*SOL.W,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*CHM.xFe.*CHM.fFes,0.*SOL.U,segFes  ,NUM.h,NUM.h,ADVN,'flx') ...
+            + advection(MAT.rhot.*CHM.xFe.*CHM.fFel,0.*SOL.U,segFel  ,NUM.h,NUM.h,ADVN,'flx') ...
             + advection(MAT.rhot           ,   SOL.U,   SOL.W,NUM.h,NUM.h,ADVN,'flx');
 
 % VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V + Div_rhoVo)/2)./(MAT.rhot/2);
