@@ -34,6 +34,7 @@ advn_H      = advection(MAT.rhot.*CHM.xSi.*CHM.fSis.*PHY.CpSis.*SOL.T,...
 
 qTz    = - (MAT.kT(1:end-1,:)+MAT.kT(2:end,:))./2 .* ddz(SOL.T,NUM.h);                 % heat diffusion z-flux
 qTx    = - (MAT.kT(:,1:end-1)+MAT.kT(:,2:end))./2 .* ddx(SOL.T,NUM.h);                 % heat diffusion x-flux
+diff_T = zeros(NUM.N+2,NUM.N+2);
 diff_T(2:end-1,2:end-1) = (- ddz(qTz(:,2:end-1),NUM.h) ...                 % heat diffusion
             - ddx(qTx(2:end-1,:),NUM.h));
 dHdt        = diff_T - advn_H +MAT.Hr +zeros(size(SOL.T));
@@ -84,12 +85,13 @@ if NUM.step>0
     SOL.H = Ho + (NUM.theta.*dHdt   + (1-NUM.theta).*dHdto)  .*NUM.dt;    SOL.H([1 end],:) = SOL.H([2 end-1],:);  SOL.H(:,[1 end]) = SOL.H(:,[2 end-1]);
     % apply boundaries
     if Topbound == 'surface'
-        rhoCpt([1 2],:)  = (MAT.rhot([1 2],:).*CHM.xFe([1 2],:).*(CHM.fFes([1 2],:).*PHY.CpFes + CHM.fFel([1 2],:).*PHY.CpFel)...
-                         +  MAT.rhot([1 2],:).*CHM.xSi([1 2],:).*(CHM.fSis([1 2],:).*PHY.CpSis + CHM.fSil([1 2],:).*PHY.CpSil));
-        SOL.H([1 2],:)   =  SOL.T0.*(MAT.rhot([1 2],:).*CHM.xFe([1 2],:).*(CHM.fFel([1 2],:).*CHM.dEntrSi) ...
-                         +  MAT.rhot([1 2],:).*CHM.xSi([1 2],:).*(CHM.fSil([1 2],:).*CHM.dEntrSi) +rhoCpt([1 2],:));
-    end
+        rhoCpt([1 ],:)  = (MAT.rhot([1 ],:).*CHM.xFe([1 ],:).*(CHM.fFes([1 ],:).*PHY.CpFes + CHM.fFel([1 ],:).*PHY.CpFel)...
+                         +  MAT.rhot([1 ],:).*CHM.xSi([1 ],:).*(CHM.fSis([1 ],:).*PHY.CpSis + CHM.fSil([1 ],:).*PHY.CpSil));
+        SOL.H([1 ],:)   =  SOL.T0.*(MAT.rhot([1 ],:).*CHM.xFe([1 ],:).*(CHM.fFel([1 ],:).*CHM.dEntrSi) ...
+                         +  MAT.rhot([1 ],:).*CHM.xSi([1 ],:).*(CHM.fSil([1 ],:).*CHM.dEntrSi) +rhoCpt([1 ],:));
+    else
     SOL.H([1 end],:) = SOL.H([2 end-1],:);  SOL.H(:,[1 end]) = SOL.H(:,[2 end-1]);
+    end
     CHM.CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto).*NUM.dt;    CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
     CHM.CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto).*NUM.dt;    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
     CHM.XFe = XFeo + (NUM.theta.*dXdt   + (1-NUM.theta).*dXdto)  .*NUM.dt;    CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);

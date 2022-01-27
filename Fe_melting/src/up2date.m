@@ -39,11 +39,20 @@ SOL.phiSil     = CHM.xSi.* CHM.fSil .* MAT.rhot ./ MAT.rhoSil;
 % % CHM.XFe = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;        
 % end
 
-% update viscosity
+%% update viscosity
+% MAT.EtalSi = zeros(size(SOL.phiSil)) + PHY.EtalSi0;
+% MAT.EtasSi = zeros(size(SOL.phiSis)) + PHY.EtasSi0;
+% MAT.EtasFe = zeros(size(SOL.phiFes)) + PHY.EtasFe0;
+% % as a function of permission weights
+% kv = permute(cat(3,PHY.Eta0,PHY.EtasSi0,PHY.EtasFe0),[3,1,2]);
+% Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
+
+% legacy
 MAT.EtaS                = (1-SOL.phiFes./0.5).^(-2)...  % iron crystal suspension
                         .*(1-SOL.phiSis./0.5).^(-2);    % silicate crystal suspension
 % MAT.Mu                  = -4.13 +3703./(SOL.T-761.7);   % T-dependent melt viscosity
 MAT.Eta                 = MAT.Eta0.*MAT.EtaS;           % mixture viscosity
+MT.ETA(SOL.phiSil<= 0.5)= 1e17;
 % MAT.Eta                 = MAT.Mu.*MAT.EtaS;           % mixture viscosity
 
 MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
