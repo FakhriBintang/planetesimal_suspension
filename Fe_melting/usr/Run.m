@@ -3,10 +3,10 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  'fully molten';              % run identifier
+RUN.ID          =  'surface cooling 1km';              % run identifier
 RUN.plot        =  1;                   % switch on to plot live output
-RUN.save        =  1;                   % switch on to save output files
-RUN.nop         =  10;                  % output every 'nop' grid steps of transport
+RUN.save        =  0;                   % switch on to save output files
+RUN.nop         =  30;                  % output every 'nop' grid steps of transport
 RUN.nup         =  1;                   % update every 'nup' grid steps of transport
 
 %% set model timing
@@ -18,8 +18,8 @@ NUM.tend        =  1e8*NUM.yr;          % model stopping time [s]
 NUM.dt          =  1e3*NUM.yr;          % (initial) time step [s]
 
 %% set model domain
-NUM.D           =  100;                 % domain depth
-NUM.L           =  100;                 % domain length
+NUM.D           =  1000;                 % domain depth
+NUM.L           =  1000;                 % domain length
 NUM.N           =  100;                 % number of real x block nodes
 
 % [do not modify]
@@ -57,8 +57,8 @@ CHM.dEntrFe  = 300;
 % CHM.dEntrSi  = 0.7;                  % entropy of fusion
 % CHM.dEntrFe  = 0.5;
 
-SOL.T0          =  250;                % reference/top potential temperature [C]
-SOL.T1          =  1600;            	% bottom potential temperature (if different from top) [C]
+SOL.T0          =  500;                % reference/top potential temperature [C]
+SOL.T1          =  1500;            	% bottom potential temperature (if different from top) [C]
 SOL.dT          =  1;                   % temperature perturbation amplitude [C]
 SOL.rT          =  NUM.D/6;             % radius of hot plume [m]
 SOL.zT          =  NUM.D*0.5;           % z-position of hot plume [m]
@@ -79,7 +79,12 @@ PHY.rhoSil      =  PHY.rhoSis-PHY.drho; % reference liquid silicate density
 PHY.rhoFel      =  PHY.rhoFes-PHY.drho; % reference iron density
 PHY.gammaSi     =  (PHY.rhoSis - PHY.rhoSif)/(CHM.cphsSi2-CHM.cphsSi1)/PHY.rhoSis; % assume zero density contrast on silicates for now
 PHY.gammaFe     =  (PHY.rhoFes - PHY.rhoFef)/(CHM.cphsFe2-CHM.cphsFe1)/PHY.rhoFes;
-PHY.Eta0        =  1e4;                 % reference viscosity [Pas]
+PHY.Eta0        =  1e3;                 % reference/silicate melt viscosity [Pas]
+PHY.EtasSi0     =  1e15;                % reference silicate crystal viscosity
+PHY.EtasFe0     =  1e15;                % reference metal solid viscosity
+PHY.EtalFe0     =  1e3;                % reference silicate crystal viscosity
+
+
 PHY.aT0         =  3e-5;                % thermal expansivity [1/K]
 PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
 PHY.kTFe        =  70;                   % Thermal conductivity [W/m/K]
@@ -136,8 +141,14 @@ NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
 
 %% start model
 % create output directory
-if ~exist(['../out/',RUN.ID],'dir'); mkdir(['../out/',RUN.ID]); end
-
+[~,systemname] = system('hostname');
+if systemname == 'Horatio'
+    outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RUN.ID];
+if ~exist(outpath, 'dir'); mkdir(outpath); end
+else
+    outpath = ['../out/',RUN.ID];
+if ~exist(outpath, 'dir'); mkdir(outpath); end
+end
 % add path to source directory
 addpath('../src')
 addpath('../src/cbrewer/')

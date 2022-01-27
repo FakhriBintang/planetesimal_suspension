@@ -307,25 +307,25 @@ if RUN.save
    
 
     % save output data
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
+    name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
     print(fh1,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_phsvol_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+    name = [outpath '/',RUN.ID,'_phsvol_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
     print(fh2,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_phswt_',num2str(floor(NUM.step/RUN.nop))]; % figure 3
+    name = [outpath '/',RUN.ID,'_phswt_',num2str(floor(NUM.step/RUN.nop))]; % figure 3
     print(fh3,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+    name = [outpath '/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
     print(fh4,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_eq',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+    name = [outpath '/',RUN.ID,'_eq',num2str(floor(NUM.step/RUN.nop))]; % figure 5
     print(fh5,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+    name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
     print(fh6,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+    name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
     print(fh7,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_XC',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+    name = [outpath '/',RUN.ID,'_XC',num2str(floor(NUM.step/RUN.nop))]; % figure 5
     print(fh8,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_Phsdg',num2str(floor(NUM.step/RUN.nop))]; % figure 9 phase diagram
+    name = [outpath '/',RUN.ID,'_Phsdg',num2str(floor(NUM.step/RUN.nop))]; % figure 9 phase diagram
     print(fh9,name,'-dpng','-r300','-opengl');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_conservation',num2str(floor(NUM.step/RUN.nop))]; % figure 10 conserved quantities
+    name = [outpath '/',RUN.ID,'_conservation',num2str(floor(NUM.step/RUN.nop))]; % figure 10 conserved quantities
     print(fh10,name,'-dpng','-r300','-opengl');
 
 
@@ -335,9 +335,9 @@ if RUN.save
 %     name = ['../out/',RUN.ID,'/',RUN.ID,'_',num2str(RUN.frame)];
 %     save([name,'.mat']);
 
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_',num2str(NUM.step/RUN.nop)];
+    name = [outpath '/',RUN.ID,'_',num2str(NUM.step/RUN.nop)];
     save(name,'NUM','PHY','SOL','MAT','CHM');
-    name = ['../out/',RUN.ID,'/',RUN.ID,'_cont'];
+    name = [outpath '/',RUN.ID,'_cont'];
     save(name,'NUM','PHY','SOL','MAT','CHM');
 
     % clean workspace
@@ -346,7 +346,7 @@ if RUN.save
     clear rr R RR S To dTdto toc_assmb toc_solve toc_update xq zq V fh1
     
     if NUM.step == 0
-        logfile = ['../out/',RUN.ID,'/',RUN.ID,'.log'];
+        logfile = [outpath '/',RUN.ID,'.log'];
         if exist(logfile,'file'); delete(logfile); end
         diary(logfile)
     end
