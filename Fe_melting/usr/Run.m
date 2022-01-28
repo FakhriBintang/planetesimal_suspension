@@ -3,7 +3,7 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  'surface cooling 1km';              % run identifier
+RUN.ID          =  'test_system_detect';              % run identifier
 RUN.plot        =  1;                   % switch on to plot live output
 RUN.save        =  0;                   % switch on to save output files
 RUN.nop         =  30;                  % output every 'nop' grid steps of transport
@@ -71,11 +71,11 @@ Topbound        = 'surface';
 %% set material parameters
 smth            =  ((NUM.N+2)/20)^2;    % regularisation of initial random perturbation
 PHY.drho        =  250;                 % solid-liquid density contrast
-PHY.rhoSis      =  3200;     
-PHY.rhoSif      =  2600;     
+PHY.rhoSis      =  3200;
+PHY.rhoSif      =  2600;
 PHY.rhoFes      =  8000;                % reference solid/pure refractory Fe density [kg/m3]
-PHY.rhoFef      =  6000;                % pure fertile FeS density     
-PHY.rhoSil      =  PHY.rhoSis-PHY.drho; % reference liquid silicate density   
+PHY.rhoFef      =  6000;                % pure fertile FeS density
+PHY.rhoSil      =  PHY.rhoSis-PHY.drho; % reference liquid silicate density
 PHY.rhoFel      =  PHY.rhoFes-PHY.drho; % reference iron density
 PHY.gammaSi     =  (PHY.rhoSis - PHY.rhoSif)/(CHM.cphsSi2-CHM.cphsSi1)/PHY.rhoSis; % assume zero density contrast on silicates for now
 PHY.gammaFe     =  (PHY.rhoFes - PHY.rhoFef)/(CHM.cphsFe2-CHM.cphsFe1)/PHY.rhoFes;
@@ -96,7 +96,7 @@ PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
 PHY.CpSil       =  1000;                % mvp  heat capacity [J/kg/K]
 
 PHY.Hr0         =  1e-4;                % Radiogenic heat productivity [W/m3]
-PHY.gz          =  0.1;                 % z-gravity 
+PHY.gz          =  0.1;                 % z-gravity
 gz              = PHY.gz;
 PHY.gx          =  0;               	% x-gravity
 
@@ -106,8 +106,8 @@ PHY.x0          =  0.1;                 % component at the top boundary
 PHY.phi0        =  0.1;                 % initial droplet fraction
 PHY.d           =  0.01;                % droplet radius
 SOL.philim      =  1e-4;                % limit liquid fraction for numerical stability
-zlay            =  0.1;                 % layer thickness of top          
- 
+zlay            =  0.1;                 % layer thickness of top
+
 %% set boundary conditions
 % Temperature boundary conditions
 SOL.BCTTop     = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
@@ -142,13 +142,16 @@ NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
 %% start model
 % create output directory
 [~,systemname] = system('hostname');
-if systemname == 'Horatio'
-    outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RUN.ID];
-if ~exist(outpath, 'dir'); mkdir(outpath); end
-else
-    outpath = ['../out/',RUN.ID];
-if ~exist(outpath, 'dir'); mkdir(outpath); end
+systemname(end) = [];
+switch systemname
+    case 'Horatio'
+        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RUN.ID];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end
+    otherwise
+        outpath = ['../out/',RUN.ID];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end
 end
+
 % add path to source directory
 addpath('../src')
 addpath('../src/cbrewer/')
@@ -169,7 +172,7 @@ run('initialise_melting');
 % end
 
 % compare thermal and phase buoyancy terms
-% dRhoT           = PHY.aT0.*(max(SOL.T(:))-min(SOL.T(:))).*PHY.RhoT0; 
+% dRhoT           = PHY.aT0.*(max(SOL.T(:))-min(SOL.T(:))).*PHY.RhoT0;
 % dRhoC           = (max(SOL.phi(:))-min(SOL.phi(:))).*(PHY.RhoFe0-PHY.RhoSi0);
 
 % if dRhoT>dRhoC; disp('Thermal buoyancy driven run');
