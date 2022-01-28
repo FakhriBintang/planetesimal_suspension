@@ -57,8 +57,8 @@ CHM.dEntrFe  = 300;
 % CHM.dEntrSi  = 0.7;                  % entropy of fusion
 % CHM.dEntrFe  = 0.5;
 
-SOL.T0          =  500;                % reference/top potential temperature [C]
-SOL.T1          =  1500;            	% bottom potential temperature (if different from top) [C]
+SOL.T0          =  700;                % reference/top potential temperature [C]
+SOL.T1          =  1200;            	% bottom potential temperature (if different from top) [C]
 SOL.dT          =  1;                   % temperature perturbation amplitude [C]
 SOL.rT          =  NUM.D/6;             % radius of hot plume [m]
 SOL.zT          =  NUM.D*0.5;           % z-position of hot plume [m]
@@ -80,9 +80,24 @@ PHY.rhoFel      =  PHY.rhoFes-PHY.drho; % reference iron density
 PHY.gammaSi     =  (PHY.rhoSis - PHY.rhoSif)/(CHM.cphsSi2-CHM.cphsSi1)/PHY.rhoSis; % assume zero density contrast on silicates for now
 PHY.gammaFe     =  (PHY.rhoFes - PHY.rhoFef)/(CHM.cphsFe2-CHM.cphsFe1)/PHY.rhoFes;
 PHY.Eta0        =  1e3;                 % reference/silicate melt viscosity [Pas]
-PHY.EtasSi0     =  1e15;                % reference silicate crystal viscosity
-PHY.EtasFe0     =  1e15;                % reference metal solid viscosity
-PHY.EtalFe0     =  1e3;                % reference silicate crystal viscosity
+PHY.Etasol0     =  1e15;                % reference silicate crystal viscosity
+PHY.EtalFe0     =  1e3;                 % reference metal solid viscosity
+Em              =  150e3;               % activation energy melt viscosity [J/mol]
+
+AA              =  [ 0.25, 0.25, 0.25; ...
+                     0.25, 0.25, 0.25; ...
+                     0.25, 0.25, 0.25; ];  % permission slopes
+
+BB              =  [ 0.44, 0.18, 0.38; ...
+                     0.60, 0.03, 0.37; ...
+                     0.70, 0.24, 0.06; ];  % permission step locations
+
+CC              =  [ 0.30, 0.30, 0.30; ...
+                     0.60, 0.60, 0.12; ...
+                     0.60, 0.12, 0.60; ];  % permission step widths
+PHY.dx          =  3e-3;                % solid grain size [m]
+PHY.dm          =  1e-3;                % melt film size [m]
+PHY.df          =  3e-3;                % metal droplet size [m]
 
 
 PHY.aT0         =  3e-5;                % thermal expansivity [1/K]
@@ -136,6 +151,8 @@ NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = For
 NUM.restol    	= 1e-4;     % residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-4;
 NUM.maxit       = 15;
+etamin   =  1e1;                 % minimum viscosity for stabilisation
+etamax   =  1e7;                 % maximum viscosity for stabilisation
 alpha           = 0.5;
 NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
 

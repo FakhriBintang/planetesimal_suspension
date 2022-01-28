@@ -40,6 +40,39 @@ SOL.phiSil     = CHM.xSi.* CHM.fSil .* MAT.rhot ./ MAT.rhoSil;
 % end
 
 %% update viscosity
+etas = zeros(size(SOL.phiSis)) + PHY.Etasol0; 
+etam = PHY.Eta0 .* exp(Em./(8.3145.*(SOL.T+273.15))-Em./(8.3145.*((CHM.TFe1+CHM.TFe2)/2+273.15)));
+etaFe= zeros(size(SOL.phiFel)) + PHY.EtalFe0;
+% get permission weights
+kv = permute(cat(3,etas,etam,etaFe),[3,1,2]);
+Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
+ 
+ff = permute(cat(3,SOL.phiSis+SOL.phiFes,SOL.phiSil,SOL.phiFel),[3,1,2]);
+FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
+Sf = (FF./BB).^(1./CC);  Sf = Sf./sum(Sf,2);
+Xf = sum(AA.*Sf,2).*FF + (1-sum(AA.*Sf,2)).*Sf;
+
+% get momentum and volume permissions
+thtv = squeeze(prod(Mv.^Xf,2));
+
+% get momentum and volume flux and transfer coefficients
+Kv =    ff .*kv.*thtv;
+Cv = (1-ff)./[PHY.dx;PHY.dm;PHY.df].^2.*Kv;
+
+% compose effective viscosity, segregation coefficients
+Kvb = squeeze(sum(Kv,1));                                                  % effective magma viscosity
+if NUM.step>0; MAT.Eta = (Kvb + Kvbo)/2; 
+else;      MAT.Eta =  Kvb;  end
+MAT.Eta   = max(etamin,min(etamax,MAT.Eta));                                       % limit viscosity range
+MAT.Etac  = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...                       % viscosity in cell corners
+          +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
+etareal = ones(102,102);
+for i = 1:102
+for j = 1:102
+etareal(i,j) = isreal(MAT.Eta(i,j));
+end
+end
+
 % MAT.EtalSi = zeros(size(SOL.phiSil)) + PHY.EtalSi0;
 % MAT.EtasSi = zeros(size(SOL.phiSis)) + PHY.EtasSi0;
 % MAT.EtasFe = zeros(size(SOL.phiFes)) + PHY.EtasFe0;
@@ -47,18 +80,18 @@ SOL.phiSil     = CHM.xSi.* CHM.fSil .* MAT.rhot ./ MAT.rhoSil;
 % kv = permute(cat(3,PHY.Eta0,PHY.EtasSi0,PHY.EtasFe0),[3,1,2]);
 % Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
 
-% legacy
-MAT.EtaS                = (1-SOL.phiFes./0.5).^(-2)...  % iron crystal suspension
-                        .*(1-SOL.phiSis./0.5).^(-2);    % silicate crystal suspension
-% MAT.Mu                  = -4.13 +3703./(SOL.T-761.7);   % T-dependent melt viscosity
-MAT.Eta                 = MAT.Eta0.*MAT.EtaS;           % mixture viscosity
-MT.ETA(SOL.phiSil<= 0.5)= 1e17;
-% MAT.Eta                 = MAT.Mu.*MAT.EtaS;           % mixture viscosity
-
-MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
-                        +  MAT.Eta(2:end  ,1:end-1) ...
-                        +  MAT.Eta(1:end-1,2:end  ) ...
-                        +  MAT.Eta(2:end  ,2:end  ))/4;                     % interpolate to corner nodes
+% % legacy
+% MAT.EtaS                = (1-SOL.phiFes./0.5).^(-2)...  % iron crystal suspension
+%                         .*(1-SOL.phiSis./0.5).^(-2);    % silicate crystal suspension
+% % MAT.Mu                  = -4.13 +3703./(SOL.T-761.7);   % T-dependent melt viscosity
+% MAT.Eta                 = MAT.Eta0.*MAT.EtaS;           % mixture viscosity
+% MT.ETA(SOL.phiSil<= 0.5)= 1e17;
+% % MAT.Eta                 = MAT.Mu.*MAT.EtaS;           % mixture viscosity
+% 
+% MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
+%                         +  MAT.Eta(2:end  ,1:end-1) ...
+%                         +  MAT.Eta(1:end-1,2:end  ) ...
+%                         +  MAT.Eta(2:end  ,2:end  ))/4;                     % interpolate to corner nodes
 
 % %% update T and chemical-dependent density
 % MAT.rhoUt               = (MAT.rhot(:,1:end-1)+MAT.rhot(:,2:end))./2;     % density on the vx nodes
@@ -80,7 +113,7 @@ MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
 %% other bulk thermochemical properties
 % Update pressure
 % rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
-SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
+SOL.Pt      = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
 MAT.rhoCpt  = (MAT.rhot.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...
             +  MAT.rhot.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
