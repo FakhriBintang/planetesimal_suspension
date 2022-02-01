@@ -49,8 +49,8 @@ Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]
  
 ff = permute(cat(3,SOL.phiSis+SOL.phiFes,SOL.phiSil,SOL.phiFel),[3,1,2]);
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
-Sf = (FF./BB).^(1./CC);  Sf = Sf./sum(Sf,2);
-Xf = sum(AA.*Sf,2).*FF + (1-sum(AA.*Sf,2)).*Sf;
+Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
+Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
 
 % get momentum and volume permissions
 thtv = squeeze(prod(Mv.^Xf,2));
@@ -64,7 +64,7 @@ Kvb = squeeze(sum(Kv,1));                                                  % eff
 if NUM.step>0; MAT.Eta = (Kvb + Kvbo)/2; 
 else;      MAT.Eta =  Kvb;  end
 MAT.Eta   = max(etamin,min(etamax,MAT.Eta));                                       % limit viscosity range
-MAT.Etac  = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...                       % viscosity in cell corners
+MAT.EtaC  = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...                       % viscosity in cell corners
           +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
 etareal = ones(102,102);
 for i = 1:102
@@ -73,42 +73,9 @@ etareal(i,j) = isreal(MAT.Eta(i,j));
 end
 end
 
-% MAT.EtalSi = zeros(size(SOL.phiSil)) + PHY.EtalSi0;
-% MAT.EtasSi = zeros(size(SOL.phiSis)) + PHY.EtasSi0;
-% MAT.EtasFe = zeros(size(SOL.phiFes)) + PHY.EtasFe0;
-% % as a function of permission weights
-% kv = permute(cat(3,PHY.Eta0,PHY.EtasSi0,PHY.EtasFe0),[3,1,2]);
-% Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
-
-% % legacy
-% MAT.EtaS                = (1-SOL.phiFes./0.5).^(-2)...  % iron crystal suspension
-%                         .*(1-SOL.phiSis./0.5).^(-2);    % silicate crystal suspension
-% % MAT.Mu                  = -4.13 +3703./(SOL.T-761.7);   % T-dependent melt viscosity
-% MAT.Eta                 = MAT.Eta0.*MAT.EtaS;           % mixture viscosity
-% MT.ETA(SOL.phiSil<= 0.5)= 1e17;
-% % MAT.Eta                 = MAT.Mu.*MAT.EtaS;           % mixture viscosity
-% 
-% MAT.EtaC                = (MAT.Eta(1:end-1,1:end-1) ...
-%                         +  MAT.Eta(2:end  ,1:end-1) ...
-%                         +  MAT.Eta(1:end-1,2:end  ) ...
-%                         +  MAT.Eta(2:end  ,2:end  ))/4;                     % interpolate to corner nodes
-
-% %% update T and chemical-dependent density
-% MAT.rhoUt               = (MAT.rhot(:,1:end-1)+MAT.rhot(:,2:end))./2;     % density on the vx nodes
-% MAT.rhoWt               = (MAT.rhot(1:end-1,:)+MAT.rhot(2:end,:))./2;     % density on the vz nodes                 
-%                     
-% % silicate
-% MAT.RhoSi               = PHY.RhoSi0.* (1 - MAT.aT.*(SOL.T-SOL.T0));        % density on centre nodes
-% MAT.RhoUSi              = (MAT.RhoSi(:,1:end-1)+MAT.RhoSi(:,2:end))./2;   % density on the vx nodes
-% MAT.RhoWSi              = (MAT.RhoSi(1:end-1,:)+MAT.RhoSi(2:end,:))./2;   % density on the vz nodes
-% 
-% % iron droplets
-% MAT.RhoFe               = PHY.RhoFe0.*(1 - MAT.aT.*(SOL.T-SOL.T0));        % density on centre nodes
-% MAT.RhoUFe              = (MAT.RhoFe(:,1:end-1)+MAT.RhoFe(:,2:end))./2;   % density on the vx nodes
-% MAT.RhoWFe              = (MAT.RhoFe(1:end-1,:)+MAT.RhoFe(2:end,:))./2;   % density on the vz nodes
-% 
-% % density contrast (between Fe and bulk)
-% MAT.dRho                = MAT.RhoFe - MAT.Rhot;
+Ksgr_x = max(1e-18,min(1e-6,SOL.phiSis+SOL.phiFes./squeeze(Cv(1,:,:))));
+Ksgr_m = max(1e-18,min(1e-6,SOL.phiSil ./squeeze(Cv(2,:,:))));
+Ksgr_f = max(1e-18,min(1e-6,SOL.phiFel ./squeeze(Cv(3,:,:))));
 
 %% other bulk thermochemical properties
 % Update pressure
@@ -125,26 +92,29 @@ if SOL.BCSeg==2; sds = -1;      % no slip
 else;            sds = +1; end  % free slip
 
 
-segSis      = 2/9 .* ((MAT.rhoSis(1:end-1,:)+ MAT.rhoSis(2:end,:))./2 ...
-                     -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))/2)...
-                  .*  PHY.gz*PHY.d^2 ...
-                  ./ ((MAT.Eta(1:end-1,:)   + MAT.Eta(2:end,:) )/2); % crystal settling speed
+segSis      = ((MAT.rhoSis(1:end-1,:)+ MAT.rhoSis(2:end,:))./2 ...
+              -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))  ./2)...
+            .*((Ksgr_x(1:end-1,:)    +Ksgr_x(2:end,:))/2)  .*  PHY.gz; % crystal settling speed
 segSis([1 end],:) = 0;
 segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
 
-segFes      = 2/9 .* ((MAT.rhoFes(1:end-1,:)+ MAT.rhoFes(2:end,:))./2      ...
-                     -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))/2)...
-                  .*  PHY.gz*PHY.d^2  ...
-                  ./ ((MAT.Eta(1:end-1,:)   + MAT.Eta(2:end,:) )/2); % crystal settling speed
+segFes      = ((MAT.rhoFes(1:end-1,:)+ MAT.rhoFes(2:end,:))./2 ...
+              -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))  ./2)...
+            .*((Ksgr_x(1:end-1,:)    +Ksgr_x(2:end,:))/2)  .*  PHY.gz; % Fe crystal settling speed
 segFes([1 end],:) = 0;
 segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
 
-segFel      = 2/9 .* ((MAT.rhoFel(1:end-1,:)+ MAT.rhoFel(2:end,:))./2 ...
-                     -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))/2)...
-                  .*  PHY.gz*PHY.d^2 ...
-                  ./((MAT.Eta(1:end-1,:)   + MAT.Eta(2:end,:) )/2); % crystal settling speed
+segFel      = ((MAT.rhoFel(1:end-1,:)+ MAT.rhoFel(2:end,:))./2 ...
+              -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))  ./2)...
+            .*((Ksgr_f(1:end-1,:)    +Ksgr_f(2:end,:))/2)  .*  PHY.gz; % droplet settling speed
 segFel([1 end],:) = 0;
 segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
+
+segSil      = ((MAT.rhoSil(1:end-1,:)+ MAT.rhoSil(2:end,:))./2 ...
+              -(MAT.rhot(1:end-1,:)  + MAT.rhot(2:end,:))  ./2)...
+            .*((Ksgr_m(1:end-1,:)    +Ksgr_m(2:end,:))/2)  .*  PHY.gz; % droplet settling speed
+segSil([1 end],:) = 0;
+segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
 
 % update phase velocities
 WlSi        = SOL.W;

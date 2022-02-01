@@ -19,6 +19,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     
     % store previous solutions
     MAT.rhoo = MAT.rhot;
+    Kvbo = Kvb;
     Ho                  = SOL.H;     % store previous temperature solution
     To                  = SOL.T;
     cFeo                = CHM.cFe;
