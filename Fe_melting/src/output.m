@@ -340,10 +340,10 @@ if RUN.save
     name = [outpath '/',RUN.ID,'_cont'];
     save(name,'NUM','PHY','SOL','MAT','CHM');
 
-    % clean workspace
-    clear aa A AA advn_T diff_T dtadvn dtdiff EtaC1 EtaC2 EtaP1 EtaP2 ii II
-    clear indP indU indW IR jj JJ jj1 jj2 jj3 jj4 kappa pert Pscale RhoRef
-    clear rr R RR S To dTdto toc_assmb toc_solve toc_update xq zq V fh1
+%     % clean workspace
+%     clear aa A AA advn_T diff_T dtadvn dtdiff EtaC1 EtaC2 EtaP1 EtaP2 ii II
+%     clear indP indU indW IR jj JJ jj1 jj2 jj3 jj4 kappa pert Pscale RhoRef
+%     clear rr R RR S To dTdto toc_assmb toc_solve toc_update xq zq V fh1
     
     if NUM.step == 0
         logfile = [outpath '/',RUN.ID,'.log'];
