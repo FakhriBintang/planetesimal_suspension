@@ -83,18 +83,25 @@ dCFedt      = -advn_CFe + diff_CFe + zeros(size(CHM.CFe));
 
 if NUM.step>0   
     SOL.H = Ho + (NUM.theta.*dHdt   + (1-NUM.theta).*dHdto)  .*NUM.dt;    SOL.H([1 end],:) = SOL.H([2 end-1],:);  SOL.H(:,[1 end]) = SOL.H(:,[2 end-1]);
-    % apply boundaries
+    CHM.CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto).*NUM.dt;    CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
+    CHM.CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto).*NUM.dt;    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
+    CHM.XFe = XFeo + (NUM.theta.*dXdt   + (1-NUM.theta).*dXdto)  .*NUM.dt;    CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
+
+ % apply boundaries
     if Topbound == 'surface'
         rhoCpt([1 ],:)  = (MAT.rhot([1 ],:).*CHM.xFe([1 ],:).*(CHM.fFes([1 ],:).*PHY.CpFes + CHM.fFel([1 ],:).*PHY.CpFel)...
                          +  MAT.rhot([1 ],:).*CHM.xSi([1 ],:).*(CHM.fSis([1 ],:).*PHY.CpSis + CHM.fSil([1 ],:).*PHY.CpSil));
         SOL.H([1 ],:)   =  SOL.T0.*(MAT.rhot([1 ],:).*CHM.xFe([1 ],:).*(CHM.fFel([1 ],:).*CHM.dEntrSi) ...
                          +  MAT.rhot([1 ],:).*CHM.xSi([1 ],:).*(CHM.fSil([1 ],:).*CHM.dEntrSi) +rhoCpt([1 ],:));
+        SOL.H(end,:)    = SOL.H(end-1,:); % bottom
+        SOL.H(:,[1 end])= SOL.H(:,[2 end-1]);
     else
     SOL.H([1 end],:) = SOL.H([2 end-1],:);  SOL.H(:,[1 end]) = SOL.H(:,[2 end-1]);
     end
-    CHM.CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto).*NUM.dt;    CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
-    CHM.CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto).*NUM.dt;    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
-    CHM.XFe = XFeo + (NUM.theta.*dXdt   + (1-NUM.theta).*dXdto)  .*NUM.dt;    CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
+    CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
+    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
+    CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
+
 
 CHM.XSi         = MAT.rhot - CHM.XFe;
 CHM.xFe         = CHM.XFe./MAT.rhot;    CHM.xSi     = 1-CHM.xFe;
