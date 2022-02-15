@@ -119,7 +119,7 @@ SOL.Pt = (CHM.xFe.*PHY.rhoFes + CHM.xSi.*PHY.rhoSis).*NUM.ZP.*PHY.gzP;
 
 % output crystal fraction and fertile solid and liquid concentrations
 [CHM.fFes,CHM.csFe,CHM.clFe]     = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-                                  CHM.perTSi,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+                                  CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
 [CHM.fSis,CHM.csSi,CHM.clSi]     = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
                                   CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
 CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
