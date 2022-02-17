@@ -69,7 +69,7 @@ MAT.kC          = zeros(NUM.nzP,NUM.nxP) + PHY.kC;      % chemical diffusivity
 % MAT.kTFe        = zeros(NUM.nzP,NUM.nxP) + PHY.kTFe;    % iron thermal conductivity
 % MAT.Cp          = zeros(NUM.nzP,NUM.nxP) + PHY.Cp0;   	% heat capacity
 % MAT.Hr	 = zeros(NUM.nzP,NUM.nxP) + PHY.Hr0;	% radiogenic heating
-MAT.Hr          = PHY.Hr0 + PHY.Hr0*0.01 .*rp;
+MAT.Hr          = PHY.Hr0 + PHY.Hr0;
 
 %% setup velocity-pressure solution arrays
 SOL.W           = zeros(NUM.nzW,NUM.nxW);               % z-velocity on z-face nodes
@@ -111,6 +111,8 @@ end
 CHM.cFe                 = CHM.cFe0 + dc.*rp; % Fe component
 CHM.cSi                 = CHM.cSi0 + dc.*rp; % Si component
 CHM.xFe                 = CHM.xFe0 + dc.*rp; % Fe system
+% test central iron plume
+% CHM.xFe = CHM.xFe + CHM.xFe0.*0.01.*exp(-(NUM.XP-SOL.xT).^2./SOL.rT.^2 - (NUM.ZP-SOL.zT).^2./SOL.rT.^2 );
 % CHM.xFe(1:15,:)         = CHM.xFe(1:15,:) +0.05
 CHM.xSi                 = 1 - CHM.xFe;
 
