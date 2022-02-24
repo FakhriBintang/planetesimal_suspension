@@ -7,41 +7,41 @@ fprintf(1,    '************************************************************\n\n'
 
 
 % %% initialise model run
-% initialise;
+run('initialise_melting');
 
 S   = [SOL.W(:);SOL.U(:);SOL.P(:)];
 
 while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % print time step header
-    fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr \n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr);
+    fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr,dtlimit);
     
     figure(100);clf
     
-    % store previous solutions
-    MAT.rhoo = MAT.rhot;
-    Kvbo = Kvb;
-    Ho                  = SOL.H;     % store previous temperature solution
+    % store previous solution and auxiliary fields
+    MAT.rhoo            = MAT.rhot;
+    Kvbo                = Kvb;
+    Ho                  = SOL.H;
     To                  = SOL.T;
     cFeo                = CHM.cFe;
     cSio                = CHM.cSi;
     CSio                = CHM.CSi;
     CFeo                = CHM.CFe;
-    dHdto               = dHdt;  % store previous rate of change
+    dHdto               = dHdt;
     XFeo                = CHM.XFe;
     dXdto               = dXdt;
     dCSidto             = dCSidt;
     dCFedto             = dCFedt;
     Pto                 = SOL.Pt;
-    
-%     phio                = SOL.phi;
     Div_rhovo           = Div_rhov;
+    
     % reset residuals and iteration count
     resnorm  = 1e3;
     resnorm0 = resnorm;
     iter     = 0;
     
-        % non-linear iteration loop
-    while resnorm/resnorm0 >= NUM.restol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter <= 2
+    % non-linear iteration loop
+    while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter <= 2
+        
         % solve thermo-chemical equations
         solve_thermochem;
         

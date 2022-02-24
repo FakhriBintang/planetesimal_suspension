@@ -1,8 +1,7 @@
 % planetesimal: solve thermo-chemical equations
 
 % print solver header
-fprintf(1,'  ---  solve thermo-chemical equations \n');
-tic;
+% fprintf(1,'  ---  solve thermo-chemical equations \n');
 
 % bndmode = 0;
 %

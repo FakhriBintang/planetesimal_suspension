@@ -6,8 +6,8 @@ clear; close all
 RUN.ID          =  'test_system_detect';              % run identifier
 RUN.plot        =  1;                   % switch on to plot live output
 RUN.save        =  0;                   % switch on to save output files
-RUN.nop         =  1;                  % output every 'nop' grid steps of transport
-RUN.nup         =  1;                   % update every 'nup' grid steps of transport
+RUN.nop         =  10;                  % output every 'nop' grid steps of transport
+% RUN.nup         =  1;                   % update every 'nup' grid steps of transport
 
 %% set model timing
 NUM.yr          =  3600*24*365.25;      % seconds per year
@@ -20,7 +20,7 @@ NUM.dt          =  1e3*NUM.yr;          % (initial) time step [s]
 %% set model domain
 NUM.D           =  1000;                 % domain depth
 NUM.L           =  1000;                 % domain length
-NUM.N           =  100;                 % number of real x block nodes
+NUM.N           =  3;                 % number of real x block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;         % spacing of x coordinates
@@ -121,7 +121,7 @@ PHY.gx          =  0;               	% x-gravity
 PHY.x1          =  0.1;                 % component at the bottom boundary
 PHY.x0          =  0.1;                 % component at the top boundary
 PHY.phi0        =  0.1;                 % initial droplet fraction
-PHY.d           =  0.01;                % droplet radius
+PHY.d           =  1e-16;                % droplet radius
 SOL.philim      =  1e-4;                % limit liquid fraction for numerical stability
 zlay            =  0.1;                 % layer thickness of top
 
@@ -150,8 +150,8 @@ ADVN = 'fromm';
 TINY  = 1e-16;
 NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.restol    	= 1e-4;     % residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-4;
+NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 20;
 dtmax       = 1e3; 
 etamin   =  1e1;                 % minimum viscosity for stabilisation
@@ -179,9 +179,6 @@ addpath('../src/cbrewer/')
 % use color brewer to create colormaps
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
-
-% run model
-run('initialise_melting');
 
 % check thermal rayleigh number
 % PHY.RhoT0       = (PHY.RhoSi0*(1-PHY.phi0)+PHY.RhoFe0.*PHY.phi0);

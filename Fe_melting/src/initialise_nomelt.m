@@ -54,6 +54,7 @@ end
 rp              = rp./max(abs(rp(:)));
 rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
 
+
 %% setup material property arrays
 % gravity
 PHY.gxP = zeros(NUM.nzP,NUM.nxP) + PHY.gx;      PHY.gzP = zeros(NUM.nzP,NUM.nxP) + PHY.gz;

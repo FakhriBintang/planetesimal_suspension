@@ -70,7 +70,10 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 % z-RHS vector
 
-rr = zeros(size(ii)) + PHY.gz(2:end-1,2:end-1).*( (MAT.rhot(2:end-2,2:end-1)+MAT.rhot(3:end-1,2:end-1))/2 - rhoRef);
+rhoBF = (MAT.rhot(2:end-2,2:end-1)+MAT.rhot(3:end-1,2:end-1))/2 - rhoRef;
+if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxP-2); end
+
+rr = zeros(size(ii)) + PHY.gz(2:end-1,2:end-1).*rhoBF;
 
 IR = [IR; ii(:)];  RR = [RR; rr(:)];
 
@@ -230,7 +233,7 @@ RR = [RR; rr(:)];
 KP = sparse(II,JJ,AA,NUM.NP,NUM.NP);
 RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
-np = round(NUM.nzP-2)/2+1;
+np = round((NUM.nzP-2)/2)+1;
 KP(indP(np,np),:) = 0;
 KP(indP(np,np),indP(np,np)) = 1;
 RP(indP(np,np),:) = 0;
@@ -278,7 +281,11 @@ SOL.P  = full(reshape(S(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   )).*Psca
 SOL.UP(:,2:end-1) = SOL.U(:,1:end-1)+SOL.U(:,2:end)./2;
 SOL.WP(2:end-1,:) = SOL.W(1:end-1,:)+SOL.W(2:end,:)./2;
 
+if iter == 0
+    resnorm0 = resnorm;
+end
+fprintf(1,'  ---  it = %d;  res = %1.4e  \n',iter,resnorm)
+
 figure(100)
-plot(iter, log10(resnorm), 'ko')
-hold on
-% 
+plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;
+drawnow;

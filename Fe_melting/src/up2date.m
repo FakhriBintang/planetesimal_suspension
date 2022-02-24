@@ -1,5 +1,5 @@
 % print update header
-fprintf(1,'  ---  update materials & deformation \n');
+% fprintf(1,'  ---  update materials & deformation \n');
 tic;  % start clock on update
 
 %% convert weight to volume fraction
@@ -47,7 +47,7 @@ etaFe= zeros(size(SOL.phiFel)) + PHY.EtalFe0;
 kv = permute(cat(3,etas,etam,etaFe),[3,1,2]);
 Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
  
-ff = permute(cat(3,SOL.phiSis+SOL.phiFes,SOL.phiSil,SOL.phiFel),[3,1,2]);
+ff = max(1e-16,permute(cat(3,SOL.phiSis+SOL.phiFes,SOL.phiSil,SOL.phiFel),[3,1,2]));
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
 Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
 Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
@@ -66,12 +66,6 @@ else;      MAT.Eta =  Kvb;  end
 MAT.Eta   = max(etamin,min(etamax,MAT.Eta));                                       % limit viscosity range
 MAT.EtaC  = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...                       % viscosity in cell corners
           +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
-etareal = ones(102,102);
-for i = 1:102
-for j = 1:102
-etareal(i,j) = isreal(MAT.Eta(i,j));
-end
-end
 
 Ksgr_x = max(1e-18,min(1e-6,SOL.phiSis+SOL.phiFes./squeeze(Cv(1,:,:))));
 Ksgr_m = max(1e-18,min(1e-6,SOL.phiSil ./squeeze(Cv(2,:,:))));
@@ -145,8 +139,8 @@ Div_rhov =  + advection(MAT.rhot.*CHM.xSi.*CHM.fSis,0.*SOL.U,segSis  ,NUM.h,NUM.
 % VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V + Div_rhoVo)/2)./(MAT.rhot/2);
 VolSrc  = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V))./MAT.rhot;
 % set variable boundary conditions
-UBG     = -mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.L/2 - NUM.XU);
-WBG     = -mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.D/2 - NUM.ZW);
+UBG     = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.L/2 - NUM.XU);
+WBG     = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.D/2 - NUM.ZW);
 
 % legacy
 % dVoldt = mean(mean(VolSrc(2:end-1,2:end-1)));
@@ -171,9 +165,9 @@ dtdiff              = (NUM.h/2)^2 / max(kappa);            % stable time step fo
 
 NUM.dt              = min(NUM.CFL * min(dtdiff,dtadvn),dtmax);                     % fraction of minimum stable time step
 if dtdiff<dtadvn
-    disp('diffusion regime')
+    dtlimit = 'diffusion limited';
 else
-    disp('advection regime')
+    dtlimit = 'advection limited';
 end
     
 %     %% update strain-rate components
