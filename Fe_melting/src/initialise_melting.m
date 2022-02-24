@@ -142,55 +142,6 @@ CHM.XFe     = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;
 rhoRef  = mean(mean(MAT.rhot(2:end-1,2:end-1)));
 SOL.Pt  = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
-% fh8 = figure(8); clf;
-% TT = linspace(CHM.TSi1,CHM.TSi2,1e3);
-% cc = [linspace(CHM.cphsSi2,(CHM.perCsSi+CHM.perClSi)/2,round((CHM.perTSi-CHM.TSi1)./(CHM.TSi2-CHM.TSi1)*1e3)),linspace((CHM.perCsSi+CHM.perClSi)/2,CHM.cphsSi1,round((CHM.perTSi-CHM.TSi2)./(CHM.TSi1-CHM.TSi2)*1e3))];
-% [~,CCxSi,CClSi]     = equilibrium(TT,cc,0.*TT,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-%                                   CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
-% 
-% TT2 = linspace(CHM.TFe1,CHM.TFe2,1000);
-% cc2 = linspace(CHM.cphsFe2,CHM.cphsFe1,length(TT2));
-% % cc2 = [linspace(CHM.cphsFe2,(CHM.perCsFe+CHM.perClFe)/2,round((CHM.perTFe-CHM.TFe1)./(CHM.TFe2-CHM.TFe1)*1e3)),linspace((CHM.perCsFe+CHM.perClFe)/2,CHM.cphsFe1,round((CHM.perTFe-CHM.TFe2)./(CHM.TFe1-CHM.TFe2)*1e3))];
-% [~,CCxFe,CClFe]     = equilibrium(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-%                                   CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
-% subplot(1,2,1)
-% plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
-% plot(CClSi,TT,'k-','LineWidth',2);
-% 
-% subplot(1,2,2)
-% plot(CCxFe,TT2,'r-','LineWidth',2); axis tight; hold on; box on;
-% plot(CClFe,TT2,'b-','LineWidth',2);
-% % loop for P-dependent equilibrium to be added later on
-% % start loop to solve P, T and phi nonlinearities
-% % initial boussineq approximation
-% SOL.phiFes = CHM.xFe.*CHM.fFes; SOL.phiFel = CHM.xFe.*CHM.fFel; SOL.phiSis = CHM.xSi.*CHM.fSis; SOL.phiSil = CHM.xSi.*CHM.fSil;
-% MAT.rhot = MAT.rhoSil.*SOL.phiSil + MAT.rhoSis.*SOL.phiSis + MAT.rhoFel.*SOL.phiFel +MAT.rhoFes.*SOL.phiFes;
-% for i = 1:10
-% [CHM.fFes,CHM.csFe,CHM.clFe]     = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-%                                   CHM.perTSi,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
-% [CHM.fSis,CHM.csSi,CHM.clSi]     = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-%                                   CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
-% CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
-% 
-% SOL.phiFesi = SOL.phiFes; SOL.phiFeli = SOL.phiFel; SOL.phiSisi = SOL.phiSis; SOL.phiSili = SOL.phiSil;
-% SOL.phiFes = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFes.*MAT.rhot./MAT.rhoFes ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
-% SOL.phiFel = max(TINY,min(1-TINY, CHM.xFe.*CHM.fFel.*MAT.rhot./MAT.rhoFel ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
-% SOL.phiSis = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSis.*MAT.rhot./MAT.rhoSis ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
-% SOL.phiSil = max(TINY,min(1-TINY, CHM.xSi.*CHM.fSil.*MAT.rhot./MAT.rhoSil ))./(SOL.phiFes+SOL.phiFel+SOL.phiSis+SOL.phiSil);
-% 
-% MAT.rhot                = SOL.phiFes.*MAT.rhoFes...
-%                         + SOL.phiFel.*MAT.rhoFel...
-%                         + SOL.phiSis.*MAT.rhoSis...
-%                         + SOL.phiSil.*MAT.rhoSil;
-%                     
-% CHM.XFe = MAT.rhot.*CHM.xFe; CHM.XSi = MAT.rhot.*CHM.xSi;                    
-%                     
-% SOL.Pt = (CHM.XFe.*(CHM.fFes.*PHY.rhoFes + CHM.fFel.*PHY.rhoFel)...
-%        +  CHM.XSi.*(CHM.fSis.*PHY.rhoSis + CHM.fSil.*PHY.rhoSil)).*NUM.ZP.*PHY.gzP;
-%    
-% 
-% end
-
 rhoCpt  = (MAT.rhot.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...
         +  MAT.rhot.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
 SOL.H   =  SOL.T.*(MAT.rhot.*CHM.xFe.*(CHM.fFel.*CHM.dEntrSi) + MAT.rhot.*CHM.xSi.*(CHM.fSil.*CHM.dEntrSi) +rhoCpt);
@@ -235,9 +186,15 @@ NUM.time  = 0;      % initialise time count
 NUM.step  = 0;      % initialise time step count
 up2date;
 
-Mass0       = sum(sum(MAT.rhot(2:end-1,2:end-1)));
+% initial quantities of conserved values (assume 1m in the 3rd dimension
+% direction)
+Mass0       = sum(sum(MAT.rhot(2:end-1,2:end-1)))   .*NUM.h.*NUM.h.*1; % initial mass of whole domain
 MassErr     = 0;
-sumH0       = sum(sum(SOL.H(2:end-1,2:end-1)));
+sumH0       = sum(sum(SOL.H(2:end-1,2:end-1)))      .*NUM.h.*NUM.h.*1;                     % 
+sumX0       = sum(sum(CHM.XFe(2:end-1,2:end-1)))    .*NUM.h.*NUM.h.*1;
+sumCFe0     = sum(sum(CHM.CFe(2:end-1,2:end-1)))    .*NUM.h.*NUM.h.*1;
+sumCSi0     = sum(sum(CHM.CSi(2:end-1,2:end-1)))    .*NUM.h.*NUM.h.*1;
+
 
 %% output initial condition
 % output;

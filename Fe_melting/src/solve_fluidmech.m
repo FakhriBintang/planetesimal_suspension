@@ -31,14 +31,14 @@ IR = [IR; ii(:)]; RR = [RR; aa(:)];
 ii = NUM.MapW(1,2:end-1); jj = ii;
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj(:)];   AA = [AA; aa(:)+1];
-aa = zeros(size(ii)); % - WBG(1,2:end-1);
+aa = zeros(size(ii)) - WBG(1,2:end-1); 
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 % bottom boundary
 ii = NUM.MapW(end,2:end-1); jj = ii;
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj(:)];   AA = [AA; aa(:)+1];
-aa = zeros(size(ii)); % - WBG(end,2:end-1);
+aa = zeros(size(ii)) - WBG(end,2:end-1);
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 
@@ -95,14 +95,14 @@ IR = [IR; ii(:)]; RR = [RR; aa(:)];
 ii = NUM.MapU(2:end-1,1); jj = ii;
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj(:)];   AA = [AA; aa(:)+1];
-aa = zeros(size(ii)); % - UBG(2:end-1,1);
+aa = zeros(size(ii)) - UBG(2:end-1,1);
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 % right side boundary
 ii = NUM.MapU(2:end-1,end); jj = ii;
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj(:)];   AA = [AA; aa(:)+1];
-aa = zeros(size(ii)); % - UBG(2:end-1,end);
+aa = zeros(size(ii)) - UBG(2:end-1,end);
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 

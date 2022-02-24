@@ -143,10 +143,14 @@ Div_rhov =  + advection(MAT.rhot.*CHM.xSi.*CHM.fSis,0.*SOL.U,segSis  ,NUM.h,NUM.
             + advection(MAT.rhot           ,   SOL.U,   SOL.W,NUM.h,NUM.h,ADVN,'flx');
 
 % VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V + Div_rhoVo)/2)./(MAT.rhot/2);
-VolSrc = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V))./MAT.rhot;
+VolSrc  = -((MAT.rhot-MAT.rhoo)./NUM.dt + (Div_rhov - MAT.rhot.*Div_V))./MAT.rhot;
+% set variable boundary conditions
+UBG     = -mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.L/2 - NUM.XU);
+WBG     = -mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.D/2 - NUM.ZW);
 
-dVoldt = mean(mean(VolSrc(2:end-1,2:end-1)));
-VolSrc = VolSrc - dVoldt;
+% legacy
+% dVoldt = mean(mean(VolSrc(2:end-1,2:end-1)));
+% VolSrc = VolSrc - dVoldt;
 
 
 %% update physical time step
@@ -165,7 +169,7 @@ kappa               = MAT.kT./rhoCpt;
 kappa               = kappa(:);
 dtdiff              = (NUM.h/2)^2 / max(kappa);            % stable time step for T diffusion
 
-NUM.dt              = NUM.CFL * min(dtdiff,dtadvn);                     % fraction of minimum stable time step
+NUM.dt              = min(NUM.CFL * min(dtdiff,dtadvn),dtmax);                     % fraction of minimum stable time step
 if dtdiff<dtadvn
     disp('diffusion regime')
 else
