@@ -42,7 +42,6 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     
         % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.restol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter <= 2
-%             for i = 1:10
         % solve thermo-chemical equations
         solve_thermochem;
         
@@ -55,17 +54,11 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         % update non-linear parameters and auxiliary variables
         up2date;
         
-%         % report convergence
-%         report;
-% output
-        if iter==0; resnorm0 = resnorm; end
         iter = iter+1;
-%             end
     end
 
-    % update mass error
-    MassErr = MassErr - dVoldt.*NUM.dt;
-
+    % update mass and energy errors
+    conservation
     
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;   

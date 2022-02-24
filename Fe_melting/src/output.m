@@ -285,17 +285,24 @@ drawnow;
 %% plot conserved quantities
 fh10 = figure(10);
 % mass conservation
-if NUM.step > 0
-Mass = sum(sum(MAT.rhot(2:end-1,2:end-1)));
-subplot(3,1,1)
-    plot(NUM.time./3600,Mass./Mass0-(1+MassErr),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+% if NUM.step > 0
+    subplot(5,1,1)
+    plot(NUM.time./3600,CON.EM(NUM.step+1),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $Mass$',TX{:},FS{:});
     xlabel('Time [hr]',TX{:},FS{:});
-    subplot(3,1,2)
-    plot(NUM.time./3600,sum(sum(SOL.H(2:end-1,2:end-1)))./Mass./(sumH0./Mass0)-1,'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    subplot(5,1,2)
+    plot(NUM.time./3600,CON.EH(NUM.step+1),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $H$',TX{:},FS{:}); set(gca,'XTickLabel',[]);
-
-end
+    subplot(5,1,3)
+    plot(NUM.time./3600,CON.EX(NUM.step+1),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $X_{fe}$',TX{:},FS{:}); set(gca,'XTickLabel',[]);
+    subplot(5,1,4)
+    plot(NUM.time./3600,CON.ECFe(NUM.step+1),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $C_{Fe}$',TX{:},FS{:}); set(gca,'XTickLabel',[]);
+    subplot(5,1,5)
+    plot(NUM.time./3600,CON.ECSi(NUM.step+1),'ko','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $C_{Si}$',TX{:},FS{:}); set(gca,'XTickLabel',[]);
+% end
     
 end
 
