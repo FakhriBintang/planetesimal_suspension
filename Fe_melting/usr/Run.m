@@ -6,7 +6,7 @@ clear; close all
 RUN.ID          =  'test_system_detect';              % run identifier
 RUN.plot        =  1;                   % switch on to plot live output
 RUN.save        =  0;                   % switch on to save output files
-RUN.nop         =  30;                  % output every 'nop' grid steps of transport
+RUN.nop         =  1;                  % output every 'nop' grid steps of transport
 RUN.nup         =  1;                   % update every 'nup' grid steps of transport
 
 %% set model timing
@@ -27,12 +27,13 @@ NUM.h           =  NUM.D/NUM.N;         % spacing of x coordinates
 
 %% set thermochemical parameters
 % set initial fractions
-CHM.xFe0            =  0.3;                 % Fe-FeS system fraction
+CHM.xFe0            =  0.2;                 % Fe-FeS system fraction
 CHM.cFe0            =  0.2;                % Fe-FeS fertile component fraction ([Wt% S], maximum 0.35 for pure FeS
 CHM.cSi0            =  0.52;                % Si system fertile component fraction [Wt% SiO2]
 
 % set parameters
-dc              =  0.001;              % amplitude of random noise
+% dc              =  0.001;              % amplitude of random noise
+dc = 0;
 
 % set phase diagram parameters
 %   Fertile   ||  Refractory
@@ -52,12 +53,12 @@ CHM.perTFe   =  1000;                 % peritectic temperature
 CHM.PhDgFe   =  2.0;                 % Phase diagram curvature factor (> 1)
 CHM.clap     =  0;
 % CHM.clap     =  1e-7;                % Clapeyron slope for P-dependence of melting T [degC/Pa]
-CHM.dEntrSi  = 300;                  % entropy of fusion
+CHM.dEntrSi  = 300;                  % entropy of (melting) fusion
 CHM.dEntrFe  = 300;
 % CHM.dEntrSi  = 0.7;                  % entropy of fusion
 % CHM.dEntrFe  = 0.5;
 
-SOL.T0          =  700;                % reference/top potential temperature [C]
+SOL.T0          =  1200;                % reference/top potential temperature [C]
 SOL.T1          =  1200;            	% bottom potential temperature (if different from top) [C]
 SOL.dT          =  1;                   % temperature perturbation amplitude [C]
 SOL.rT          =  NUM.D/6;             % radius of hot plume [m]
@@ -65,7 +66,8 @@ SOL.zT          =  NUM.D*0.5;           % z-position of hot plume [m]
 SOL.xT          =  NUM.L/2;             % x-position of hot plume [m]
 
 SOL.Ttype       = 'constant';           % constant ambient background temperature
-Topbound        = 'surface';
+Topbound        = 'contant_T';
+% Topbound        = 'other'
 % SOL.Ttype       = 'gaussian';             % linear temperaure profile between top and bottom
 
 %% set material parameters
@@ -110,7 +112,7 @@ PHY.CpFel       =  1000;                % melt heat capacity [J/kg/K]
 PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
 PHY.CpSil       =  1000;                % mvp  heat capacity [J/kg/K]
 
-PHY.Hr0         =  1e-4;                % Radiogenic heat productivity [W/m3]
+PHY.Hr0         =  0;                % Radiogenic heat productivity [W/m3]
 PHY.gz          =  0.1;                 % z-gravity
 gz              = PHY.gz;
 PHY.gx          =  0;               	% x-gravity
@@ -146,14 +148,15 @@ ADVN = 'fromm';
 % NUM.AdvnScheme  = 'third upwind';
 % NUM.AdvnScheme  = 'flxdiv'
 TINY  = 1e-16;
-NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.restol    	= 1e-4;     % residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-4;
-NUM.maxit       = 15;
+NUM.maxit       = 20;
+dtmax       = 1e3; 
 etamin   =  1e1;                 % minimum viscosity for stabilisation
 etamax   =  1e7;                 % maximum viscosity for stabilisation
-alpha           = 0.5;
+alpha           = 0.7;
 NUM.cstab     	= 1e-6;     % stabilising coefficient for P-diagonal
 
 %% start model
