@@ -17,14 +17,14 @@ RR  = [];       % forcing entries for R
 ii = NUM.MapW(:,1); jj1 = ii; jj2 = NUM.MapW(:,2);
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj1(:)];   AA = [AA; aa(:)+1];
-II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)+SOL.BCleft];
+II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)+SOL.BCsides];
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 % right boundary
 ii = NUM.MapW(:,end); jj1 = ii; jj2 = NUM.MapW(:,end-1);
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj1(:)];   AA = [AA; aa(:)+1];
-II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)+SOL.BCright];
+II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)+SOL.BCsides];
 IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 % top boundary
@@ -70,10 +70,10 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 % z-RHS vector
 
-rhoBF = (MAT.rhot(2:end-2,2:end-1)+MAT.rhot(3:end-1,2:end-1))/2 - rhoRef;
+rhoBF = (MAT.rho(2:end-2,2:end-1)+MAT.rho(3:end-1,2:end-1))/2 - rhoRef;
 if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxP-2); end
 
-rr = zeros(size(ii)) + PHY.gz(2:end-1,2:end-1).*rhoBF;
+rr = - rhoBF .* PHY.gz(2:end-1,2:end-1);
 
 IR = [IR; ii(:)];  RR = [RR; rr(:)];
 
@@ -169,6 +169,7 @@ II  = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)+1/NUM.h];     % P one to
 
 GG  = sparse(II,JJ,AA,NW+NU,NP);
 
+
 %% assemble coefficients for divergence operator
 II  = [];       % equation indeces into A
 JJ  = [];       % variable indeces into A
@@ -189,6 +190,7 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; aa(:)+1/NUM.h];  % W one below
 
 % assemble coefficient matrix
 DD = sparse(II,JJ,AA,NUM.NP,NUM.NW+NUM.NU);
+
 
 %% assemble coefficients for matrix pressure diagonal and right-hand side
 II  = [];       % equation indeces into A
@@ -224,7 +226,7 @@ ii = indP(2:end-1,2:end-1);
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; ii(:)];    AA = [AA; aa(:)];  % P on stencil centre
 
-rr = zeros(size(ii)) + VolSrc(2:end-1,2:end-1); 
+rr = - VolSrc(2:end-1,2:end-1); 
 IR = [IR; ii(:)];
 RR = [RR; rr(:)];
 
@@ -233,58 +235,47 @@ RR = [RR; rr(:)];
 KP = sparse(II,JJ,AA,NUM.NP,NUM.NP);
 RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
+Pscale = geomean(MAT.Eta(:))/NUM.h;
+
 np = round((NUM.nzP-2)/2)+1;
 KP(indP(np,np),:) = 0;
-KP(indP(np,np),indP(np,np)) = 1;
+KP(indP(np,np),indP(np,np)) = Pscale;
 RP(indP(np,np),:) = 0;
 
 
 %% assemble global coefficient matrix and right-hand side vector
-Pscale = geomean(MAT.Eta(:))/NUM.h;
-LL =  [-KV         Pscale.*GG  ; ...
-       Pscale.*DD  Pscale.*KP  ];
+LL =  [ KV         -Pscale.*GG ; ...
+       -Pscale.*DD  Pscale.*KP ];
 
 RR = [RV; RP.*Pscale];
 
 
-%% Scale system of equations (diagonal preconditioning)
-% CC  =  sqrt(abs(diag(LL)));
-% CC  =  diag(sparse(1./CC));
-% 
-% LL  =  CC*LL*CC;
-% RR  =  CC*RR;
-
-
 %% get residual
-% get non-linear residual
-% FF = LL*(CC\S) - RR;
-% if NUM.step > 0
 FF      = LL*S - RR;
 resnorm = norm(FF(:),2)./norm(RR(:),2);
 
 % map residual vector to 2D arrays
-res_W  = full(reshape(FF(NUM.MapW(:))        ,(NUM.nzW), NUM.nxW   ));                 % z-velocity
-res_U  = full(reshape(FF(NUM.MapU(:))        , NUM.nzU   ,(NUM.nxU)));                 % x-velocity
-res_P  = full(reshape(FF(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   ));                 % dynamic pressure
-% end
+res_W  = full(reshape(FF(NUM.MapW(:)),NUM.nzW,NUM.nxW));   % z-velocity residual
+res_U  = full(reshape(FF(NUM.MapU(:)),NUM.nzU,NUM.nxU));   % x-velocity residual
+res_P  = full(reshape(FF(NUM.MapP(:)),NUM.nzP,NUM.nxP));   % dynamic pressure residual
+
 
 %% Solve linear system of equations for vx, vz, P
-% S = CC*(LL\RR);  % update solution
 S = LL\RR;  % update solution
 
 % Read out solution
 % map solution vector to 2D arrays
-SOL.W  = full(reshape(S(NUM.MapW(:))        ,NUM.nzW, NUM.nxW   ));                      % matrix z-velocity
-SOL.U  = full(reshape(S(NUM.MapU(:))        , NUM.nzU   ,NUM.nxU));                      % matrix x-velocity
-SOL.P  = full(reshape(S(indP(:)+(NUM.NW+NUM.NU)), NUM.nzP   , NUM.nxP   )).*Pscale;              % matrix dynamic pressure
+SOL.W  = full(reshape(S(NUM.MapW(:)),NUM.nzW, NUM.nxW));         % matrix z-velocity
+SOL.U  = full(reshape(S(NUM.MapU(:)),NUM.nzU, NUM.nxU));         % matrix x-velocity
+SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP,NUM.nxP)).*Pscale;  % matrix dynamic pressure
 
-SOL.UP(:,2:end-1) = SOL.U(:,1:end-1)+SOL.U(:,2:end)./2;
-SOL.WP(2:end-1,:) = SOL.W(1:end-1,:)+SOL.W(2:end,:)./2;
+SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
+SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
 
 if iter == 0
     resnorm0 = resnorm;
 end
-fprintf(1,'  ---  it = %d;  res = %1.4e  \n',iter,resnorm)
+fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
 figure(100)
 plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;

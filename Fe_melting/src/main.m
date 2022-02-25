@@ -7,9 +7,8 @@ fprintf(1,    '************************************************************\n\n'
 
 
 % %% initialise model run
-run('initialise_melting');
+initialise_melting;
 
-S   = [SOL.W(:);SOL.U(:);SOL.P(:)];
 
 while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % print time step header
@@ -18,29 +17,28 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     figure(100);clf
     
     % store previous solution and auxiliary fields
-    MAT.rhoo            = MAT.rhot;
-    Kvbo                = Kvb;
-    Ho                  = SOL.H;
-    To                  = SOL.T;
-    cFeo                = CHM.cFe;
-    cSio                = CHM.cSi;
-    CSio                = CHM.CSi;
-    CFeo                = CHM.CFe;
-    dHdto               = dHdt;
-    XFeo                = CHM.XFe;
-    dXdto               = dXdt;
-    dCSidto             = dCSidt;
-    dCFedto             = dCFedt;
-    Pto                 = SOL.Pt;
-    Div_rhovo           = Div_rhov;
+    rhoo      = MAT.rho;
+    Ho        = SOL.H;
+    To        = SOL.T;
+    cFeo      = CHM.cFe;
+    cSio      = CHM.cSi;
+    CSio      = CHM.CSi;
+    CFeo      = CHM.CFe;
+    XFeo      = CHM.XFe;
+    dHdto     = dHdt;
+    dXdto     = dXdt;
+    dCSidto   = dCSidt;
+    dCFedto   = dCFedt;
+    Pto       = SOL.Pt;
+    Div_rhoVo = Div_rhoV - MAT.rho.*Div_V;
     
     % reset residuals and iteration count
-    resnorm  = 1e3;
-    resnorm0 = resnorm;
-    iter     = 0;
+    resnorm   = 1e3;
+    resnorm0  = resnorm;
+    iter      = 0;
     
     % non-linear iteration loop
-    while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter <= 2
+    while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
         
         % solve thermo-chemical equations
         solve_thermochem;

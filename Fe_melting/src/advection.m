@@ -16,8 +16,8 @@ Div_v = diff(w(:,2:end-1),1,1)./dz + diff(u(2:end-1,:),1,2)./dx;
 agh                    = zeros(size(a)+2);
 agh(2:end-1,2:end-1)   = a;
 
-agh([1 2 end-1 end],:) = agh([3 3 end-2 end-2],:);
-agh(:,[1 2 end-1 end]) = agh(:,[3 3 end-2 end-2]);
+agh([1 end],:) = agh([2 end-1],:);
+agh(:,[1 end]) = agh(:,[2 end-1]);
 
 acc = agh(3:end-2,3:end-2);
 ajp = agh(4:end-1,3:end-2);  ajpp = agh(5:end-0,3:end-2);
@@ -58,10 +58,7 @@ switch scheme
         azp   = (ajp-acc)./dz;
         azm   = (acc-ajm)./dz;
         
-        daxdt = vxp.*axm + vxm.*axp;
-        dazdt = vzp.*azm + vzm.*azp;
-        
-        advn  = daxdt + dazdt;
+        advn  = vxp.*axm + vxm.*axp + vzp.*azm + vzm.*azp + acc.*Div_v;
         
         
     case 'second upwind'
@@ -70,9 +67,6 @@ switch scheme
         axm   = ( 3*acc-4*aim+aimm)/2/dx;
         azp   = (-3*acc+4*ajp-ajpp)/2/dz;
         azm   = ( 3*acc-4*ajm+ajmm)/2/dz;
-        
-        daxdt = vxp.*axm + vxm.*axp;
-        dazdt = vzp.*azm + vzm.*azp;
         
         advn  = vxp.*axm + vxm.*axp + vzp.*azm + vzm.*azp + acc.*Div_v;
         
@@ -85,22 +79,13 @@ switch scheme
         azm   = ( 2*ajp+3*acc-6*ajm+ajmm)/6/dz;
         
         advn  = vxp.*axm + vxm.*axp + vzp.*azm + vzm.*azp + acc.*Div_v;
-        
-%         axp   = (-2*aim-3*acc+6*aip-aipp)/6/dx;
-%         axm   = ( 2*aip+3*acc-6*aim+aimm)/6/dx;
-%         azp   = (-2*ajm-3*acc+6*ajp-ajpp)/6/dz;
-%         azm   = ( 2*ajp+3*acc-6*ajm+ajmm)/6/dz;
-%         
-%         daxdt = vxp.*axm + vxm.*axp;
-%         dazdt = vzp.*azm + vzm.*azp;
-        
-%         advn  = daxdt + dazdt;
+
 end
 
 if strcmp(type,'adv')
     advn = advn - acc.*Div_v;
 end
 
-advn = advn([1 1:end end],[1 1:end end]);                         % periodic top/bot boundaries
+advn = advn([1 1:end end],[1 1:end end]);                         % continuous top/bot boundaries
 
 end
