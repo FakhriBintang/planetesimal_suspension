@@ -170,7 +170,7 @@ if RUN.diseq
     
     dfFedt   = - advn_fFe + CHM.GFe;                                       % total rate of change
     
-    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*dt)./CHM.xFe./MAT.rho; end  % explicit update of crystal fraction
+    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./CHM.xFe./MAT.rho; end  % explicit update of crystal fraction
     CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
     CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
     CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
@@ -181,7 +181,7 @@ if RUN.diseq
     
     dfSidt   = - advn_fSi + CHM.GSi;                                       % total rate of change
     
-    if NUM.step>0; CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*dt)./CHM.xSi./MAT.rho; end  % explicit update of crystal fraction
+    if NUM.step>0; CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./CHM.xSi./MAT.rho; end  % explicit update of crystal fraction
     CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
     CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);

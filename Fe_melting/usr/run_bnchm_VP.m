@@ -9,6 +9,7 @@ for nn = NN
     
 RUN.ID          =  'test';               % run identifier
 RUN.bnchm       =  1;                    % manufactured solution benchmark on fluid mechanics solver
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 NUM.N           =  nn;                   % number of real x block nodes
 
 
@@ -64,6 +65,7 @@ CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 300;                       % iron entropy of melting
+CHM.tau_r   = 10*DT(1);                  % reaction time scale [s]
 
 % set temperature initial condition
 SOL.T0      =  1100;                     % reference/top potential temperature [C]

@@ -1,7 +1,7 @@
 % planetesimal: generate output
 
 % print output header
-fprintf(1,'\n*****  prepare output frame %d  *****\n',RUN.frame);
+fprintf(1,'\n*****  prepare output frame %d  *****\n',NUM.step/RUN.nop);
 
 
 %% plot output figures
@@ -117,22 +117,22 @@ if RUN.plot
         fh2 = figure(2); clf;
         figure(2) % plot phase fractions
         subplot(2,2,1);
-        imagesc(NUM.xP,NUM.zP,SOL.phiSil);
+        imagesc(NUM.xP,NUM.zP,MAT.phiSil);
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^l')
         subplot(2,2,2);
-        imagesc(NUM.xP,NUM.zP,SOL.phiSis);
+        imagesc(NUM.xP,NUM.zP,MAT.phiSis);
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^s')
         subplot(2,2,3);
-        imagesc(NUM.xP,NUM.zP,SOL.phiFel);
+        imagesc(NUM.xP,NUM.zP,MAT.phiFel);
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^l')
         subplot(2,2,4);
-        imagesc(NUM.xP,NUM.zP,SOL.phiFes);
+        imagesc(NUM.xP,NUM.zP,MAT.phiFes);
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^s')
@@ -389,4 +389,3 @@ if RUN.save
     end
 end
 
-RUN.frame = RUN.frame + 1;  % increment frame count

@@ -14,6 +14,7 @@ RUN.nop         =  10;                    % output every 'nop' grid steps of tra
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 
+
 %% set model timing
 NUM.yr          =  3600*24*365.25;       % seconds per year
 NUM.maxstep     =  128e3/dt*1e+9;          % maximum number of time steps
