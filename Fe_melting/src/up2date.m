@@ -4,32 +4,42 @@ tic;  % start clock on update
 
 %% convert weight to volume fraction
 % update T and chemical-dependent density
-MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-SOL.T0) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
-MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-SOL.T0) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
-MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-SOL.T0) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
-MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-SOL.T0) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
+MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
+MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
+MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
+MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
 
 % update mixture density
-MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
+MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel ...
+               + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
+MAT.rho([1 end],:) = MAT.rho([2 end-1],:);  MAT.rho(:,[1 end]) = MAT.rho(:,[2 end-1]);
 
 % update volume fractions
-SOL.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
-SOL.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
-SOL.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
-SOL.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil; 
+MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
+MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
+MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
+MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil; 
+
+% figure(200); if iter==0; clf; end
+% subplot(6,1,1); plot(iter,mean(mean(SOL.T(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
+% subplot(6,1,2); plot(iter,mean(mean(CHM.xFe(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
+% subplot(6,1,3); plot(iter,mean(mean(CHM.cFe(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
+% subplot(6,1,4); plot(iter,mean(mean(CHM.cSi(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
+% subplot(6,1,5); plot(iter,mean(mean(CHM.fFel(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
+% subplot(6,1,6); plot(iter,mean(mean(CHM.fSil(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
 
 
 %% update viscosity
 % get pure phase densities
-etas   = zeros(size(SOL.phiSis)) + PHY.EtaSol0; 
+etas   = zeros(size(MAT.phiSis)) + PHY.EtaSol0; 
 etaSil = PHY.EtaSil0 .* exp(Em./(8.3145.*(SOL.T+273.15))-Em./(8.3145.*((CHM.TFe1+CHM.TFe2)/2+273.15)));
-etaFel = zeros(size(SOL.phiFel)) + PHY.EtaFel0;
+etaFel = zeros(size(MAT.phiFel)) + PHY.EtaFel0;
 
 % get momentum permission
 kv = permute(cat(3,etas,etaSil,etaFel),[3,1,2]);
 Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
  
-ff = max(1e-16,permute(cat(3,SOL.phiSis+SOL.phiFes,SOL.phiSil,SOL.phiFel),[3,1,2]));
+ff = max(1e-16,permute(cat(3,MAT.phiSis+MAT.phiFes,MAT.phiSil,MAT.phiFel),[3,1,2]));
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
 Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
 Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
@@ -46,9 +56,9 @@ MAT.Eta  = max(etamin,min(etamax,MAT.Eta));                                % lim
 MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
          +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
 
-Ksgr_x   = max(1e-18,min(1e-6,(SOL.phiSis+SOL.phiFes)./squeeze(Cv(1,:,:))));
-Ksgr_m   = max(1e-18,min(1e-6, SOL.phiSil            ./squeeze(Cv(2,:,:))));
-Ksgr_f   = max(1e-18,min(1e-6, SOL.phiFel            ./squeeze(Cv(3,:,:))));
+Ksgr_x   = max(1e-18,min(1e-6,(MAT.phiSis+MAT.phiFes)./squeeze(Cv(1,:,:))));
+Ksgr_m   = max(1e-18,min(1e-6, MAT.phiSil            ./squeeze(Cv(2,:,:))));
+Ksgr_f   = max(1e-18,min(1e-6, MAT.phiFel            ./squeeze(Cv(3,:,:))));
 
 
 %% other bulk thermochemical properties
@@ -113,8 +123,7 @@ Div_rhoV =  + advection(MAT.rho.*CHM.xSi.*CHM.fSis,0.*SOL.U,segSis  ,NUM.h,NUM.h
             + advection(MAT.rho.*CHM.xFe.*CHM.fFel,0.*SOL.U,segFel  ,NUM.h,NUM.h,NUM.ADVN,'flx') ...
             + advection(MAT.rho                   ,   SOL.U,   SOL.W,NUM.h,NUM.h,NUM.ADVN,'flx');
 
-VolSrc = -((MAT.rho-rhoo)/NUM.dt + (Div_rhoV - MAT.rho.*Div_V + Div_rhoVo)/2)./MAT.rho;
-% VolSrc = -((MAT.rho-rhoo)./NUM.dt + (Div_rhoV - MAT.rho.*Div_V))./MAT.rho;
+VolSrc = -((MAT.rho-rhoo)./NUM.dt + (Div_rhoV - MAT.rho.*Div_V))./MAT.rho;
 
 % set variable boundary conditions
 UBG    = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.L/2 - NUM.XU);
@@ -131,51 +140,4 @@ if dtdiff<dtadvn
 else
     dtlimit = 'advection limited';
 end
-    
-%     %% update strain-rate components
-%     % get volumetric strain-rate (velocity divergence)
-%     DEF.ups(2:end-1,2:end-1) = diff(SOL.U(2:end-1,:),1,2)./NUM.h ...
-%                              + diff(SOL.W(:,2:end-1),1,1)./NUM.h;           % velocity divergence
-%     DEF.ups([1 end],:)       = DEF.ups([2 end-1],:);                        % apply boundary conditions
-%     DEF.ups(:,[1 end])       = DEF.ups(:,[2 end-1]);
-%     
-%     % get deviatoric strain rates
-%     DEF.exx(:,2:end-1)      = diff(SOL.U,1,2)./NUM.h ...
-%                             - DEF.ups(:,2:end-1)./3;                        % x-normal strain rate
-%     DEF.exx([1 end],:)      = DEF.exx([2 end-1],:);                         % apply boundary conditions
-%     DEF.exx(:,[1 end])      = DEF.exx(:,[2 end-1]);
-%     
-%     DEF.ezz(2:end-1,:)      = diff(SOL.W,1,1)./NUM.h ...
-%                             - DEF.ups(2:end-1,:)./3;                        % z-normal strain rate
-%     DEF.ezz([1 end],:)      =  DEF.ezz([2 end-1],:);                        % apply boundary conditions
-%     DEF.ezz(:,[1 end])      =  DEF.ezz(:,[2 end-1]);
-%     
-%     DEF.exz                 = (diff(SOL.U,1,1)./NUM.h ...
-%                             +  diff(SOL.W,1,2)./NUM.h)/2;                   % shear strain rate
-%     
-%     % update strain-rate magnitude
-%     DEF.eII(2:end-1,2:end-1)= (  (DEF.exx(2:end-1,2:end-1).^2 + DEF.ezz(2:end-1,2:end-1).^2 ...
-%                             + 2.*(DEF.exz(1:end-1,1:end-1).^2 + DEF.exz(2:end,1:end-1).^2 ...
-%                             +     DEF.exz(1:end-1,2:end  ).^2 + DEF.exz(2:end,2:end  ).^2)/4 )/2).^0.5 + 1e-16;
-%     DEF.eII([1 end],:)      =     DEF.eII([2 end-1],:);                   	% apply boundaries
-%     DEF.eII(:,[1 end])      =     DEF.eII(:,[2 end-1]);
-%     
-%     
-%     %% update stress components
-%     DEF.txx = MAT.Eta  .* DEF.exx;                                          % x-normal stress
-%     DEF.tzz = MAT.Eta  .* DEF.ezz;                                          % z-normal stress
-%     DEF.txz = MAT.EtaC .* DEF.exz;                                          % xz-shear stress
-%     
-%     % update strain-rate magnitude
-%     DEF.tII(2:end-1,2:end-1)= (  (DEF.txx(2:end-1,2:end-1).^2 + DEF.tzz(2:end-1,2:end-1).^2 ...
-%                             + 2.*(DEF.txz(1:end-1,1:end-1).^2 + DEF.txz(2:end,1:end-1).^2 ...
-%                             +     DEF.txz(1:end-1,2:end  ).^2 + DEF.txz(2:end,2:end  ).^2)/4 )/2).^0.5 + 1e-16;
-%     DEF.tII([1 end],:)      =     DEF.tII([2 end-1],:);                     % apply boundaries
-%     DEF.tII(:,[1 end])      =     DEF.tII(:,[2 end-1]);
-% end
-% %% update heat source fields
-%     % update shear heating
-%     SOL.Hs = 2.*DEF.eII.*DEF.tII;
-%     
-%     % update adiabatic heating
-%     SOL.Ha = ((SOL.WP.*PHY.gzP + SOL.UP.*PHY.gxP) .* MAT.Rhot + SOL.seg.*PHY.gzP).*MAT.aT.*SOL.T;
+  
