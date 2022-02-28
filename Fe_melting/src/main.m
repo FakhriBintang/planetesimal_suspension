@@ -9,6 +9,10 @@ fprintf(1,    '************************************************************\n\n'
 % %% initialise model run
 initialise_melting;
 
+% run manufactured solution benchmark on fluid mechanics solver if specified
+if RUN.bnchm 
+    mms; return; 
+end
 
 while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % print time step header

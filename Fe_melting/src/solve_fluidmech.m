@@ -52,7 +52,7 @@ EtaP1 = MAT.Eta (2:end-2,2:end-1); EtaP2 = MAT.Eta (3:end-1,2:end-1);
 jj1 = NUM.MapW(1:end-2,2:end-1); jj2 = NUM.MapW(3:end,2:end-1); jj3 = NUM.MapW(2:end-1,1:end-2); jj4 = NUM.MapW(2:end-1,3:end);
 
 aa = - 2/3*(EtaP1+EtaP2)/NUM.h^2 - 1/2*(EtaC1+EtaC2)/NUM.h^2;
-II = [II; ii(:)]; JJ = [JJ;  ii(:)];   AA = [AA; aa(:)           ];      % W on stencil centre
+II = [II; ii(:)]; JJ = [JJ;  ii(:)];   AA = [AA; aa(:)               ];      % W on stencil centre
 II = [II; ii(:)]; JJ = [JJ; jj1(:)];   AA = [AA; 2/3*EtaP1(:)/NUM.h^2];      % W one above
 II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; 2/3*EtaP2(:)/NUM.h^2];      % W one below
 II = [II; ii(:)]; JJ = [JJ; jj3(:)];   AA = [AA; 1/2*EtaC1(:)/NUM.h^2];      % W one to the left
@@ -69,11 +69,15 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 
 % z-RHS vector
-
-rhoBF = (MAT.rho(2:end-2,2:end-1)+MAT.rho(3:end-1,2:end-1))/2 - rhoRef;
-if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxP-2); end
+if ~RUN.bnchm
+    rhoBF = (MAT.rho(2:end-2,2:end-1)+MAT.rho(3:end-1,2:end-1))/4 ...
+          + (   rhoo(2:end-2,2:end-1)+   rhoo(3:end-1,2:end-1))/4 - rhoRef;
+    if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxP-2); end
+end
 
 rr = - rhoBF .* PHY.gz(2:end-1,2:end-1);
+if RUN.bnchm; rr = rr + src_W_mms(2:end-1,2:end-1); end
+
 
 IR = [IR; ii(:)];  RR = [RR; rr(:)];
 
@@ -137,6 +141,8 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 % x-RHS vector
 rr = zeros(size(ii)); % no x-buoyancy
+if RUN.bnchm; rr = rr + src_U_mms(2:end-1,2:end-1); end
+
 IR = [IR; ii(:)];  RR = [RR; rr(:)];
 
 
@@ -226,7 +232,9 @@ ii = indP(2:end-1,2:end-1);
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; ii(:)];    AA = [AA; aa(:)];  % P on stencil centre
 
-rr = - VolSrc(2:end-1,2:end-1); 
+rr = - VolSrc(2:end-1,2:end-1);
+if RUN.bnchm; rr = rr + src_P_mms(2:end-1,2:end-1); end
+
 IR = [IR; ii(:)];
 RR = [RR; rr(:)];
 
@@ -237,11 +245,18 @@ RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
 Pscale = geomean(MAT.Eta(:))/NUM.h;
 
-np = round((NUM.nzP-2)/2)+1;
-KP(indP(np,np),:) = 0;
-KP(indP(np,np),indP(np,np)) = Pscale;
-RP(indP(np,np),:) = 0;
+% np = round((NUM.nzP-2)/2)+1;
+% KP(indP(np,np),:) = 0;
+% KP(indP(np,np),indP(np,np)) = Pscale;
+% RP(indP(np,np),:) = 0;
+% if RUN.bnchm; RP(MapP(np,NUM.nxp),:) = P_mms(nzp,nxp); end
 
+nzp = round((NUM.nzP-2)/2)+1;
+nxp = round((NUM.nxP-2)/2)+1;
+KP(indP(nzp,nxp),:) = 0;
+KP(indP(nzp,nxp),indP(nzp,nxp)) = Pscale;
+RP(indP(nzp,nxp),:) = 0;
+if RUN.bnchm; RP(indP(nzp,nxp),:) = P_mms(nzp,nxp); end
 
 %% assemble global coefficient matrix and right-hand side vector
 LL =  [ KV         -Pscale.*GG ; ...
@@ -272,11 +287,13 @@ SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP,NUM.nxP)).*Pscale;  % matrix dynami
 SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
 SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
 
-if iter == 0
-    resnorm0 = resnorm;
+if ~RUN.bnchm
+    if iter == 0
+        resnorm0 = resnorm;
+    end
+    fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+    
+    figure(100)
+    plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;
+    drawnow;
 end
-fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
-
-figure(100)
-plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;
-drawnow;
