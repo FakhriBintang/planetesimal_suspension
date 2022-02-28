@@ -1,22 +1,26 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear; close all
+clear; close all;
 
+DT = [16,8,4]*1e+9;  % test increasing time steps
+
+for dt = DT
+    
 RUN.ID          =  'test';               % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  10;                    % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 
 %% set model timing
 NUM.yr          =  3600*24*365.25;       % seconds per year
-NUM.maxstep     =  1e4;                  % maximum number of time steps
+NUM.maxstep     =  128e3/dt*1e+9;          % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  100*NUM.yr;           % (initial) time step [s]
+NUM.dt          =  dt;                   % (initial) time step [s]
 
 
 %% set model domain
@@ -56,8 +60,9 @@ CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition 
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 0e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
-CHM.dEntrSi = 300;                       % silicate entropy of melting
-CHM.dEntrFe = 300;                       % iron entropy of melting
+CHM.dEntrSi = 0;                       % silicate entropy of melting
+CHM.dEntrFe = 0;                       % iron entropy of melting
+CHM.tau_r   = 10*DT(1);                  % reaction time scale [s]
 
 % set temperature initial condition
 SOL.T0      =  1050;                     % reference/top potential temperature [C]
@@ -73,10 +78,10 @@ SOL.Ttype   = 'constant';                % set initial temperature field type
 % buoyancy parameters
 PHY.rhoSis      =  3300;                 % reference density solid refractory silicate [kg/m3]
 PHY.rhoSil      =  2800;                 % reference density liquid refractory silicate [kg/m3]
-PHY.rhoFes      =  8000;                 % reference desnity solid refractory iron [kg/m3]
+PHY.rhoFes      =  8000;                 % reference density solid refractory iron [kg/m3]
 PHY.rhoFel      =  7500;                 % reference desnity liquid refractory iron [kg/m3]
-PHY.gCSi        =  0.52;                 % compositional expansivity silicate
-PHY.gCFe        =  0.71;                 % compositional expansivity iron
+PHY.gCSi        =  0.60;                 % compositional expansivity silicate
+PHY.gCFe        =  0.60;                 % compositional expansivity iron
 PHY.aTSi        =  3e-5;                 % thermal expansivity silicate [1/K]
 PHY.aTFe        =  1e-5;                 % thermal expansivity iron [1/K]
 PHY.dx          =  1e-12;                % solid grain size [m]
@@ -132,15 +137,15 @@ SOL.BCbot       = 1;                     % bottom boundary
 % advection scheme
 NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.CFL         = 1e6;   	% Courant number to limit physical time step
 NUM.theta     	= 1.0;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 20;       % maximum iteration count
-dtmax           = 100*NUM.yr; % maximum time step
+NUM.reltol    	= 1e-9;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 1e3;      % maximum iteration count
+dtmax           = dt;       % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
-etamax          = 1e16;      % maximum viscosity for stabilisation
-alpha           = 0.8;      % iterative lagging parameters
+etamax          = 1e16;     % maximum viscosity for stabilisation
+alpha           = 0.50;     % iterative lagging parameters
 
 
 %% start model
@@ -166,4 +171,33 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
 
 run('main');
+
+
+% plot convergence
+EH   = abs(HST.EH  (end));
+EXFe = abs(HST.EXFe(end));
+ECFe = abs(HST.ECFe(end));
+ECSi = abs(HST.ECSi(end));
+
+fh15 = figure(15);
+p1 = loglog(     dt,EH  ,'r+','MarkerSize',8,'LineWidth',2); hold on; box on;
+p2 = loglog(0.99*dt,EXFe,'g+','MarkerSize',8,'LineWidth',2);
+p3 = loglog(1.00*dt,ECFe,'b+','MarkerSize',8,'LineWidth',2);
+p4 = loglog(1.01*dt,ECSi,'m+','MarkerSize',8,'LineWidth',2);
+set(gca,'TicklabelInterpreter','latex','FontSize',12)
+xlabel('time step [s]','Interpreter','latex','FontSize',16)
+ylabel('rel. numerical error [1]','Interpreter','latex','FontSize',16)
+title('Numerical convergence in time','Interpreter','latex','FontSize',20)
+
+if dt == DT(1)
+    p5 = loglog(DT,mean([EH,EXFe,ECFe,ECSi]).*(DT./DT(1)).^1,'k-','LineWidth',2);  % plot linear trend for comparison
+end
+if dt == DT(end)
+    legend([p1,p2,p3,p4,p5],{'error H','error X_{Fe}','error C_{Fe}','error C_{Si}','linear'},'Interpreter','latex','box','on','location','southeast')
+end
+
+end
+
+name = [outpath,'/',RUN.ID,'/',RUN.ID,'_bnchm'];
+print(fh15,name,'-dpng','-r300','-opengl');
 

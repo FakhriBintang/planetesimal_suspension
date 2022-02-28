@@ -8,7 +8,7 @@ NN = [40,80,160];  % test increasing time steps
 for nn = NN
     
 RUN.ID          =  'test';               % run identifier
-RUN.bnchm       =  1;                    % run manufactured solution benchmark on fluid mechanics solver
+RUN.bnchm       =  1;                    % manufactured solution benchmark on fluid mechanics solver
 NUM.N           =  nn;                   % number of real x block nodes
 
 
@@ -224,5 +224,11 @@ if nn == NN(end)
 end
 
 end
+
+name = [outdir,'/',RUN.ID,'/',RUN.ID,'_bnchm'];
+print(fh18,name,'-dpng','-r300','-opengl');
+
+name = [outdir,'/',RUN.ID,'/',RUN.ID,'_sclng'];
+print(fh19,name,'-dpng','-r300','-opengl');
 
 
