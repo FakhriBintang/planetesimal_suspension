@@ -6,12 +6,12 @@ L = NUM.L;  h = NUM.h;  hr = 3600;  g0 = mean(PHY.gz(:));
 fprintf(1,'  ***  compose manufactured solution\n\n');
 
 % compose manufactured solution variables
-W_mms(x,z) = 5.00e-7.*(cos(4*(x)*pi/L).*sin(4*(z)*pi/L));
-U_mms(x,z) = 1.00e-7.*(sin(4*(x)*pi/L).*cos(4*(z)*pi/L));
-P_mms(x,z) = 2.00e+5.*(sin(4*(x)*pi/L).*sin(4*(z)*pi/L));
+W_mms(x,z) = 5.00e-5.*(cos(4*(x)*pi/L).*sin(4*(z)*pi/L));
+U_mms(x,z) = 1.00e-5.*(sin(4*(x)*pi/L).*cos(4*(z)*pi/L));
+P_mms(x,z) = 2.00e+4.*(sin(4*(x)*pi/L).*sin(4*(z)*pi/L));
 
 % compose manufactured material coefficients and volume source
-eta_mms(x,z) = 1e+6-8e+5.*(cos(4*(x)*pi/L).*sin(4*(z)*pi/L));
+eta_mms(x,z) = 1e+3-8e+2.*(cos(4*(x)*pi/L).*sin(4*(z)*pi/L));
 rho_mms(x,z) =     -1e+1.*(cos(4*(x)*pi/L).*sin(4*(z)*pi/L));
 src_mms(x,z) =     -1e-4.*(sin(4*(x)*pi/L).*sin(4*(z)*pi/L));
 

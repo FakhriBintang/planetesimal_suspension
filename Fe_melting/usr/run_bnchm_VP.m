@@ -3,7 +3,7 @@
 % equal grid spacing
 clear; close all
 
-NN = [40,80,160];  % test increasing time steps
+NN = [40,60,80];  % test increasing time steps
 
 for nn = NN
     
@@ -27,8 +27,8 @@ NUM.dt          =  0.1*NUM.yr;           % (initial) time step [s]
 
 
 %% set model domain
-NUM.D           =  1000;                 % domain depth
-NUM.L           =  1000;                 % domain length
+NUM.D           =  1;                 % domain depth
+NUM.L           =  1;                 % domain length
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
