@@ -197,6 +197,8 @@ iter      = 0;      % initialise iteration count
 %% update nonlinear material properties
 up2date;
 
+%% initialise recording of model history
+history;
 
 %% output initial condition
 output;
