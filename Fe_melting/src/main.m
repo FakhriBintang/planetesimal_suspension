@@ -7,7 +7,7 @@ fprintf(1,    '************************************************************\n\n'
 
 
 % %% initialise model run
-initialise_melting;
+initialise;
 
 % run manufactured solution benchmark on fluid mechanics solver if specified
 if RUN.bnchm 

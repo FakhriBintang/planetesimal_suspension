@@ -201,5 +201,5 @@ up2date;
 history;
 
 %% output initial condition
-output;
+% output;
 
