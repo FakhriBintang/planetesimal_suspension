@@ -120,7 +120,7 @@ if RUN.plot
         fh1  = figure(1); clf
         figure(1)
         subplot(2,3,1)
-        imagesc(NUM.xU,NUM.zU,SOL.U*NUM.yr); hold on;
+        imagesc(NUM.xU(:),NUM.zU(2:end-1),SOL.U(2:end-1,:)*NUM.yr); hold on;
         quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
         colormap(subplot(2,3,1),cm2)
         axis ij equal tight;
@@ -128,7 +128,7 @@ if RUN.plot
         title('v^*_x [m/yr]')
         
         subplot(2,3,2)
-        imagesc(NUM.xW,NUM.zW,-SOL.W*NUM.yr); hold on;
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-SOL.W(:,2:end-1)*NUM.yr); hold on;
         quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
         colormap(subplot(2,3,2),cm2)
         axis ij equal tight;
@@ -136,29 +136,28 @@ if RUN.plot
         title('v_z^*-velocity [m/yr]')
         
         subplot(2,3,3)
-        imagesc(NUM.xP,NUM.zP,SOL.P); hold on;
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),SOL.P(2:end-1,2:end-1)); hold on;
         colormap(subplot(2,3,3),cm2)
         axis ij equal tight;
         colorbar
         title('dynamic pressure [Pa]')
         
-        Tplot = SOL.T;
         subplot(2,3,4)
-        imagesc(NUM.xP,NUM.zP,SOL.T);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),SOL.T(2:end-1,2:end-1));
         colormap(subplot(2,3,4),flipud(cm1))
         axis ij equal tight;
         colorbar
         title('Temperature [C]')
         
         subplot(2,3,5);
-        imagesc(NUM.xP,NUM.zP,MAT.rho);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rho(2:end-1,2:end-1));
         colormap(subplot(2,3,5),cm1)
         axis ij equal tight;
         colorbar
         title('bulk density [kgm^-^3]')
         
         subplot(2,3,6);
-        imagesc(NUM.xP,NUM.zP,log10(MAT.Eta));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),log10(MAT.Eta(2:end-1,2:end-1)));
         colormap(subplot(2,3,6),cm1)
         axis ij equal tight;
         colorbar
@@ -169,22 +168,22 @@ if RUN.plot
         fh2 = figure(2); clf;
         figure(2) % plot phase fractions
         subplot(2,2,1);
-        imagesc(NUM.xP,NUM.zP,MAT.phiSil);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiSil(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^l')
         subplot(2,2,2);
-        imagesc(NUM.xP,NUM.zP,MAT.phiSis);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiSis(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^s')
         subplot(2,2,3);
-        imagesc(NUM.xP,NUM.zP,MAT.phiFel);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiFel(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^l')
         subplot(2,2,4);
-        imagesc(NUM.xP,NUM.zP,MAT.phiFes);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiFes(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^s')
@@ -194,22 +193,22 @@ if RUN.plot
         fh3 = figure(3); clf
         figure(3) % plot phase fractions
         subplot(2,2,1);
-        imagesc(NUM.xP,NUM.zP,CHM.fSil);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fSil(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Si}^l [wt]')
         subplot(2,2,2);
-        imagesc(NUM.xP,NUM.zP,CHM.fSis);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fSis(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Si}^s [wt]')
         subplot(2,2,3);
-        imagesc(NUM.xP,NUM.zP,CHM.fFel);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fFel(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Fe}^l [wt]')
         subplot(2,2,4);
-        imagesc(NUM.xP,NUM.zP,CHM.fFes);
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fFes(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Fe}^s [wt]')
@@ -219,25 +218,25 @@ if RUN.plot
         fh4 = figure(4); clf
         figure(4) % plot phase segregation
         subplot(2,2,1);
-        imagesc(NUM.xW,NUM.zW,-segSil*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segSil(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Si}^l [m/yr]')
         
         subplot(2,2,2);
-        imagesc(NUM.xP,NUM.zP,-segSis*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segSis(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Si}^s [m/yr]')
         
         subplot(2,2,3);
-        imagesc(NUM.xP,NUM.zP,-segFel*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segFel(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Fe}^l [m/yr]')
         
         subplot(2,2,4);
-        imagesc(NUM.xP,NUM.zP,-segFes*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segFes(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Fe}^s [m/yr]')
@@ -247,25 +246,25 @@ if RUN.plot
         fh5 = figure(5); clf
         figure(5)
         subplot(2,2,1)
-        imagesc(NUM.xP,NUM.zP,CHM.xFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.xFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('x_{Fe} [wt]')
         
         subplot(2,2,2)
-        imagesc(NUM.xP,NUM.zP,CHM.xSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.xSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('x_{Si} [wt]')
         
         subplot(2,2,3)
-        imagesc(NUM.xP,NUM.zP,CHM.cFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.cFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Fe} [wt]')
         
         subplot(2,2,4)
-        imagesc(NUM.xP,NUM.zP,CHM.cSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.cSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Si} [wt]')
@@ -275,25 +274,25 @@ if RUN.plot
         fh6 = figure(6); clf
         figure(6)
         subplot(2,2,1)
-        imagesc(NUM.xP,NUM.zP,MAT.rhoSil)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoSil(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Si}^l')
         
         subplot(2,2,2)
-        imagesc(NUM.xP,NUM.zP,MAT.rhoSis)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoSis(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Si}^s')
         
         subplot(2,2,3)
-        imagesc(NUM.xP,NUM.zP,MAT.rhoFel)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoFel(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Fe}^l')
         
         subplot(2,2,4)
-        imagesc(NUM.xP,NUM.zP,MAT.rhoFes)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoFes(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Fe}^s')
@@ -303,25 +302,25 @@ if RUN.plot
         fh7 = figure(7); clf
         figure(7)
         subplot(2,2,1)
-        imagesc(NUM.xP,NUM.zP,CHM.clSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.clSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Si}^l')
         
         subplot(2,2,2)
-        imagesc(NUM.xP,NUM.zP,CHM.csSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.csSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Si}^s')
         
         subplot(2,2,3)
-        imagesc(NUM.xP,NUM.zP,CHM.clFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.clFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Fe}^l')
         
         subplot(2,2,4)
-        imagesc(NUM.xP,NUM.zP,CHM.csFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.csFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('c_{Fe}^s')
@@ -331,25 +330,25 @@ if RUN.plot
         fh8 = figure(8); clf;
         figure(8)
         subplot(2,2,1)
-        imagesc(NUM.xP,NUM.zP,CHM.CFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('C_{Fe} ')
         
         subplot(2,2,2)
-        imagesc(NUM.xP,NUM.zP,CHM.CSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('C_{Si} ')
         
         subplot(2,2,3)
-        imagesc(NUM.xP,NUM.zP,CHM.XFe)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('X_{Fe}')
         
         subplot(2,2,4)
-        imagesc(NUM.xP,NUM.zP,CHM.XSi)
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('X_{Si}')
@@ -433,13 +432,13 @@ if RUN.save
         print(fh3,name,'-dpng','-r300','-opengl');
         name = [outpath '/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
         print(fh4,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_xc',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        name = [outpath '/',RUN.ID,'_xcb',num2str(floor(NUM.step/RUN.nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-opengl');
         name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
         print(fh6,name,'-dpng','-r300','-opengl');
         name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
         print(fh7,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_XC',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        name = [outpath '/',RUN.ID,'_xcd',num2str(floor(NUM.step/RUN.nop))]; % figure 5
         print(fh8,name,'-dpng','-r300','-opengl');
 
     end
