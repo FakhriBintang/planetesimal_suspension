@@ -14,45 +14,97 @@ if RUN.plot
     
     if NUM.Nx <= 10 && NUM.Nz <= 10  % create 0D plots
         
-        if iter > 0
-            
-            fh1 = figure(1); clf;
-            subplot(4,1,1)
-            ph1 = plot(HST.time/NUM.yr,HST.T(:,2),'LineWidth',2); axis xy tight; box on;
-            title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(4,1,2)
-            plot(HST.time/NUM.yr,HST.xFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(4,1,3)
-            plot(HST.time/NUM.yr,HST.cFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(4,1,4)
-            plot(HST.time/NUM.yr,HST.cSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            xlabel('Time [yr]',TX{:},FS{:});
-
-            fh2 = figure(2); clf;
-            subplot(6,1,1)
-            plot(HST.time/NUM.yr,HST.fFel(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title(['$f_{Fe}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(6,1,2)
-            plot(HST.time/NUM.yr,HST.fSil(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title(['$f_{Si}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(6,1,3)
-            plot(HST.time/NUM.yr,HST.phiFel(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title('$\phi_{Fe}^s$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(6,1,4)
-            plot(HST.time/NUM.yr,HST.phiSil(:,2).*100,'LineWidth',2); axis xy tight; box on;
-            title('$\phi_{Si}^\ell$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(6,1,5)
-            plot(HST.time/NUM.yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
-            title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            subplot(6,1,6)
-            plot(HST.time/NUM.yr,log10(HST.eta(:,2)),'LineWidth',2); axis xy tight; box on;
-            title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-            xlabel('Time [hr]',TX{:},FS{:});
-            
-        end
+        fh1 = figure(1); clf;
+        subplot(4,1,1)
+        plot(HST.time/NUM.yr,HST.T(:,2),'LineWidth',2); axis xy tight; box on;
+        title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,2)
+        plot(HST.time/NUM.yr,HST.xFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,3)
+        plot(HST.time/NUM.yr,HST.cFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,4)
+        plot(HST.time/NUM.yr,HST.cSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        xlabel('Time [yr]',TX{:},FS{:});
+        
+        fh2 = figure(2); clf;
+        subplot(4,1,1)
+        plot(HST.time/NUM.yr,HST.fFel(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        title(['$f_{Fe}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,2)
+        plot(HST.time/NUM.yr,HST.fSil(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        title(['$f_{Si}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,3)
+        plot(HST.time/NUM.yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
+        title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(4,1,4)
+        plot(HST.time/NUM.yr,log10(HST.eta(:,2)),'LineWidth',2); axis xy tight; box on;
+        title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        xlabel('Time [hr]',TX{:},FS{:});
+        
+    elseif NUM.Nx <= 10
+        
+        fh1 = figure(1); clf;
+        subplot(1,4,1)
+        plot(mean(SOL.T(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,4,2)
+        plot(mean(CHM.xFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,3)
+        plot(mean(CHM.cFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,4)
+        plot(mean(CHM.cSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        
+        fh2 = figure(2); clf;
+        subplot(1,4,1)
+        plot(mean(CHM.fFel(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title(['$f_{Fe}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,4,2)
+        plot(mean(CHM.fSil(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title(['$f_{Si}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,3)
+        plot(mean(CHM.GFe(2:end-1,2:end-1)./MAT.rho(2:end-1,2:end-1).*100.*NUM.yr,2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\Gamma_{Fe}$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,4)
+        plot(mean(CHM.GSi(2:end-1,2:end-1)./MAT.rho(2:end-1,2:end-1).*100.*NUM.yr,2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\Gamma_{Si}$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        
+        fh3 = figure(3); clf;
+        subplot(1,4,1)
+        plot(mean(-SOL.W(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        title(['$W$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,4,2)
+        plot(mean(SOL.P(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title(['$P$ [Pa]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,3)
+        plot(mean(MAT.rho(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,4)
+        plot(mean(log10(MAT.Eta(2:end-1,2:end-1)),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        
+        fh4 = figure(4); clf;
+        subplot(1,4,1)
+        plot(mean(-(MAT.phiFel(1:end-1,2:end-1)+MAT.phiFel(2:end,2:end-1))/2.*segFel(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        title(['$w_{\Delta,Fe}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,4,2)
+        plot(mean(-(MAT.phiFes(1:end-1,2:end-1)+MAT.phiFes(2:end,2:end-1))/2.*segFes(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        title(['$w_{\Delta,Fe}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,3)
+        plot(mean(-(MAT.phiSil(1:end-1,2:end-1)+MAT.phiSil(2:end,2:end-1))/2.*segSil(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        title(['$w_{\Delta,Si}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,4)
+        plot(mean(-(MAT.phiSis(1:end-1,2:end-1)+MAT.phiSis(2:end,2:end-1))/2.*segSis(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        title(['$w_{\Delta,Si}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         
     else
         
@@ -68,20 +120,20 @@ if RUN.plot
         fh1  = figure(1); clf
         figure(1)
         subplot(2,3,1)
-        imagesc(NUM.xU,NUM.zU,SOL.U); hold on;
+        imagesc(NUM.xU,NUM.zU,SOL.U*NUM.yr); hold on;
         quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
         colormap(subplot(2,3,1),cm2)
         axis ij equal tight;
         colorbar
-        title('v^*_x [ms^-^1]')
+        title('v^*_x [m/yr]')
         
         subplot(2,3,2)
-        imagesc(NUM.xW,NUM.zW,-SOL.W); hold on;
+        imagesc(NUM.xW,NUM.zW,-SOL.W*NUM.yr); hold on;
         quiver(NUM.xP(xq),NUM.zP(zq),SOL.UP(zq,xq),SOL.WP(zq,xq),'k')
         colormap(subplot(2,3,2),cm2)
         axis ij equal tight;
         colorbar
-        title('v_z^*-velocity [ms^-^1]')
+        title('v_z^*-velocity [m/yr]')
         
         subplot(2,3,3)
         imagesc(NUM.xP,NUM.zP,SOL.P); hold on;
@@ -167,28 +219,28 @@ if RUN.plot
         fh4 = figure(4); clf
         figure(4) % plot phase segregation
         subplot(2,2,1);
-        imagesc(NUM.xW,NUM.zW,-segSil);
+        imagesc(NUM.xW,NUM.zW,-segSil*NUM.yr);
         colorbar
         axis ij equal tight
-        title('total phi')
+        title('\Delta v_{Si}^l [m/yr]')
         
         subplot(2,2,2);
-        imagesc(NUM.xP,NUM.zP,-segSis);
+        imagesc(NUM.xP,NUM.zP,-segSis*NUM.yr);
         colorbar
         axis ij equal tight
-        title('v_{\Delta, Si}^s')
+        title('\Delta v_{Si}^s [m/yr]')
         
         subplot(2,2,3);
-        imagesc(NUM.xP,NUM.zP,-segFel);
+        imagesc(NUM.xP,NUM.zP,-segFel*NUM.yr);
         colorbar
         axis ij equal tight
-        title('v_{\Delta, Fe}^l')
+        title('\Delta v_{Fe}^l [m/yr]')
         
         subplot(2,2,4);
-        imagesc(NUM.xP,NUM.zP,-segFes);
+        imagesc(NUM.xP,NUM.zP,-segFes*NUM.yr);
         colorbar
         axis ij equal tight
-        title('v_{\Delta, Fe}^s')
+        title('\Delta v_{Fe}^s [m/yr]')
         
         
         %% plot system fractions and chemical solutions
@@ -330,57 +382,77 @@ if RUN.plot
     
     %% plot conserved quantities
     fh10 = figure(10); clf;
-    % mass conservation
-    if iter > 0
-        subplot(5,1,1)
-        plot(HST.time./NUM.yr,HST.EM  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-        ylabel('consv. $Mass$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-        subplot(5,1,2)
-        plot(HST.time./NUM.yr,HST.EH  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-        ylabel('consv. $H$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-        subplot(5,1,3)
-        plot(HST.time./NUM.yr,HST.EXFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-        ylabel('consv. $X_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-        subplot(5,1,4)
-        plot(HST.time./NUM.yr,HST.ECFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-        ylabel('consv. $C_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-        subplot(5,1,5)
-        plot(HST.time./NUM.yr,HST.ECSi,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-        ylabel('consv. $C_{Si}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
-        xlabel('Time [yr]',TX{:},FS{:});
-    end
+    % mass/energy conservation
+    subplot(5,1,1)
+    plot(HST.time./NUM.yr,HST.EM  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $Mass$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
+    subplot(5,1,2)
+    plot(HST.time./NUM.yr,HST.EH  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $H$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
+    subplot(5,1,3)
+    plot(HST.time./NUM.yr,HST.EXFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $X_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
+    subplot(5,1,4)
+    plot(HST.time./NUM.yr,HST.ECFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $C_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
+    subplot(5,1,5)
+    plot(HST.time./NUM.yr,HST.ECSi,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $C_{Si}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
+    xlabel('Time [yr]',TX{:},FS{:});
     
 end
 
 
 %% save output
 if RUN.save
-    % save output data
-    name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
-    print(fh1,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_phsvol_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
-    print(fh2,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_phswt_',num2str(floor(NUM.step/RUN.nop))]; % figure 3
-    print(fh3,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
-    print(fh4,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_eq',num2str(floor(NUM.step/RUN.nop))]; % figure 5
-    print(fh5,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
-    print(fh6,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
-    print(fh7,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_XC',num2str(floor(NUM.step/RUN.nop))]; % figure 5
-    print(fh8,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_Phsdg',num2str(floor(NUM.step/RUN.nop))]; % figure 9 phase diagram
-    print(fh9,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_conservation',num2str(floor(NUM.step/RUN.nop))]; % figure 10 conserved quantities
-    print(fh10,name,'-dpng','-r300','-opengl');
+    if NUM.Nx <= 10 && NUM.Nz <= 10  % save 0D plots
+        
+        name = [outpath '/',RUN.ID,'_txc_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
+        print(fh1,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_fre_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+        print(fh2,name,'-dpng','-r300','-opengl');
+        
+    elseif NUM.Nx <= 10   % save 1D plots
+        
+        name = [outpath '/',RUN.ID,'_txc_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
+        print(fh1,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_fmr_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+        print(fh2,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+        print(fh2,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_seg_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+        print(fh2,name,'-dpng','-r300','-opengl');
+        
+    else  % save 2D plots
+        
+        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 1
+        print(fh1,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_phsvol_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
+        print(fh2,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_phswt_',num2str(floor(NUM.step/RUN.nop))]; % figure 3
+        print(fh3,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh4,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_xc',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        print(fh5,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        print(fh6,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        print(fh7,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_XC',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        print(fh8,name,'-dpng','-r300','-opengl');
 
+    end
+    
+    name = [outpath '/',RUN.ID,'_phsdg',num2str(floor(NUM.step/RUN.nop))]; % figure 9 phase diagram
+    print(fh9,name,'-dpng','-r300','-opengl');
+    name = [outpath '/',RUN.ID,'_consv',num2str(floor(NUM.step/RUN.nop))]; % figure 10 conserved quantities
+    print(fh10,name,'-dpng','-r300','-opengl');
+    
     name = [outpath '/',RUN.ID,'_',num2str(NUM.step/RUN.nop)];
-    save(name,'NUM','PHY','SOL','MAT','CHM');
+    save(name,'NUM','PHY','SOL','MAT','CHM','HST');
     name = [outpath '/',RUN.ID,'_cont'];
-    save(name,'NUM','PHY','SOL','MAT','CHM');
+    save(name,'NUM','PHY','SOL','MAT','CHM','HST');
     
     if NUM.step == 0
         logfile = [outpath '/',RUN.ID,'.log'];
