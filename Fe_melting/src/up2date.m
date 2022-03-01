@@ -101,7 +101,7 @@ segFel([1 end],:) = 0;
 segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
 % update phase velocities
-WlSi        = SOL.W;
+WlSi        = SOL.W + segSil;
 UlSi        = SOL.U;
 WsSi        = SOL.W + segSis;
 UsSi        = SOL.U;

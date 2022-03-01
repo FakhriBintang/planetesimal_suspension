@@ -64,18 +64,14 @@ adv_XFe     = advection(MAT.rho.*CHM.xFe.*CHM.fFes,UsFe,WsFe,NUM.h,NUM.h,NUM.ADV
             + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
 dXdt        = - adv_XFe;
 
-if NUM.step>0
+if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
     % update solution
     CHM.XFe = XFeo + (NUM.theta.*dXdt + (1-NUM.theta).*dXdto) .* NUM.dt;
     
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
-    
-%     figure(40)
-%     subplot(2,2,1); imagesc(XFeo); colorbar; title('Xo')
-%     subplot(2,2,2); imagesc(CHM.XFe); colorbar; title('X')
-%     subplot(2,2,3); imagesc(CHM.XFe - XFeo); colorbar; title('dX')
-%     subplot(2,2,4); imagesc(dXdt); colorbar; title('dXdt')
+else
+    CHM.XFe = CHM.xFe.*MAT.rho;
 end
 
 % update fertile chemical components
@@ -120,19 +116,6 @@ if NUM.step>0
     % apply boundaries
     CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
     CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
-
-%     figure(41)
-%     subplot(2,2,1); imagesc(CFeo); colorbar; title('CFeo')
-%     subplot(2,2,2); imagesc(CHM.CFe); colorbar; title('CFe')
-%     subplot(2,2,3); imagesc(CHM.CFe - CFeo); colorbar; title('dCFe')
-%     subplot(2,2,4); imagesc(dCFedt); colorbar; title('dCFedt')
-% 
-%     figure(42)
-%     subplot(2,2,1); imagesc(CSio); colorbar; title('CSio')
-%     subplot(2,2,2); imagesc(CHM.CSi); colorbar; title('CSi')
-%     subplot(2,2,3); imagesc(CHM.CSi - CSio); colorbar; title('dCSi')
-%     subplot(2,2,4); imagesc(dCSidt); colorbar; title('dCSidt')
-%     drawnow
 end
 
 if NUM.step>0
@@ -142,11 +125,6 @@ if NUM.step>0
     CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho;
     CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho;
     SOL.T   = SOL.H./(MAT.rhoCp + MAT.rhoDs);
-else
-%     SOL.H   = SOL.T.*(MAT.rhoDs + MAT.rhoCp);                              % mixture enthalpy density
-%     CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                % mixture Fe/Si system densities
-%     CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                   % mixture Fe component density
-%     CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                   % mixture Si component density
 end
 
 
@@ -170,7 +148,7 @@ if RUN.diseq
     
     dfFedt   = - advn_fFe + CHM.GFe;                                       % total rate of change
     
-    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./CHM.xFe./MAT.rho; end  % explicit update of crystal fraction
+    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; end  % explicit update of crystal fraction
     CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
     CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
     CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
@@ -181,7 +159,7 @@ if RUN.diseq
     
     dfSidt   = - advn_fSi + CHM.GSi;                                       % total rate of change
     
-    if NUM.step>0; CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./CHM.xSi./MAT.rho; end  % explicit update of crystal fraction
+    if NUM.step>0; CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho; end  % explicit update of crystal fraction
     CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
     CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
