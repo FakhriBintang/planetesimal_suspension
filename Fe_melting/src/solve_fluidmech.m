@@ -243,7 +243,7 @@ RR = [RR; rr(:)];
 KP = sparse(II,JJ,AA,NUM.NP,NUM.NP);
 RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
-Pscale = geomean(MAT.Eta(:))/NUM.h^2;
+Pscale = sqrt(geomean(MAT.Eta(:))/NUM.h^2);
 
 nzp = round((NUM.nzP-2)/2)+1;
 nxp = round((NUM.nxP-2)/2)+1;
