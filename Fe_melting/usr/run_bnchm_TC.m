@@ -3,31 +3,31 @@
 % equal grid spacing
 clear; close all;
 
-DT = [16,8,4]*1e+9;  % test increasing time steps
+NUM.yr  =  3600*24*365.25;        % seconds per year
+DT      = [1,1/2,1/4]*50*NUM.yr;  % test increasing time steps
 
 for dt = DT
     
-RUN.ID          =  'test';               % run identifier
+RUN.ID          =  'bnchm_TC';           % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  10;                    % output every 'nop' grid steps of transport
+RUN.nop         =  10;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
 
 
 %% set model timing
-NUM.yr          =  3600*24*365.25;       % seconds per year
-NUM.maxstep     =  128e3/dt*1e+9;          % maximum number of time steps
+NUM.maxstep     =  int16(20/dt*DT(1));         % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  dt;                   % (initial) time step [s]
+NUM.dt          =  dt;           % (initial) time step [s]
 
 
 %% set model domain
 NUM.D           =  1000;                 % domain depth
 NUM.L           =  1000;                 % domain length
-NUM.N           =  3;                   % number of real x block nodes
+NUM.N           =  1;                   % number of real x block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
@@ -41,8 +41,8 @@ CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([w
 CHM.cSi0        =  0.50;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  0;                    % amplitude of initial random perturbation to iron system
-dcFe            =  0;                    % amplitude of initial random perturbation to iron component
+dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
+dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
@@ -60,14 +60,14 @@ CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition 
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (> 1)
-CHM.clap    = 0e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
-CHM.dEntrSi = 0;                       % silicate entropy of melting
-CHM.dEntrFe = 0;                       % iron entropy of melting
-CHM.tau_r   = 10*DT(1);                  % reaction time scale [s]
+CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
+CHM.dEntrSi = 300;                       % silicate entropy of melting
+CHM.dEntrFe = 300;                       % iron entropy of melting
+CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1050;                     % reference/top potential temperature [C]
-SOL.T1      =  1050;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1000;                     % reference/top potential temperature [C]
+SOL.T1      =  1000;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -78,22 +78,22 @@ SOL.Ttype   = 'constant';                % set initial temperature field type
 %% set material parameters
 % buoyancy parameters
 PHY.rhoSis      =  3300;                 % reference density solid refractory silicate [kg/m3]
-PHY.rhoSil      =  2800;                 % reference density liquid refractory silicate [kg/m3]
-PHY.rhoFes      =  8000;                 % reference density solid refractory iron [kg/m3]
-PHY.rhoFel      =  7500;                 % reference desnity liquid refractory iron [kg/m3]
-PHY.gCSi        =  0.60;                 % compositional expansivity silicate
-PHY.gCFe        =  0.60;                 % compositional expansivity iron
+PHY.rhoSil      =  2900;                 % reference density liquid refractory silicate [kg/m3]
+PHY.rhoFes      =  8000;                 % reference desnity solid refractory iron [kg/m3]
+PHY.rhoFel      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
+PHY.gCSi        =  0.50;                 % compositional expansivity silicate
+PHY.gCFe        =  0.65;                 % compositional expansivity iron
 PHY.aTSi        =  3e-5;                 % thermal expansivity silicate [1/K]
 PHY.aTFe        =  1e-5;                 % thermal expansivity iron [1/K]
-PHY.dx          =  1e-12;                % solid grain size [m]
-PHY.df          =  1e-12;                % metal droplet size [m]
-PHY.dm          =  1e-12;                % melt film size [m]
+PHY.dx          =  1e-3;                 % solid grain size [m]
+PHY.df          =  1e-3;                 % metal droplet size [m]
+PHY.dm          =  1e-3;                 % melt film size [m]
 PHY.gz          =  0.1;                  % z-gravity
 PHY.gx          =  0;               	 % x-gravity
 
 % rheology parameters
-PHY.EtaSil0     =  1e3;                  % reference silicate melt viscosity [Pas]
-PHY.EtaFel0     =  1;                    % reference metal melt viscosity [Pas]
+PHY.EtaSil0     =  1e2;                  % reference silicate melt viscosity [Pas]
+PHY.EtaFel0     =  1.0;                  % reference metal melt viscosity [Pas]
 PHY.EtaSol0     =  1e15;                 % reference silicate/iron crystal viscosity
 Em              =  150e3;                % activation energy melt viscosity [J/mol]
 
@@ -112,14 +112,14 @@ CCP             =  [ 0.30, 0.30, 0.30; ...
 % thermochemical parameters
 PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
 PHY.kTFe        =  70;                  % Thermal conductivity [W/m/K]
-PHY.kC          =  1e-8;                % chemical diffusivity [m^2/s]
+PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
-PHY.CpFes       =  1000;                % Volumetric heat capacity [J/kg/K]
+PHY.CpFes       =   800;                % Volumetric heat capacity [J/kg/K]
 PHY.CpFel       =  1000;                % melt heat capacity [J/kg/K]
 PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
-PHY.CpSil       =  1000;                % mvp  heat capacity [J/kg/K]
+PHY.CpSil       =  1200;                % mvp  heat capacity [J/kg/K]
 
-PHY.Hr0         =  1e-4;                % Radiogenic heat productivity [W/m3]
+PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 
 %% set boundary conditions
@@ -129,24 +129,24 @@ SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom b
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
-SOL.BCsides     = -1;                    % side boundaries
-SOL.BCtop       = 1;                     % top boundary
-SOL.BCbot       = 1;                     % bottom boundary
+SOL.BCsides     = -1;                     % side boundaries
+SOL.BCtop       = -1;                     % top boundary
+SOL.BCbot       = -1;                     % bottom boundary
 
 
 %% set solver options
 % advection scheme
 NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 1e6;   	% Courant number to limit physical time step
-NUM.theta     	= 1.0;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-9;     % relative residual tolerance for nonlinear iterations
+NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
+NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 1e3;      % maximum iteration count
+NUM.maxit       = 100;      % maximum iteration count
 dtmax           = dt;       % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.50;     % iterative lagging parameters
+alpha           = 0.80;     % iterative lagging parameters
 
 
 %% start model

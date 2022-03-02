@@ -7,7 +7,7 @@ NN = [40,80,160];  % test increasing time steps
 
 for nn = NN
     
-RUN.ID          =  'test';               % run identifier
+RUN.ID          =  'bnchm_VP';           % run identifier
 RUN.bnchm       =  1;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 NUM.N           =  nn;                   % number of real x block nodes
