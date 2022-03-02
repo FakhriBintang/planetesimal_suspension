@@ -52,22 +52,22 @@ if RUN.plot
         title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(CHM.xFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.xFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(CHM.cFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.cFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(CHM.cSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.cSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         
         fh2 = figure(2); clf;
         subplot(1,4,1)
-        plot(mean(CHM.fFel(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.fFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title(['$f_{Fe}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(CHM.fSil(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.fSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title(['$f_{Si}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
         plot(mean(CHM.GFe(2:end-1,2:end-1)./MAT.rho(2:end-1,2:end-1).*100.*NUM.yr,2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
@@ -369,12 +369,12 @@ if RUN.plot
     subplot(1,2,1)
     plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CClSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
-    plot(CHM.cSi(2:end-1),SOL.T(2:end-1), '.k', CHM.csSi(2:end-1),SOL.T(2:end-1), '.b', CHM.clSi(2:end-1),SOL.T(2:end-1), '.r','MarkerSize',15)
+    plot(CHM.cSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.k', CHM.csSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.b', CHM.clSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.r','MarkerSize',15)
     
     subplot(1,2,2)
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; hold on; box on;
-    plot(CHM.cFe(2:end-1),SOL.T(2:end-1), '.k', CHM.csFe(2:end-1),SOL.T(2:end-1), '.b', CHM.clFe(2:end-1),SOL.T(2:end-1), '.r','MarkerSize',15)
+    plot(CHM.cFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.k', CHM.csFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.b', CHM.clFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.r','MarkerSize',15)
     
     drawnow;
     
