@@ -123,7 +123,7 @@ Div_rhoV =  + advection(MAT.rho.*CHM.xSi.*CHM.fSis,0.*SOL.U,segSis  ,NUM.h,NUM.h
             + advection(MAT.rho.*CHM.xFe.*CHM.fFel,0.*SOL.U,segFel  ,NUM.h,NUM.h,NUM.ADVN,'flx') ...
             + advection(MAT.rho                   ,   SOL.U,   SOL.W,NUM.h,NUM.h,NUM.ADVN,'flx');
 
-VolSrc = -((MAT.rho-rhoo)./NUM.dt + (Div_rhoV - MAT.rho.*Div_V))./MAT.rho;
+VolSrc = -((MAT.rho-rhoo)/NUM.dt + (Div_rhoV - MAT.rho.*Div_V))./MAT.rho;
 
 % set variable boundary conditions
 UBG    = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.L/2 - NUM.XU);

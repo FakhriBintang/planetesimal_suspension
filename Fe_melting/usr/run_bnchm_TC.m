@@ -4,7 +4,7 @@
 clear; close all;
 
 NUM.yr  =  3600*24*365.25;        % seconds per year
-DT      = [1,1/2,1/4]*50*NUM.yr;  % test increasing time steps
+DT      = [1,1/2,1/4]*10*NUM.yr;  % test increasing time steps
 
 for dt = DT
     
@@ -17,7 +17,7 @@ RUN.diseq       =  0;                    % switch to disequilibrium approach to 
 
 
 %% set model timing
-NUM.maxstep     =  int16(20/dt*DT(1));         % maximum number of time steps
+NUM.maxstep     =  int16(10/dt*DT(1));         % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
@@ -63,11 +63,11 @@ CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 300;                       % iron entropy of melting
-CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
+CHM.tau_r   = 10*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1000;                     % reference/top potential temperature [C]
-SOL.T1      =  1000;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1075;                     % reference/top potential temperature [C]
+SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -140,13 +140,13 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 100;      % maximum iteration count
+NUM.reltol    	= 1e-12;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-12;     % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 500;      % maximum iteration count
 dtmax           = dt;       % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.80;     % iterative lagging parameters
+alpha           = 0.75;     % iterative lagging parameters
 
 
 %% start model
@@ -181,24 +181,24 @@ ECFe = abs(HST.ECFe(end));
 ECSi = abs(HST.ECSi(end));
 
 fh15 = figure(15);
-p1 = loglog(     dt,EH  ,'r+','MarkerSize',8,'LineWidth',2); hold on; box on;
-p2 = loglog(0.99*dt,EXFe,'g+','MarkerSize',8,'LineWidth',2);
-p3 = loglog(1.00*dt,ECFe,'b+','MarkerSize',8,'LineWidth',2);
-p4 = loglog(1.01*dt,ECSi,'m+','MarkerSize',8,'LineWidth',2);
-set(gca,'TicklabelInterpreter','latex','FontSize',12)
-xlabel('time step [s]','Interpreter','latex','FontSize',16)
-ylabel('rel. numerical error [1]','Interpreter','latex','FontSize',16)
-title('Numerical convergence in time','Interpreter','latex','FontSize',20)
+p1 = loglog(     dt/NUM.yr,1.01*EH  ,'r+','MarkerSize',8,'LineWidth',2); hold on; box on;
+p2 = loglog(0.99*dt/NUM.yr,EXFe,'g+','MarkerSize',8,'LineWidth',2);
+p3 = loglog(1.00*dt/NUM.yr,0.99*ECFe,'b+','MarkerSize',8,'LineWidth',2);
+p4 = loglog(1.01*dt/NUM.yr,ECSi,'m+','MarkerSize',8,'LineWidth',2);
 
 if dt == DT(1)
-    p5 = loglog(DT,mean([EH,EXFe,ECFe,ECSi]).*(DT./DT(1)).^1,'k-','LineWidth',2);  % plot linear trend for comparison
+    p5 = loglog(DT/NUM.yr,mean([EH,EXFe,ECFe,ECSi]).*(DT./DT(1)).^1,'k-','LineWidth',2);  % plot linear trend for comparison
+    set(gca,'TicklabelInterpreter','latex','FontSize',12)
+    xlabel('time step [yr]','Interpreter','latex','FontSize',16)
+    ylabel('rel. numerical error [1]','Interpreter','latex','FontSize',16)
+    title('Numerical convergence in time','Interpreter','latex','FontSize',20)
 end
 if dt == DT(end)
-    legend([p1,p2,p3,p4,p5],{'error H','error X_{Fe}','error C_{Fe}','error C_{Si}','linear'},'Interpreter','latex','box','on','location','southeast')
+    legend([p1,p2,p3,p4,p5],{'error $H$','error $X_{Fe}$','error $C_{Fe}$','error $C_{Si}$','linear'},'Interpreter','latex','box','on','location','southeast')
 end
 
 end
 
-name = [outpath,'/',RUN.ID,'/',RUN.ID,'_bnchm'];
+name = [outpath,'/',RUN.ID,'_bnchm'];
 print(fh15,name,'-dpng','-r300','-opengl');
 

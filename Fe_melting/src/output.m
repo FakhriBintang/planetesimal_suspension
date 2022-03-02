@@ -42,7 +42,7 @@ if RUN.plot
         subplot(4,1,4)
         plot(HST.time/NUM.yr,log10(HST.eta(:,2)),'LineWidth',2); axis xy tight; box on;
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        xlabel('Time [hr]',TX{:},FS{:});
+        xlabel('Time [yr]',TX{:},FS{:});
         
     elseif NUM.Nx <= 10
         

@@ -65,7 +65,7 @@ CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 300;                       % iron entropy of melting
-CHM.tau_r   = 10*DT(1);                  % reaction time scale [s]
+CHM.tau_r   = 10*NUM.yr;                 % reaction time scale [s]
 
 % set temperature initial condition
 SOL.T0      =  1100;                     % reference/top potential temperature [C]
@@ -191,7 +191,7 @@ errU = norm(SOL.U(2:end-1,:)-U_mms(2:end-1,:),2)./norm(U_mms(2:end-1,:),2);
 errP = norm(SOL.P(2:end-1,2:end-1)-P_mms(2:end-1,2:end-1),2)./norm(P_mms(2:end-1,2:end-1),2);
 
 % plot error convergence
-figure(18); 
+fh18 = figure(18); 
 p1 = loglog(h,errW,'r+','MarkerSize',8,'LineWidth',2); axis xy tight; hold on; box on; 
 p2 = loglog(h,errU,'g+','MarkerSize',8,'LineWidth',2); axis xy tight; hold on; box on; 
 p3 = loglog(h,errP,'b+','MarkerSize',8,'LineWidth',2); axis xy tight; hold on; box on; 
@@ -209,7 +209,7 @@ if nn == NN(end)
 end
 
 % plot error convergence
-figure(19);
+fh19 = figure(19);
 DOFS = (NN+2).*(NN+2) + 2.*(NN+1).*(NN+2);
 dofs = (nn+2).*(nn+2) + 2.*(nn+1).*(nn+2);
 p5 = loglog(dofs,solvetime,'r+','MarkerSize',8,'LineWidth',2); axis xy tight; hold on; box on; 
@@ -227,10 +227,10 @@ end
 
 end
 
-name = [outdir,'/',RUN.ID,'/',RUN.ID,'_bnchm'];
+name = [outpath,'/',RUN.ID,'_bnchm'];
 print(fh18,name,'-dpng','-r300','-opengl');
 
-name = [outdir,'/',RUN.ID,'/',RUN.ID,'_sclng'];
+name = [outpath,'/',RUN.ID,'_sclng'];
 print(fh19,name,'-dpng','-r300','-opengl');
 
 

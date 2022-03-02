@@ -129,12 +129,12 @@ end
 
 
 %% update local phase equilibrium
-[fFesq,csFeq,clFeq]     = equilibrium(NUM.theta.*SOL.T+(1-NUM.theta).*To,NUM.theta.*CHM.cFe+(1-NUM.theta).*cFeo,NUM.theta.*SOL.Pt+(1-NUM.theta).*Pto,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-                                      CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+[fFesq,csFeq,clFeq] = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                  CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
     
-[fSisq,csSiq,clSiq]     = equilibrium(NUM.theta.*SOL.T+(1-NUM.theta).*To,NUM.theta.*CHM.cSi+(1-NUM.theta).*cSio,NUM.theta.*SOL.Pt+(1-NUM.theta).*Pto,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-                                      CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
-    
+[fSisq,csSiq,clSiq] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+                                  CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+                                  
 fFelq = 1-fFesq;
 fSilq = 1-fSisq;
 
@@ -186,6 +186,7 @@ KcSi = csSiq./clSiq;
 CHM.clSi = CHM.cSi./(CHM.fSil + CHM.fSis.*KcSi);
 CHM.csSi = CHM.cSi./(CHM.fSil./KcSi + CHM.fSis);
 
+% get residual of thermochemical equations from iterative update
 resnorm_TC = norm(SOL.T    - Ti   ,2)./norm(SOL.T   ,2) ...
            + norm(CHM.fFel - fFeli,2)./norm(CHM.fFel,2) ...
            + norm(CHM.fSil - fSili,2)./norm(CHM.fSil,2);
