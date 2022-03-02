@@ -70,9 +70,9 @@ II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; (1/2*EtaC2(:)-1/3*EtaP2(:))/NUM
 
 % z-RHS vector
 if ~RUN.bnchm
-    rhoBF = (MAT.rho(2:end-2,2:end-1)+MAT.rho(3:end-1,2:end-1))/4 ...
-          + (   rhoo(2:end-2,2:end-1)+   rhoo(3:end-1,2:end-1))/4 - rhoRef;
-    if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxP-2); end
+    rhoBF =    NUM.theta .*(MAT.rho(2:end-2,2:end-1)+MAT.rho(3:end-1,2:end-1))/2 ...
+          + (1-NUM.theta).*(   rhoo(2:end-2,2:end-1)+   rhoo(3:end-1,2:end-1))/2 - rhoRef;
+    if NUM.nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,NUM.nxW-2); end
 end
 
 rr = - rhoBF .* PHY.gz(2:end-1,2:end-1);
@@ -243,13 +243,7 @@ RR = [RR; rr(:)];
 KP = sparse(II,JJ,AA,NUM.NP,NUM.NP);
 RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
-Pscale = geomean(MAT.Eta(:))/NUM.h;
-
-% np = round((NUM.nzP-2)/2)+1;
-% KP(indP(np,np),:) = 0;
-% KP(indP(np,np),indP(np,np)) = Pscale;
-% RP(indP(np,np),:) = 0;
-% if RUN.bnchm; RP(MapP(np,NUM.nxp),:) = P_mms(nzp,nxp); end
+Pscale = sqrt(geomean(MAT.Eta(:))/NUM.h^2);
 
 nzp = round((NUM.nzP-2)/2)+1;
 nxp = round((NUM.nxP-2)/2)+1;
@@ -266,8 +260,8 @@ RR = [RV; RP.*Pscale];
 
 
 %% get residual
-FF      = LL*S - RR;
-resnorm = norm(FF(:),2)./norm(RR(:),2);
+FF         = LL*S - RR;
+resnorm_VP = norm(FF(:),2)./sqrt(length(S(:)));
 
 % map residual vector to 2D arrays
 res_W  = full(reshape(FF(NUM.MapW(:)),NUM.nzW,NUM.nxW));   % z-velocity residual
@@ -286,14 +280,3 @@ SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP,NUM.nxP)).*Pscale;  % matrix dynami
 
 SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
 SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
-
-if ~RUN.bnchm
-    if iter == 0
-        resnorm0 = resnorm;
-    end
-    fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
-    
-    figure(100)
-    plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;
-    drawnow;
-end

@@ -113,7 +113,7 @@ while res > tol
     
     rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
     SOL.Pt     = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
-    if NUM.Nx<=10; SOL.Pt = mean(mean(SOL.Pt(2:end-1,2:end-1))); end
+    if NUM.Nx<=10; SOL.Pt = mean(mean(SOL.Pt(2:end-1,2:end-1))).*ones(size(SOL.Pt)); end
 
     % output crystal fraction and fertile solid and liquid concentrations
     [CHM.fFes,CHM.csFe,CHM.clFe] = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
@@ -122,17 +122,21 @@ while res > tol
                                                CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
     CHM.fFel = 1-CHM.fFes;  CHM.fSil = 1-CHM.fSis;
     
-    MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-SOL.T0) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
-    MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-SOL.T0) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
-    MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-SOL.T0) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
-    MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-SOL.T0) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
+    % update T and chemical-dependent density
+    MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
+    MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
+    MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
+    MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
     
-    MAT.rho    = 1./ (CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
+    % update mixture density
+    MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel ...
+        + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
+    MAT.rho([1 end],:) = MAT.rho([2 end-1],:);  MAT.rho(:,[1 end]) = MAT.rho(:,[2 end-1]);
     
-    SOL.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
-    SOL.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
-    SOL.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
-    SOL.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
+    MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
+    MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
+    MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
+    MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
     
     res        = rhoRef - mean(mean(MAT.rho(2:end-1,2:end-1)));
 
@@ -147,6 +151,9 @@ SOL.H   = SOL.T.*(MAT.rhoDs + MAT.rhoCp);                                  % mix
 CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
 CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
+
+CHM.GFe = 0.*CHM.fFel;
+CHM.GSi = 0.*CHM.fSil;
 
 
 %% setup deformation property arrays
@@ -166,11 +173,13 @@ dHdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % enthalpy rate of change
 dXdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron system rate of change 
 dCSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component density rate of change
 dCFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component density rate of change
+dfFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron melt fraction rate of change
+dfSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate melt fraction rate of change
 diff_T   = zeros(NUM.Nz+2,NUM.Nx+2);            % Temperature diffusion rate
 diff_CSi = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component diffusion rate
 diff_CFe = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component diffusion rate
-Div_V    = zeros(NUM.Nz+2  ,NUM.Nx+2 );         % Stokes velocity divergence
-Div_rhoV = zeros(NUM.Nz+2  ,NUM.Nx+2 );         % Mixture mass flux divergence
+Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
+Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
 
 % initialise previous solution and auxiliary fields
 rhoo      = MAT.rho;
@@ -182,12 +191,15 @@ Div_rhoVo = Div_rhoV;
 RUN.frame = 0;      % initialise output frame count
 NUM.time  = 0;      % initialise time count
 NUM.step  = 0;      % initialise time step count
+iter      = 0;      % initialise iteration count
 
 
 %% update nonlinear material properties
 up2date;
 
+%% initialise recording of model history
+history;
 
 %% output initial condition
-output;
+% output;
 
