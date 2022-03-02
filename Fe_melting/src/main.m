@@ -49,6 +49,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
         
+        if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
+        
         % solve thermo-chemical equations
         solve_thermochem;
         
