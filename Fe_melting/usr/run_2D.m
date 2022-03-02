@@ -6,9 +6,9 @@ clear; close all
 RUN.ID          =  'test_2D';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  1;                    % switch on to save output files
-RUN.nop         =  10;                   % output every 'nop' grid steps of transport
+RUN.nop         =  20;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 
 
 %% set model timing
@@ -17,13 +17,13 @@ NUM.maxstep     =  1e4;                  % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  100*NUM.yr;           % (initial) time step [s]
+NUM.dt          =  0.01*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
 NUM.D           =  1000;                 % domain depth
 NUM.L           =  1000;                 % domain length
-NUM.N           =  100;                  % number of real x block nodes
+NUM.N           =  150;                  % number of real x block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
@@ -38,8 +38,8 @@ CHM.cSi0        =  0.50;                 % Si system fertile component fraction 
 
 % set parameters
 dxFe            =  1e-5;                 % amplitude of initial random perturbation to iron system
-dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
+dcFe            = -1e-6;                 % amplitude of initial random perturbation to iron component
+dcSi            = -1e-6;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -58,7 +58,7 @@ CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
-CHM.dEntrFe = 300;                       % iron entropy of melting
+CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
@@ -88,7 +88,7 @@ PHY.gz          =  0.1;                  % z-gravity
 PHY.gx          =  0;               	 % x-gravity
 
 % rheology parameters
-PHY.EtaSil0     =  1e2;                  % reference silicate melt viscosity [Pas]
+PHY.EtaSil0     =  1e3;                  % reference silicate melt viscosity [Pas]
 PHY.EtaFel0     =  1.0;                  % reference metal melt viscosity [Pas]
 PHY.EtaSol0     =  1e15;                 % reference silicate/iron crystal viscosity
 Em              =  150e3;                % activation energy melt viscosity [J/mol]
@@ -136,13 +136,13 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
+NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 50*NUM.yr; % maximum time step
+dtmax           = 0.01*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.80;     % iterative lagging parameters
+alpha           = 0.75;     % iterative lagging parameters
 
 
 %% start model

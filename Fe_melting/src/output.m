@@ -326,32 +326,32 @@ if RUN.plot
         title('c_{Fe}^s')
         
         
-        %% plot Partial densities and
-        fh8 = figure(8); clf;
-        figure(8)
-        subplot(2,2,1)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('C_{Fe} ')
-        
-        subplot(2,2,2)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('C_{Si} ')
-        
-        subplot(2,2,3)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('X_{Fe}')
-        
-        subplot(2,2,4)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('X_{Si}')
+%         %% plot Partial densities and
+%         fh8 = figure(8); clf;
+%         figure(8)
+%         subplot(2,2,1)
+%         imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CFe(2:end-1,2:end-1))
+%         colorbar
+%         axis ij equal tight
+%         title('C_{Fe} ')
+%         
+%         subplot(2,2,2)
+%         imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.CSi(2:end-1,2:end-1))
+%         colorbar
+%         axis ij equal tight
+%         title('C_{Si} ')
+%         
+%         subplot(2,2,3)
+%         imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XFe(2:end-1,2:end-1))
+%         colorbar
+%         axis ij equal tight
+%         title('X_{Fe}')
+%         
+%         subplot(2,2,4)
+%         imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.XSi(2:end-1,2:end-1))
+%         colorbar
+%         axis ij equal tight
+%         title('X_{Si}')
         
     end
     
@@ -417,10 +417,10 @@ if RUN.save
         print(fh1,name,'-dpng','-r300','-opengl');
         name = [outpath '/',RUN.ID,'_fmr_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
         print(fh2,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
-        print(fh2,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_seg_',num2str(floor(NUM.step/RUN.nop))]; % figure 2
-        print(fh2,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(NUM.step/RUN.nop))]; % figure 3
+        print(fh3,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_seg_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh4,name,'-dpng','-r300','-opengl');
         
     else  % save 2D plots
         
@@ -432,14 +432,14 @@ if RUN.save
         print(fh3,name,'-dpng','-r300','-opengl');
         name = [outpath '/',RUN.ID,'_vseg',num2str(floor(NUM.step/RUN.nop))]; % figure 4
         print(fh4,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_xcb',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        name = [outpath '/',RUN.ID,'_xc',num2str(floor(NUM.step/RUN.nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        name = [outpath '/',RUN.ID,'_rho',num2str(floor(NUM.step/RUN.nop))]; % figure 6
         print(fh6,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 5
+        name = [outpath '/',RUN.ID,'_chm',num2str(floor(NUM.step/RUN.nop))]; % figure 7
         print(fh7,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_xcd',num2str(floor(NUM.step/RUN.nop))]; % figure 5
-        print(fh8,name,'-dpng','-r300','-opengl');
+%         name = [outpath '/',RUN.ID,'_xcd',num2str(floor(NUM.step/RUN.nop))]; % figure 8
+%         print(fh8,name,'-dpng','-r300','-opengl');
 
     end
     

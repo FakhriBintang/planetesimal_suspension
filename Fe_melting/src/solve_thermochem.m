@@ -125,6 +125,12 @@ if NUM.step>0
     CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho;
     CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho;
     SOL.T   = SOL.H./(MAT.rhoCp + MAT.rhoDs);
+else
+    SOL.H   = SOL.T.*(MAT.rhoDs + MAT.rhoCp);
+    CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;
+    CHM.XSi = MAT.rho - CHM.XFe;
+    CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;
+    CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;
 end
 
 

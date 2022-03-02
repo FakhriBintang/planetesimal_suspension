@@ -13,7 +13,7 @@ RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  10;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 
 
 %% set model timing

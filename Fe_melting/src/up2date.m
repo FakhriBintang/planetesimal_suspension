@@ -20,14 +20,6 @@ MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
 MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
 MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil; 
 
-% figure(200); if iter==0; clf; end
-% subplot(6,1,1); plot(iter,mean(mean(SOL.T(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-% subplot(6,1,2); plot(iter,mean(mean(CHM.xFe(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-% subplot(6,1,3); plot(iter,mean(mean(CHM.cFe(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-% subplot(6,1,4); plot(iter,mean(mean(CHM.cSi(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-% subplot(6,1,5); plot(iter,mean(mean(CHM.fFel(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-% subplot(6,1,6); plot(iter,mean(mean(CHM.fSil(2:end-1,2:end-1))),'k.','MarkerSize',20); axis tight; hold on;
-
 
 %% update viscosity
 % get pure phase densities
@@ -135,7 +127,10 @@ dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);Us
 dtdiff = (NUM.h/2)^2/max(MAT.kT(:)./MAT.rhoCp(:));                         % stable time step for T diffusion
 
 NUM.dt = min(NUM.CFL * min(dtdiff,dtadvn),dtmax);                          % fraction of minimum stable time step
-if dtdiff<dtadvn
+
+if NUM.dt==dtmax
+    dtlimit = 'max step limited';
+elseif dtdiff<dtadvn
     dtlimit = 'diffusion limited';
 else
     dtlimit = 'advection limited';

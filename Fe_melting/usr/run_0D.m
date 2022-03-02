@@ -6,7 +6,7 @@ clear; close all
 RUN.ID          =  'test_0D';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  1;                    % switch on to save output files
-RUN.nop         =  10;                   % output every 'nop' grid steps of transport
+RUN.nop         =  100;                  % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
 
@@ -17,13 +17,13 @@ NUM.maxstep     =  1e4;                  % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  100*NUM.yr;           % (initial) time step [s]
+NUM.dt          =  20*NUM.yr;           % (initial) time step [s]
 
 
 %% set model domain
 NUM.D           =  1000;                 % domain depth
 NUM.L           =  1000;                 % domain length
-NUM.N           =  1;                   % number of real x block nodes
+NUM.N           =  1;                    % number of real x block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
@@ -58,12 +58,12 @@ CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
-CHM.dEntrFe = 300;                       % iron entropy of melting
+CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1000;                     % reference/top potential temperature [C]
-SOL.T1      =  1000;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  800;                      % reference/top potential temperature [C]
+SOL.T1      =  800;                      % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -139,10 +139,10 @@ NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = For
 NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 50*NUM.yr; % maximum time step
+dtmax           = 20*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.80;     % iterative lagging parameters
+alpha           = 0.75;     % iterative lagging parameters
 
 
 %% start model
