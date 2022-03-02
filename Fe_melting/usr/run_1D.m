@@ -8,7 +8,7 @@ RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  1;                    % switch on to save output files
 RUN.nop         =  10;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
 
 
 %% set model timing
@@ -34,7 +34,7 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 % set initial system and component fractions
 CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.50;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
@@ -62,7 +62,7 @@ CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1075;                     % reference/top potential temperature [C]
+SOL.T0      =  900;                      % reference/top potential temperature [C]
 SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
@@ -120,7 +120,7 @@ PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-SOL.BCTTop      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTTop      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
@@ -134,15 +134,15 @@ SOL.BCbot       = -1;                     % bottom boundary
 % advection scheme
 NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 0.05*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
-etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.75;     % iterative lagging parameters
+etamax          = 1e15;     % maximum viscosity for stabilisation
+alpha           = 0.80;     % iterative lagging parameters
 
 
 %% start model

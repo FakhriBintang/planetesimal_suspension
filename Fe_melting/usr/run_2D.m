@@ -17,7 +17,7 @@ NUM.maxstep     =  1e4;                  % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  0.01*NUM.yr;          % (initial) time step [s]
+NUM.dt          =  0.1*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
@@ -34,12 +34,12 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 % set initial system and component fractions
 CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.50;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  1e-5;                 % amplitude of initial random perturbation to iron system
-dcFe            = -1e-6;                 % amplitude of initial random perturbation to iron component
-dcSi            = -1e-6;                 % amplitude of initial random perturbation to silicate component
+dxFe            =  1e-2;                 % amplitude of initial random perturbation to iron system
+dcFe            = -1e-3;                 % amplitude of initial random perturbation to iron component
+dcSi            = -1e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -59,10 +59,10 @@ CHM.PhDgFe  = 5.0;                       % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 200;                       % iron entropy of melting
-CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
+CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1075;                     % reference/top potential temperature [C]
+SOL.T0      =  900;                      % reference/top potential temperature [C]
 SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
@@ -136,13 +136,13 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 0.01*NUM.yr; % maximum time step
+NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 10;       % maximum iteration count
+dtmax           = 0.1*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
-etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.75;     % iterative lagging parameters
+etamax          = 1e15;     % maximum viscosity for stabilisation
+alpha           = 0.80;     % iterative lagging parameters
 
 
 %% start model
