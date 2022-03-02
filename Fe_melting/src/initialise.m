@@ -85,7 +85,7 @@ SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
 pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
 switch SOL.Ttype
     case 'constant'     % constant temperature
-        SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1;
+        SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1 + (SOL.T0-SOL.T1).*exp(-NUM.ZP./(3*NUM.h));
         SOL.T(1,:) = SOL.T0;
     case 'linear'       % linear temperature gradient with depth
         SOL.T      = SOL.T0 + abs(NUM.ZP+pert)./NUM.D.*(SOL.T1-SOL.T0);
