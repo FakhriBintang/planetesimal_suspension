@@ -370,12 +370,13 @@ if RUN.plot
     plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CClSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CHM.cSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.k', CHM.csSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.b', CHM.clSi(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.r','MarkerSize',15)
-    
+    xlabel('Si [wt]'); ylabel('T [^\circC]')
+
     subplot(1,2,2)
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; hold on; box on;
     plot(CHM.cFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.k', CHM.csFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.b', CHM.clFe(2:end-1,2:end-1),SOL.T(2:end-1,2:end-1), '.r','MarkerSize',15)
-    
+    xlabel('Fe [wt]'); ylabel('T [^\circC]')
     drawnow;
     
     
