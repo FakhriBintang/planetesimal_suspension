@@ -14,7 +14,7 @@ RUN.diseq       =  0;                    % switch to disequilibrium approach to 
 %% set model timing
 NUM.yr          =  3600*24*365.25;       % seconds per year
 NUM.maxstep     =  1e4;                  % maximum number of time steps
-NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
+NUM.tend        =  1.5e5*NUM.yr;         % model stopping time [s]
 
 % [do not modify]
 NUM.dt          =  20*NUM.yr;           % (initial) time step [s]
@@ -136,8 +136,8 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
+NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 20*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation

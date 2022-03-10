@@ -26,13 +26,13 @@ if NUM.step>0
     %apply boundaries
     switch SOL.BCTTop
         case 'isothermal'
-            SOL.H(1,:)  =  SOL.T0.*(MAT.rhoDs(1,:) + MAT.rhoCp(1,:));
+            SOL.H(1,:)  =  2*SOL.T0.*(MAT.rhoDs(1,:) + MAT.rhoCp(1,:)) - SOL.H(2,:);
         case 'insulating'
             SOL.H(1,:)  =  SOL.H(2,:);
     end
     switch SOL.BCTBot
         case 'isothermal'
-            SOL.H(end,:)  =  SOL.T0.*(MAT.rhoDs(end,:) + MAT.rhoCp(end,:));
+            SOL.H(end,:)  =  2*SOL.T0.*(MAT.rhoDs(end,:) + MAT.rhoCp(end,:)) - SOL.H(end-1,:);
         case 'insulating'
             SOL.H(end,:)  =  SOL.H(end-1,:);
     end    
@@ -42,17 +42,7 @@ if NUM.step>0
         case 'insulating'
             SOL.H(:,[1 end])  =  SOL.H(:,[2 end-1]);
     end 
-    %visualise changes
-    %     figure(30)
-    %     subplot(2,2,1)
-    %     imagesc(Ho); colorbar; axis ij equal tight; title('Ho')
-    %     subplot(2,2,2)
-    %     imagesc(SOL.H); colorbar; axis ij equal tight; title('H')
-    %     subplot(2,2,3)
-    %     imagesc(SOL.H-Ho); colorbar; axis ij equal tight; title('dH')
-    %     subplot(2,2,4)
-    %     imagesc(dHdt); colorbar; axis ij equal tight; title('dH/dt')
-    %     drawnow
+
 end
 
 

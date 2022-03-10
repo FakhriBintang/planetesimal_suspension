@@ -126,7 +126,7 @@ WBG    = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.D/2 - NUM.ZW);
 dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
 dtdiff = (NUM.h/2)^2/max(MAT.kT(:)./MAT.rhoCp(:));                         % stable time step for T diffusion
 
-NUM.dt = min(NUM.CFL * min(dtdiff,dtadvn),dtmax);                          % fraction of minimum stable time step
+NUM.dt = min(min(0.75*dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
 
 if NUM.dt==dtmax
     dtlimit = 'max step limited';
