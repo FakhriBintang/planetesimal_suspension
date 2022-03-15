@@ -156,6 +156,11 @@ CHM.GFe = 0.*CHM.fFel;
 CHM.GSi = 0.*CHM.fSil;
 
 
+%% initialise radioactive decay (make sure to cleanp)
+
+
+
+
 %% setup deformation property arrays
 DEF.ups = zeros(NUM.nzP,NUM.nxP);               % velocity divergence on centre nodes
 DEF.exx = zeros(NUM.nzP,NUM.nxP);               % x-normal strain rate on centre nodes

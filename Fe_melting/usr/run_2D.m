@@ -3,9 +3,9 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  'test_2D';            % run identifier
+RUN.ID          =  'cold_2D';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
-RUN.save        =  1;                    % switch on to save output files
+RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  20;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
@@ -60,10 +60,11 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
+% CHM.tau_r   = 100;
 
 % set temperature initial condition
-SOL.T0      =  900;                      % reference/top potential temperature [C]
-SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  750;                      % reference/top potential temperature [C]
+SOL.T1      =  850;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -138,7 +139,7 @@ NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 10;       % maximum iteration count
+NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 0.1*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation

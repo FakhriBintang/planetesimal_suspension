@@ -45,7 +45,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     resnorm   = 1e3;
     resnorm0  = resnorm;
     iter      = 0;
-    
+    tic
     % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
         
@@ -57,11 +57,13 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         % update non-linear parameters and auxiliary variables
         up2date;
         
+
+        if ~mod(iter,5) || iter ==0
         % solve fluid-mechanics equations
         solve_fluidmech;
-        
         % update non-linear parameters and auxiliary variables
         up2date;
+        end
         
         if ~RUN.bnchm
             resnorm = resnorm_TC + resnorm_VP;
@@ -77,7 +79,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         
         iter = iter+1;
     end
-
+toc
     % update mass and energy errors
     history;
     
