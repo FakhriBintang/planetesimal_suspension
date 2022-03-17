@@ -9,7 +9,8 @@ RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  20;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
-
+%temporary
+RUN.rad         =  0; %radiogenic heating
 
 %% set model timing
 NUM.yr          =  3600*24*365.25;       % seconds per year

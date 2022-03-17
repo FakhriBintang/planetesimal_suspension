@@ -40,6 +40,10 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     dfFedto   = dfFedt;
     dfSidto   = dfSidt;
     Pto       = SOL.Pt;
+
+    % temp for radioactive decay
+    NAlo = NAl;
+    dNdto = dNdt;
     
     % reset residuals and iteration count
     resnorm   = 1e3;
@@ -53,7 +57,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         
         % solve thermo-chemical equations
         solve_thermochem;
-        
+        if RUN.rad; radioactive_decay; end
+     
         % update non-linear parameters and auxiliary variables
         up2date;
         
@@ -82,9 +87,14 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 toc
     % update mass and energy errors
     history;
+    %temporary
+    HIST.Hr = [HIST.Hr mean(MAT.Hr(:))];
+
     
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;   
+            %temp
+    figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
     end
     
     % increment time

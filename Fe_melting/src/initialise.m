@@ -63,8 +63,7 @@ rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
 PHY.gxP = zeros(NUM.nzP,NUM.nxP) + PHY.gx;      PHY.gzP = zeros(NUM.nzP,NUM.nxP) + PHY.gz;
 PHY.gx  = zeros(NUM.nzU,NUM.nxU) + PHY.gx;      PHY.gz  = zeros(NUM.nzW,NUM.nxW) + PHY.gz;
 
-% radiogenic heating
-MAT.Hr	= zeros(NUM.nzP,NUM.nxP) + PHY.Hr0;         
+      
 
 
 %% setup velocity-pressure solution arrays
@@ -156,7 +155,17 @@ CHM.GFe = 0.*CHM.fFel;
 CHM.GSi = 0.*CHM.fSil;
 
 
-%% initialise radioactive decay (make sure to cleanp)
+%% initialise radioactive decay (make sure to cleanup)
+nAl     = 2.0532e23;% initial nAl per kg
+rAl0    = 5.25e-5;  % initial ratio of 26Al/27Al
+eAl     = 5e-13;    % decay energy
+NAl     = zeros(NUM.nzP,NUM.nxP); 
+NAl     = NAl + nAl*rAl0 .* mean(MAT.rho(:)); % initial NAl per m^3
+dNdt = zeros(NUM.nzP,NUM.nxP);
+
+MAT.Hr = zeros(NUM.nzP,NUM.nxP);
+HIST.Hr = 0;
+if ~RUN.rad; MAT.Hr + PHY.Hr0;  end
 
 
 

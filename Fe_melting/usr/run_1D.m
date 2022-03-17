@@ -4,12 +4,13 @@
 clear; %close all
 
 RUN.ID          =  'test_1D_cold';            % run identifier
-RUN.plot        =  10;                    % switch on to plot live output
+RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  1;                   % output every 'nop' grid steps of transport
+RUN.nop         =  10;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
-
+%temporary
+RUN.rad         =  0; %radiogenic heating
 
 %% set model timing
 NUM.yr          =  3600*24*365.25;       % seconds per year
@@ -62,7 +63,7 @@ CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  900;                      % reference/top potential temperature [C]
+SOL.T0      =  1075;                      % reference/top potential temperature [C]
 SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
@@ -110,8 +111,8 @@ PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
 PHY.kTFe        =  70;                  % Thermal conductivity [W/m/K]
 PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
-PHY.CpFes       =   800;                % Volumetric heat capacity [J/kg/K]
-PHY.CpFel       =  1000;                % melt heat capacity [J/kg/K]
+PHY.CpFes       =   900;                % Volumetric heat capacity [J/kg/K]
+PHY.CpFel       =  1200;                % melt heat capacity [J/kg/K]
 PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
 PHY.CpSil       =  1200;                % mvp  heat capacity [J/kg/K]
 
