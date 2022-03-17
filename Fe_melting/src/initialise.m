@@ -163,7 +163,7 @@ NAl     = zeros(NUM.nzP,NUM.nxP);
 NAl     = NAl + nAl*rAl0 .* mean(MAT.rho(:)); % initial NAl per m^3
 dNdt = zeros(NUM.nzP,NUM.nxP);
 
-MAT.Hr = zeros(NUM.nzP,NUM.nxP);
+MAT.Hr = zeros(NUM.nzP,NUM.nxP) + PHY.Hr0;
 HIST.Hr = 0;
 if ~RUN.rad; MAT.Hr + PHY.Hr0;  end
 

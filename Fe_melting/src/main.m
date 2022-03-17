@@ -77,9 +77,11 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
             end
             fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
             
+           
             figure(100)
             plot(iter, log10(resnorm), 'k.','MarkerSize',20); axis xy tight; box on; hold on;
             drawnow;
+            
         end
         
         iter = iter+1;
@@ -94,7 +96,9 @@ toc
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;   
             %temp
+            if RUN.rad
     figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
+            end
     end
     
     % increment time

@@ -64,8 +64,8 @@ CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
 % CHM.tau_r   = 100;
 
 % set temperature initial condition
-SOL.T0      =  750;                      % reference/top potential temperature [C]
-SOL.T1      =  850;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1000;                      % reference/top potential temperature [C]
+SOL.T1      =  1175;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
