@@ -63,7 +63,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         up2date;
         
 
-        if ~mod(iter,5) || iter ==0
+        if ~mod(iter,2) || iter ==0
         % solve fluid-mechanics equations
         solve_fluidmech;
         % update non-linear parameters and auxiliary variables
