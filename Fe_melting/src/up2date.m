@@ -76,25 +76,16 @@ segFes      = ((MAT.rhoFes(1:end-1,:) + MAT.rhoFes(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
     .*((Ksgr_x    (1:end-1,:) + Ksgr_x    (2:end,:))/2)  .*  PHY.gz; % iron particle settling speed
 
-segFes(2:end-1,2:end-1)   = segFes(2:end-1,2:end-1) + diff(segFes(:,2:end-1),2,1)./8 + diff(segFes(2:end-1,:),2,2)./8;
-segFes([1 end],:) = 0;
-segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
 
 segSil      = ((MAT.rhoSil(1:end-1,:) + MAT.rhoSil(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
     .*((Ksgr_m    (1:end-1,:) + Ksgr_m    (2:end,:))/2)  .*  PHY.gz; % silicate particle settling speed
 
-segSil(2:end-1,2:end-1)   = segSil(2:end-1,2:end-1) + diff(segSil(:,2:end-1),2,1)./8 + diff(segSil(2:end-1,:),2,2)./8;
-segSil([1 end],:) = 0;
-segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
 
 segFel      = ((MAT.rhoFel(1:end-1,:) + MAT.rhoFel(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
     .*((Ksgr_f    (1:end-1,:) + Ksgr_f    (2:end,:))/2)  .*  PHY.gz; % iron particle settling speed
 
-segFel(2:end-1,2:end-1)   = segFel(2:end-1,2:end-1) + diff(segFel(:,2:end-1),2,1)./8 + diff(segFel(2:end-1,:),2,2)./8;
-segFel([1 end],:) = 0;
-segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
 for nsmooth = 1:20
     segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
