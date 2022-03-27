@@ -63,8 +63,8 @@ CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1075;                      % reference/top potential temperature [C]
-SOL.T1      =  1075;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1300;                      % reference/top potential temperature [C]
+SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
