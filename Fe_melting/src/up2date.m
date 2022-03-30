@@ -31,7 +31,7 @@ etaFel = zeros(size(MAT.phiFel)) + PHY.EtaFel0;
 kv = permute(cat(3,etas,etaSil,etaFel),[3,1,2]);
 Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
  
-ff = max(1e-16,permute(cat(3,MAT.phiSis+MAT.phiFes,MAT.phiSil,MAT.phiFel),[3,1,2]));
+ff = max(1e-6,min(1-1e-6,permute(cat(3,MAT.phiSis+MAT.phiFes,MAT.phiSil,MAT.phiFel),[3,1,2])));
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
 Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
 Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
@@ -48,9 +48,9 @@ MAT.Eta  = max(etamin,min(etamax,MAT.Eta));                                % lim
 MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
          +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
 
-Ksgr_x   = max(1e-18,min(1e-6,(MAT.phiSis+MAT.phiFes)./squeeze(Cv(1,:,:))));
-Ksgr_m   = max(1e-18,min(1e-6, MAT.phiSil            ./squeeze(Cv(2,:,:))));
-Ksgr_f   = max(1e-18,min(1e-6, MAT.phiFel            ./squeeze(Cv(3,:,:))));
+Ksgr_x   = max(1e-15,min(1e-6,(MAT.phiSis+MAT.phiFes)./squeeze(Cv(1,:,:))));
+Ksgr_m   = max(1e-15,min(1e-6, MAT.phiSil            ./squeeze(Cv(2,:,:))));
+Ksgr_f   = max(1e-15,min(1e-6, MAT.phiFel            ./squeeze(Cv(3,:,:))));
 
 
 %% other bulk thermochemical properties
