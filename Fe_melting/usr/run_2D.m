@@ -5,7 +5,7 @@ clear; close all
 
 RUN.ID          =  'thickcooling 1300';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
-RUN.save        =  1;                    % switch on to save output files
+RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
@@ -35,12 +35,12 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 % set initial system and component fractions
 CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.47;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  0; %1e-2;                 % amplitude of initial random perturbation to iron system
-dcFe            = 0; %-1e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            = 0; %-1e-3;                 % amplitude of initial random perturbation to silicate component
+dxFe            =  1e-3;                 % amplitude of initial random perturbation to iron system
+dcFe            = -1e-3;                 % amplitude of initial random perturbation to iron component
+dcSi            = -1e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -64,8 +64,8 @@ CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
 % CHM.tau_r   = 100;
 
 % set temperature initial condition
-SOL.T0      =  800;                      % reference/top potential temperature [C]
-SOL.T1      =  1250;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  850;                      % reference/top potential temperature [C]
+SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -122,7 +122,7 @@ PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-SOL.BCTTop      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTTop      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
