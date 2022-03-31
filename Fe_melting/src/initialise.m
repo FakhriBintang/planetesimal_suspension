@@ -82,9 +82,17 @@ SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
 %% set initial condition on thermochemical fields
 % temperature
 pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
+% temporary, set theral distribution parameters. Switch to run scripts
+% later
+zlay     =  0.05;                 % layer thickness (relative to domain depth D)
+wlay_T   =  0.1;                % thickness of smooth layer boundary (relative to domain depth D)
+% wlay_c   =  2*NUM.h/NUM.D;       % thickness of smooth layer boundary (relative to domain depth D)
+
+
 switch SOL.Ttype
     case 'constant'     % constant temperature
-        SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1 + (SOL.T0-SOL.T1).*exp(-NUM.ZP./(10*NUM.h));
+%         SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1 + (SOL.T0-SOL.T1).*exp(-NUM.ZP./(10*NUM.h));
+        SOL.T      = SOL.T0 + (SOL.T1-SOL.T0) .* (1+erf((NUM.ZP/NUM.D-zlay)/wlay_T))/2; % + dT.*rp;
         SOL.T(1,:) = SOL.T0;
     case 'linear'       % linear temperature gradient with depth
         SOL.T      = SOL.T0 + abs(NUM.ZP+pert)./NUM.D.*(SOL.T1-SOL.T0);

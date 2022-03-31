@@ -63,8 +63,8 @@ CHM.dEntrFe = 200;                       % iron entropy of melting
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1300;                      % reference/top potential temperature [C]
-SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  900;                      % reference/top potential temperature [C]
+SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -144,7 +144,7 @@ dtmax           = 0.05*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.80;     % iterative lagging parameters
-
+nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 %% start model
 % create output directory

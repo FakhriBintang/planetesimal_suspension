@@ -3,10 +3,10 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  'cold_2D';            % run identifier
+RUN.ID          =  'thickcooling 1300';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
-RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  20;                   % output every 'nop' grid steps of transport
+RUN.save        =  1;                    % switch on to save output files
+RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -35,12 +35,12 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 % set initial system and component fractions
 CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  1e-2;                 % amplitude of initial random perturbation to iron system
-dcFe            = -1e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            = -1e-3;                 % amplitude of initial random perturbation to silicate component
+dxFe            =  0; %1e-2;                 % amplitude of initial random perturbation to iron system
+dcFe            = 0; %-1e-3;                 % amplitude of initial random perturbation to iron component
+dcSi            = 0; %-1e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -48,7 +48,7 @@ smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random pert
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
 CHM.TSi1    = 750;  CHM.TSi2    = 1750;  % silicate system melting limits
 CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
-CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
+CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.32;  % iron system limits
 CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
 CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
 CHM.perTSi  = 1100;                      % silicate peritectic temperature
@@ -64,8 +64,8 @@ CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
 % CHM.tau_r   = 100;
 
 % set temperature initial condition
-SOL.T0      =  1000;                      % reference/top potential temperature [C]
-SOL.T1      =  1175;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  800;                      % reference/top potential temperature [C]
+SOL.T1      =  1250;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -145,6 +145,7 @@ dtmax           = 0.1*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.80;     % iterative lagging parameters
+nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 
 %% start model

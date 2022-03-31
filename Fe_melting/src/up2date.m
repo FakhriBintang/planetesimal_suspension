@@ -87,7 +87,7 @@ segFel      = ((MAT.rhoFel(1:end-1,:) + MAT.rhoFel(2:end,:))/2 ...
     .*((Ksgr_f    (1:end-1,:) + Ksgr_f    (2:end,:))/2)  .*  PHY.gz; % iron particle settling speed
 
 
-for nsmooth = 1:20
+for nsmooth = 1:nvsmooth
     segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
     segSis([1 end],:) = 0;
     segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
