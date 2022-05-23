@@ -33,12 +33,12 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
+CHM.xFe0        =  0.0;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.485;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  1e-3;                 % amplitude of initial random perturbation to iron system
+dxFe            =  0; %1e-6;                 % amplitude of initial random perturbation to iron system
 dcFe            = -1e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            = -1e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
@@ -64,8 +64,8 @@ CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
 % CHM.tau_r   = 100;
 
 % set temperature initial condition
-SOL.T0      =  850;                      % reference/top potential temperature [C]
-SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1300;                      % reference/top potential temperature [C]
+SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -90,7 +90,7 @@ PHY.gz          =  0.1;                  % z-gravity
 PHY.gx          =  0;               	 % x-gravity
 
 % rheology parameters
-PHY.EtaSil0     =  1e3;                  % reference silicate melt viscosity [Pas]
+PHY.EtaSil0     =  1e2;                  % reference silicate melt viscosity [Pas]
 PHY.EtaFel0     =  1.0;                  % reference metal melt viscosity [Pas]
 PHY.EtaSol0     =  1e15;                 % reference silicate/iron crystal viscosity
 Em              =  150e3;                % activation energy melt viscosity [J/mol]
@@ -122,7 +122,7 @@ PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-SOL.BCTTop      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTTop      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
@@ -142,7 +142,7 @@ NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iteration
 NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 0.1*NUM.yr; % maximum time step
-etamin          = 1e2;      % minimum viscosity for stabilisation
+etamin          = 1e3;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.80;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal

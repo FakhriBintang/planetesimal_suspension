@@ -52,11 +52,11 @@ CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
 CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
 CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
 CHM.perTSi  = 1100;                      % silicate peritectic temperature
-CHM.PhDgSi  = 5.0;                       % silicate phase diagram curvature factor (> 1)
+CHM.PhDgSi  = [7.0,4.2,1.0,0.93];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
-CHM.PhDgFe  = 5.5;                       % iron hase diagram curvature factor (> 1)
+CHM.PhDgFe  = [5.5,5.5,5.5,5.5];                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 CHM.dEntrSi = 300;                       % silicate entropy of melting
 CHM.dEntrFe = 200;                       % iron entropy of melting

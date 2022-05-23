@@ -2,3 +2,10 @@
 *.asv
 *.asv
 *.asv
+*.txt
+*.melts
+*.numbers
+*.csv
+Fe_melting/cal/Javoy2010/lowerphsloop2/BSE.run
+*.run
+*.fig

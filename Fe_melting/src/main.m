@@ -49,7 +49,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     resnorm   = 1e3;
     resnorm0  = resnorm;
     iter      = 0;
-    tic
+    
     % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
         
@@ -86,7 +86,14 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         
         iter = iter+1;
     end
-toc
+
+
+    % calculate rayleigh number
+    Ray = (NUM.D^3)*(max(MAT.rhoFes(:))-min(MAT.rho(:)))*0.1/mean(MAT.Eta(:))/(mean(mean(MAT.kT./MAT.rho./MAT.rhoCp)));
+    if Ray>1e7 
+        disp(['WARNING: Rayleigh Number too high, log10(Ra) = ', num2str(log10(Ray))])
+    end
+
     % update mass and energy errors
     history;
     %temporary
