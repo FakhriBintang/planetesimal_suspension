@@ -364,7 +364,7 @@ if RUN.plot
     
     TT2 = linspace(CHM.TFe1,CHM.TFe2,1000);
     cc2 = linspace(CHM.cphsFe2,CHM.cphsFe1,length(TT2));
-    [~,CCxFe,CClFe] = equilibrium(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+    [~,CCxFe,CClFe] = equilibrium_single(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
                                   CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
     subplot(1,2,1)
     plot(CCxSi,TT,'k-','LineWidth',2); axis tight; hold on; box on;

@@ -4,7 +4,7 @@ addpath('../src'); close all;
 runID     = 'Phsdg3';     % run ID for output files; [system name_wt.% SiO2_wt.% H2O]
 holdfig   = 0;                           % set to 1 to hold figures, to 0 for new figures
 linestyle = '-';                         % set line style for plots
-save_plot = 1;                           % turn on (1) to save output file in /out directory
+save_plot = 0;                           % turn on (1) to save output file in /out directory
 
 %% load data
 % Load MELTS tables in csv format

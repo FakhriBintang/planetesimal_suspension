@@ -52,7 +52,7 @@ CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.32;  % iron system limits
 CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
 CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
 CHM.perTSi  = 1100;                      % silicate peritectic temperature
-CHM.PhDgSi  = 5.0;                       % silicate phase diagram curvature factor (> 1)
+CHM.PhDgSi  = [7.0,4.2,1.0,0.93];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
