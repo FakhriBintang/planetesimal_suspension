@@ -149,12 +149,10 @@ while res > tol
 
 end
 
-MAT.rhoCp = (MAT.rho.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...  % mixture sensible heat capacity density
-          +  MAT.rho.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
-MAT.rhoDs = (MAT.rho.*CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrSi)...        % mixture latent heat capacity density
-          +  MAT.rho.*CHM.xSi.*(CHM.fSis.*0 + CHM.fSil.*CHM.dEntrSi));
+MAT.Ds    = (CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrSi)...        % mixture latent heat capacity density
+          +  CHM.xSi.*(CHM.fSis.*0 + CHM.fSil.*CHM.dEntrSi));
     
-SOL.H   = SOL.T.*(MAT.rhoDs + MAT.rhoCp);                                  % mixture enthalpy density
+SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                                  % mixture enthalpy density
 CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
 CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density

@@ -7,10 +7,10 @@ fSili = CHM.fSil;
 
 
 %% update enthalpy and Temperature
-advn_H  = advection(MAT.rho.*CHM.xSi.*CHM.fSis.*SOL.T.* PHY.CpSis               ,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        + advection(MAT.rho.*CHM.xFe.*CHM.fFes.*SOL.T.* PHY.CpFes               ,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        + advection(MAT.rho.*CHM.xSi.*CHM.fSil.*SOL.T.*(PHY.CpSil + CHM.dEntrSi),UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        + advection(MAT.rho.*CHM.xFe.*CHM.fFel.*SOL.T.*(PHY.CpFel + CHM.dEntrFe),UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
+advn_H  = advection(MAT.rho.*CHM.xSi.*CHM.fSis.*SOL.T.* PHY.Cp               ,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+        + advection(MAT.rho.*CHM.xFe.*CHM.fFes.*SOL.T.* PHY.Cp               ,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
+        + advection(MAT.rho.*CHM.xSi.*CHM.fSil.*SOL.T.*(PHY.Cp + CHM.dEntrSi),UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+        + advection(MAT.rho.*CHM.xFe.*CHM.fFel.*SOL.T.*(PHY.Cp + CHM.dEntrFe),UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
 
 qTz    = - (MAT.kT(1:end-1,:)+MAT.kT(2:end,:))./2 .* ddz(SOL.T,NUM.h);     % heat diffusion z-flux
 qTx    = - (MAT.kT(:,1:end-1)+MAT.kT(:,2:end))./2 .* ddx(SOL.T,NUM.h);     % heat diffusion x-flux
@@ -26,19 +26,19 @@ if NUM.step>0
     %apply boundaries
     switch SOL.BCTTop
         case 'isothermal'
-            SOL.H(1,:)  =  2*SOL.T0.*(MAT.rhoDs(1,:) + MAT.rhoCp(1,:)) - SOL.H(2,:);
+            SOL.H(1,:)      =  2*SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
         case 'insulating'
-            SOL.H(1,:)  =  SOL.H(2,:);
+            SOL.H(1,:)      =  SOL.H(2,:);
     end
     switch SOL.BCTBot
         case 'isothermal'
-            SOL.H(end,:)  =  2*SOL.T0.*(MAT.rhoDs(end,:) + MAT.rhoCp(end,:)) - SOL.H(end-1,:);
+            SOL.H(end,:)    =  2*SOL.T0.*(MAT.rho(end,:).*(MAT.rhoDs(end,:) +PHY.Cp)) - SOL.H(end-1,:);
         case 'insulating'
-            SOL.H(end,:)  =  SOL.H(end-1,:);
+            SOL.H(end,:)    =  SOL.H(end-1,:);
     end    
     switch SOL.BCTSides
         case 'isothermal'
-            SOL.H(:,[1 end])  =  SOL.T0.*(MAT.rhoDs(:,[1 end]) + MAT.rhoCp(:,[1 end]));
+            SOL.H(:,[1 end])  =  SOL.T0.*(MAT.rho(:,[1 end]).*(MAT.rhoDs(:,[1 end]) + PHY.Cp));
         case 'insulating'
             SOL.H(:,[1 end])  =  SOL.H(:,[2 end-1]);
     end 
@@ -114,9 +114,9 @@ if NUM.step>0
     CHM.xSi = 1-CHM.xFe;
     CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho;
     CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho;
-    SOL.T   = SOL.H./(MAT.rhoCp + MAT.rhoDs);
+    SOL.T   = SOL.H./(MAT.rho.*(PHY.Cp + MAT.Ds));
 else
-    SOL.H   = SOL.T.*(MAT.rhoDs + MAT.rhoCp);
+    SOL.H   = SOL.T.*(MAT.rho.*(PHY.Cp + MAT.Ds));
     CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;
     CHM.XSi = MAT.rho - CHM.XFe;
     CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;

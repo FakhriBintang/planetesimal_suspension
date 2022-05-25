@@ -58,10 +58,11 @@ Ksgr_f   = max(1e-15,min(1e-6, MAT.phiFel            ./squeeze(Cv(3,:,:))));
 % SOL.Pt      = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
 
 % update heat capacities
-MAT.rhoCp = (MAT.rho.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...  % mixture sensible heat capacity density
-          +  MAT.rho.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
-MAT.rhoDs = (MAT.rho.*CHM.xFe.*CHM.fFel.*CHM.dEntrFe...                        % mixture latent heat capacity density
-          +  MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.dEntrSi);
+% MAT.rhoCp = (MAT.rho.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...  % mixture sensible heat capacity density
+%           +  MAT.rho.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
+% MAT.rhoDs = (MAT.rho.*CHM.xFe.*CHM.fFel.*CHM.dEntrFe...                        % mixture latent heat capacity density
+%           +  MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.dEntrSi);
+MAT.Ds    =  CHM.xFe.*CHM.fFel.*CHM.dEntrFe + CHM.xSi.*CHM.fSil.*CHM.dEntrSi;   % mixture entropy
 MAT.kT    =  CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi;                            % magma thermal conductivity
 
 %% calculate stokes settling velocity
@@ -138,7 +139,7 @@ WBG    = mean(mean(VolSrc(2:end-1,2:end-1)))./2 .* (NUM.D/2 - NUM.ZW);
 
 %% update physical time step
 dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
-dtdiff = (NUM.h/2)^2/max(MAT.kT(:)./MAT.rhoCp(:));                         % stable time step for T diffusion
+dtdiff = (NUM.h/2)^2/max(MAT.kT(:)./MAT.rho(:)./PHY.Cp);                         % stable time step for T diffusion
 
 NUM.dt = min(min(0.75*dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
 
