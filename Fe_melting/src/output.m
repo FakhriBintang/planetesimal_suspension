@@ -44,7 +44,7 @@ if RUN.plot
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         xlabel('Time [yr]',TX{:},FS{:});
         
-    elseif NUM.Nx <= 10
+    elseif NUM.Nx <= 10 % 1D plots
         
         fh1 = figure(1); clf;
         subplot(1,4,1)

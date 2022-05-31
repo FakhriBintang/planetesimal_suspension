@@ -6,9 +6,9 @@ clear; close all
 RUN.ID          =  'test_1D_cold';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  10;                   % output every 'nop' grid steps of transport
+RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
 RUN.rad         =  0; %radiogenic heating
 
@@ -22,20 +22,20 @@ NUM.dt          =  0.05*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
-NUM.D           =  1000;                 % domain depth
-NUM.L           =  5;                    % domain length
+NUM.D           =  10;                 % domain depth
+% NUM.L           =  5;                    % domain length
 NUM.N           =  200;                  % number of real x block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
-
+NUM.L = NUM.h*3;
 
 %% set thermochemical parameters
 
 % set initial system and component fractions
 CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
-CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.49;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+CHM.cSi0        =  0.53;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
@@ -46,13 +46,13 @@ smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random pert
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
-CHM.TSi1    = 750;  CHM.TSi2    = 1750;  % silicate system melting limits
+CHM.TSi1    = 910;  CHM.TSi2    = 1810;  % silicate system melting limits
 CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
 CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
-CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
-CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
-CHM.perTSi  = 1100;                      % silicate peritectic temperature
-CHM.PhDgSi  = [7.0,4.2,1.0,0.93];                       % silicate phase diagram curvature factor (> 1)
+CHM.perClSi = 0.5785;                      % silicate peritectic liquidus composition [wt SiO2]
+CHM.perCsSi = 0.5079;                      % silicate peritectic solidus  composition [wt SiO2]
+CHM.perTSi  = 1189;                      % silicate peritectic temperature
+CHM.PhDgSi  = [19.925,10.168,1.006,0.93];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
@@ -107,7 +107,7 @@ CCP             =  [ 0.30, 0.30, 0.30; ...
 
 % thermochemical parameters
 PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
-PHY.kTFe        =  70;                  % Thermal conductivity [W/m/K]
+PHY.kTFe        =  7;                  % Thermal conductivity [W/m/K]
 PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
 PHY.Cp          = 1000;                 % mixture heat capacity
@@ -138,9 +138,9 @@ NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 0.05*NUM.yr; % maximum time step
-etamin          = 1e2;      % minimum viscosity for stabilisation
+NUM.maxit       = 20;       % maximum iteration count
+dtmax           = 0.5*NUM.yr; % maximum time step
+etamin          = 1e4;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.5;     % iterative lagging parameters
 nvsmooth        = 5;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal

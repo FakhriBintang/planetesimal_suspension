@@ -26,13 +26,13 @@ if NUM.step>0
     %apply boundaries
     switch SOL.BCTTop
         case 'isothermal'
-            SOL.H(1,:)      =  2*SOL.T1.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
+            SOL.H(1,:)      =  2*SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
         case 'insulating'
             SOL.H(1,:)      =  SOL.H(2,:);
     end
     switch SOL.BCTBot
         case 'isothermal'
-            SOL.H(end,:)    =  2*SOL.T0.*(MAT.rho(end,:).*(MAT.rhoDs(end,:) +PHY.Cp)) - SOL.H(end-1,:);
+            SOL.H(end,:)    =  2*SOL.T1.*(MAT.rho(end,:).*(MAT.rhoDs(end,:) +PHY.Cp)) - SOL.H(end-1,:);
         case 'insulating'
             SOL.H(end,:)    =  SOL.H(end-1,:);
     end    
