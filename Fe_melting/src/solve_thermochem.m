@@ -29,6 +29,8 @@ if NUM.step>0
             SOL.H(1,:)      =  2*SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
         case 'insulating'
             SOL.H(1,:)      =  SOL.H(2,:);
+        case 'flux'
+
     end
     switch SOL.BCTBot
         case 'isothermal'
@@ -137,14 +139,14 @@ fSilq = 1-fSisq;
 
 % update phase fractions
 if RUN.diseq
-    
+    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; 
+                   CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho;end  % explicit update of crystal fraction
     CHM.GFe = alpha.*CHM.GFe + (1-alpha).*((fFelq-CHM.fFel).*MAT.rho./max(4.*NUM.dt,CHM.tau_r));
     
     advn_fFe = advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
     
-    dfFedt   = - advn_fFe + CHM.GFe;                                       % total rate of change
-    
-    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; end  % explicit update of crystal fraction
+    dfFedt   = - advn_fFe + CHM.GFe;            
+               
     CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
     CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
     CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
@@ -155,7 +157,6 @@ if RUN.diseq
     
     dfSidt   = - advn_fSi + CHM.GSi;                                       % total rate of change
     
-    if NUM.step>0; CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho; end  % explicit update of crystal fraction
     CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
     CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
