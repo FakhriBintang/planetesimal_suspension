@@ -116,6 +116,7 @@ MAT.rho = CHM.xFe.*PHY.rhoFes + CHM.xSi.*PHY.rhoSis;
 
 res = 1e3;
 tol = 1e-16;
+it = 0;
 while res > tol
     
     rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
@@ -140,14 +141,16 @@ while res > tol
         + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
     MAT.rho([1 end],:) = MAT.rho([2 end-1],:);  MAT.rho(:,[1 end]) = MAT.rho(:,[2 end-1]);
     
-    MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
-    MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
-    MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
-    MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
-    
     res        = rhoRef - mean(mean(MAT.rho(2:end-1,2:end-1)));
+    it = it+1;
+    disp([num2str(it), 'iter'])
 
 end
+
+MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
+MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
+MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
+MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
 
 MAT.Ds    = (CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrSi)...        % mixture latent heat capacity density
           +  CHM.xSi.*(CHM.fSis.*0 + CHM.fSil.*CHM.dEntrSi));
@@ -156,6 +159,8 @@ SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                                  % 
 CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
 CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
+CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho;
+CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho;
 
 CHM.GFe = 0.*CHM.fFel;
 CHM.GSi = 0.*CHM.fSil;
