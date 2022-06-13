@@ -19,14 +19,17 @@ diff_T(2:end-1,2:end-1) = (- ddz(qTz(:,2:end-1),NUM.h) ...                 % hea
 
 dHdt   = - advn_H + diff_T + MAT.Hr;
 
+
 if NUM.step>0
     % update solution
     SOL.H = Ho + (NUM.theta.*dHdt + (1-NUM.theta).*dHdto) .* NUM.dt;
-    
+
+
     %apply boundaries
     switch SOL.BCTTop
         case 'isothermal'
-            SOL.H(1,:)      =  2*SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
+            %SOL.H(1,:)      =  2*SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp)) - SOL.H(2,:);
+            SOL.H(1,:)      = SOL.T0.*(MAT.rho(1,:).*(MAT.Ds(1,:) +PHY.Cp));
         case 'insulating'
             SOL.H(1,:)      =  SOL.H(2,:);
         case 'flux'
@@ -34,7 +37,8 @@ if NUM.step>0
     end
     switch SOL.BCTBot
         case 'isothermal'
-            SOL.H(end,:)    =  2*SOL.T1.*(MAT.rho(end,:).*(MAT.Ds(end,:) +PHY.Cp)) - SOL.H(end-1,:);
+            %SOL.H(end,:)    =  2*SOL.T1.*(MAT.rho(end,:).*(MAT.Ds(end,:) +PHY.Cp)) - SOL.H(end-1,:);
+            SOL.H(end,:)    =  SOL.T1.*(MAT.rho(end,:).*(MAT.Ds(end,:) +PHY.Cp));
         case 'insulating'
             SOL.H(end,:)    =  SOL.H(end-1,:);
     end    
@@ -125,7 +129,6 @@ else
     CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;
 end
 
-
 %% update local phase equilibrium
 [fFesq,csFeq,clFeq] = equilibrium_single(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
                                   CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
@@ -136,11 +139,12 @@ end
 fFelq = 1-fFesq;
 fSilq = 1-fSisq;
 
+% %temporary, reset transfer coefficients
+% CHM.GFe = 0; 
+% CHM.GSi = 0; 
 
 % update phase fractions
 if RUN.diseq
-    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; 
-                   CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho;end  % explicit update of crystal fraction
     CHM.GFe = alpha.*CHM.GFe + (1-alpha).*((fFelq-CHM.fFel).*MAT.rho./max(4.*NUM.dt,CHM.tau_r));
     
     advn_fFe = advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
@@ -157,6 +161,13 @@ if RUN.diseq
     
     dfSidt   = - advn_fSi + CHM.GSi;                                       % total rate of change
     
+    if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; 
+                   CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho;end  % explicit update of crystal fraction
+
+    CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
+    CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
+    CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
+
     CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
     CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
@@ -175,11 +186,11 @@ else
 end
 
 % update phase compositions
-KcFe = csFeq./clFeq;
+KcFe = csFeq./clFeq;                                % calculate partition coefficient
 CHM.clFe = CHM.cFe./(CHM.fFel + CHM.fFes.*KcFe);
 CHM.csFe = CHM.cFe./(CHM.fFel./KcFe + CHM.fFes);
 
-KcSi = csSiq./clSiq;
+KcSi = csSiq./clSiq;                                % calculate partition coefficient
 CHM.clSi = CHM.cSi./(CHM.fSil + CHM.fSis.*KcSi);
 CHM.csSi = CHM.cSi./(CHM.fSil./KcSi + CHM.fSis);
 
