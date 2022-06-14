@@ -37,14 +37,18 @@ if NUM.step>0
     end
     switch SOL.BCTBot
         case 'isothermal'
+<<<<<<< HEAD
             %SOL.H(end,:)    =  2*SOL.T1.*(MAT.rho(end,:).*(MAT.Ds(end,:) +PHY.Cp)) - SOL.H(end-1,:);
             SOL.H(end,:)    =  SOL.T1.*(MAT.rho(end,:).*(MAT.Ds(end,:) +PHY.Cp));
+=======
+            SOL.H(end,:)    =  2*SOL.T1.*(MAT.rho(end,:).*(MAT.rhoDs(end,:) +PHY.Cp)) - SOL.H(end-1,:);
+>>>>>>> parent of 9c95996 (minor: corrected terminology of variables for enropy)
         case 'insulating'
             SOL.H(end,:)    =  SOL.H(end-1,:);
     end    
     switch SOL.BCTSides
         case 'isothermal'
-            SOL.H(:,[1 end])  =  SOL.T0.*(MAT.rho(:,[1 end]).*(MAT.Ds(:,[1 end]) + PHY.Cp));
+            SOL.H(:,[1 end])  =  SOL.T0.*(MAT.rho(:,[1 end]).*(MAT.rhoDs(:,[1 end]) + PHY.Cp));
         case 'insulating'
             SOL.H(:,[1 end])  =  SOL.H(:,[2 end-1]);
     end 
