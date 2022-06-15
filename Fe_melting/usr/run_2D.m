@@ -22,8 +22,8 @@ NUM.dt          =  0.1*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
-NUM.D           =  1000;                 % domain depth
-NUM.L           =  1000;                 % domain length
+NUM.D           =  100;                 % domain depth
+NUM.L           =  100;                 % domain length
 NUM.N           =  150;                  % number of real x block nodes
 
 % [do not modify]
@@ -33,45 +33,42 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0.0;                 % Fe-FeS system fraction
-CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.485;                 % Si system fertile component fraction [wt% SiO2]
+CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
+CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+CHM.cSi0        =  0.53;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            =  0; %1e-6;                 % amplitude of initial random perturbation to iron system
-dcFe            = -1e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            = -1e-3;                 % amplitude of initial random perturbation to silicate component
+dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
+dcFe            =  0.1e-3;                 % amplitude of initial random perturbation to iron component
+dcSi            =  0.1e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
-CHM.TSi1    = 750;  CHM.TSi2    = 1750;  % silicate system melting limits
+CHM.TSi1    = 910;  CHM.TSi2    = 1810;  % silicate system melting limits
 CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
-CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.32;  % iron system limits
-CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
-CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
-CHM.perTSi  = 1100;                      % silicate peritectic temperature
-CHM.PhDgSi  = [7.0,4.2,1.0,0.93];                       % silicate phase diagram curvature factor (> 1)
+CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
+CHM.perClSi = 0.5785;                      % silicate peritectic liquidus composition [wt SiO2]
+CHM.perCsSi = 0.5079;                      % silicate peritectic solidus  composition [wt SiO2]
+CHM.perTSi  = 1189;                      % silicate peritectic temperature
+CHM.PhDgSi  = [19.925,10.168,1.006,0.93];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.5;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
-CHM.dEntrSi = 300;                       % silicate entropy of melting
-CHM.dEntrFe = 200;                       % iron entropy of melting
-CHM.tau_r   = 0.1*NUM.yr;                % reaction time scale [s]
-% CHM.tau_r   = 100;
+
+CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1300;                      % reference/top potential temperature [C]
-SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1000;                      % reference/top potential temperature [C]
+SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
 
 SOL.Ttype   = 'constant';                % set initial temperature field type
-
 
 %% set material parameters
 % buoyancy parameters
@@ -112,10 +109,10 @@ PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
 PHY.kTFe        =  70;                  % Thermal conductivity [W/m/K]
 PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
-PHY.CpFes       =   800;                % Volumetric heat capacity [J/kg/K]
-PHY.CpFel       =  1000;                % melt heat capacity [J/kg/K]
-PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
-PHY.CpSil       =  1200;                % mvp  heat capacity [J/kg/K]
+PHY.Cp          = 1000;                 % mixture heat capacity
+
+CHM.dEntrSi = 300;                      % silicate entropy of melting
+CHM.dEntrFe = 200;                      % iron entropy of melting
 
 PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
@@ -141,7 +138,7 @@ NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = For
 NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 0.1*NUM.yr; % maximum time step
+dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e3;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.80;     % iterative lagging parameters

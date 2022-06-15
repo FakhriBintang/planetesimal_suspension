@@ -1,12 +1,12 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear;% close all
+clear%; close all
 
-RUN.ID          =  '1D_coolingSi_allvseg';            % run identifier
+RUN.ID          =  'test_1D_cold';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  100;                   % output every 'nop' grid steps of transport
+RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -33,7 +33,7 @@ NUM.L = NUM.h*3;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0;                 % Fe-FeS system fraction
+CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 CHM.cSi0        =  0.53;                 % Si system fertile component fraction [wt% SiO2]
 
@@ -59,7 +59,7 @@ CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.5;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
-CHM.tau_r   = 1e-4*NUM.yr;                % reaction time scale [s]
+CHM.tau_r   = 0.5e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
 SOL.T0      =  1000;                      % reference/top potential temperature [C]
@@ -84,7 +84,7 @@ PHY.aTFe        =  1e-5;                 % thermal expansivity iron [1/K]
 PHY.dx          =  1e-3;                 % solid grain size [m]
 PHY.df          =  1e-3;                 % metal droplet size [m]
 PHY.dm          =  1e-3;                 % melt film size [m]
-PHY.gz          =  10;                  % z-gravity
+PHY.gz          =  0.1;                  % z-gravity
 PHY.gx          =  0;               	 % x-gravity
 
 % rheology parameters
@@ -112,8 +112,8 @@ PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
 PHY.Cp          = 1000;                 % mixture heat capacity
 
-CHM.dEntrSi = 300;                      % silicate entropy of melting [J/mol/K]
-CHM.dEntrFe =-200;                      % iron entropy of melting
+CHM.dEntrSi = 300;                      % silicate entropy of melting
+CHM.dEntrFe = 200;                      % iron entropy of melting
 
 PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
@@ -121,7 +121,7 @@ PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 %% set boundary conditions
 % Temperature boundary conditions
 SOL.BCTTop      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
-SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTBot      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
@@ -134,16 +134,16 @@ SOL.BCbot       = -1;                     % bottom boundary
 % advection scheme
 NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 0.5;   	% Courant number to limit physical time step
+NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 20;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
-etamin          = 1e2;      % minimum viscosity for stabilisation
+etamin          = 1e4;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
-alpha           = 0.7;     % iterative lagging parameters
-nvsmooth        = 5;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
+alpha           = 0.5;     % iterative lagging parameters
+nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 %% start model
 % create output directory
