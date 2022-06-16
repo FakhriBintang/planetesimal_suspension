@@ -39,8 +39,8 @@ CHM.cSi0        =  0.53;                 % Si system fertile component fraction 
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
-dcFe            =  0.1e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            =  0.1e-3;                 % amplitude of initial random perturbation to silicate component
+dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
+dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -62,7 +62,7 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1000;                      % reference/top potential temperature [C]
+SOL.T0      =  1200;                      % reference/top potential temperature [C]
 SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]

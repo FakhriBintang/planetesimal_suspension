@@ -33,7 +33,7 @@ NUM.L = NUM.h*3;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
+CHM.xFe0        =  0;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 CHM.cSi0        =  0.53;                 % Si system fertile component fraction [wt% SiO2]
 
@@ -62,8 +62,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 0.5e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1000;                      % reference/top potential temperature [C]
-SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1200;                      % reference/top potential temperature [C]
+SOL.T1      =  1250;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -140,7 +140,7 @@ NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iteration
 NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 20;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
-etamin          = 1e4;      % minimum viscosity for stabilisation
+etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.5;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal

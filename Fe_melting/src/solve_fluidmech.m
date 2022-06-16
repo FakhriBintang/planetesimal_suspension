@@ -4,6 +4,7 @@ indW = NUM.MapW;
 indP = NUM.MapP-NUM.NW-NUM.NU;
 
 NW = NUM.NW; NU = NUM.NU; NP = NUM.NP;
+% profile on
 %% assemble coefficients for matrix velocity diagonal and right-hand side
 II  = [];       % equation indeces into A
 JJ  = [];       % variable indeces into A
@@ -247,6 +248,7 @@ RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
 nzp = round((NUM.nzP-2)/2)+1;
 nxp = round((NUM.nxP-2)/2)+1;
+DD(indP(nzp,nxp),:) = 0;
 KP(indP(nzp,nxp),:) = 0;
 KP(indP(nzp,nxp),indP(nzp,nxp)) = 1;
 RP(indP(nzp,nxp),:) = 0;
@@ -286,3 +288,6 @@ SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP, NUM.nxP));         % matrix dynami
 
 SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
 SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
+
+% profile report
+% profile off
