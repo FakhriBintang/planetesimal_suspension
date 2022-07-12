@@ -4,10 +4,10 @@ tic;  % start clock on update
 
 %% convert weight to volume fraction
 % update T and chemical-dependent density
-MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
-MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
-MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
-MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
+MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-CHM.perTSi) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
+MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-CHM.perTSi) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
+MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1)   - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
+MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1)   - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
 
 % update mixture density
 MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel ...
@@ -66,26 +66,27 @@ MAT.Ds    =  CHM.xFe.*CHM.fFel.*CHM.dEntrFe + CHM.xSi.*CHM.fSil.*CHM.dEntrSi;   
 MAT.kT    =  CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi;                            % magma thermal conductivity
 
 %% calculate stokes settling velocity
-sds = SOL.BCsides;      % side boundary type
+sds = SOL.BCsides;      % side boundary type 
+% also runge kutta advection time stepping
 kappaseg = 100;
 segSis      = ((MAT.rhoSis(1:end-1,:) + MAT.rhoSis(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
-    .*((Ksgr_x    (1:end-1,:) + Ksgr_x    (2:end,:))/2)  .*  PHY.gz; % silicate particle settling speed
+    .* (Ksgr_x    (1:end-1,:) .*Ksgr_x    (2:end,:)).^0.5  .*  PHY.gz; % silicate particle settling speed
 
 
 segFes      = ((MAT.rhoFes(1:end-1,:) + MAT.rhoFes(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
-    .*((Ksgr_x    (1:end-1,:) + Ksgr_x    (2:end,:))/2)  .*  PHY.gz; % iron particle settling speed
+    .* (Ksgr_x    (1:end-1,:) .*Ksgr_x    (2:end,:)).^0.5  .*  PHY.gz; % iron particle settling speed
 
 
-segSil      = (((MAT.rhoSil(1:end-1,:) + MAT.rhoSil(2:end,:))/2 ...
+segSil      = ((MAT.rhoSil(1:end-1,:) + MAT.rhoSil(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
-    .*((Ksgr_m    (1:end-1,:) + Ksgr_m    (2:end,:))/2)  .*  PHY.gz) .*0; % silicate particle settling speed
+    .* (Ksgr_m    (1:end-1,:) .*Ksgr_m    (2:end,:)).^0.5  .*  PHY.gz; % silicate particle settling speed
 
 
 segFel      = ((MAT.rhoFel(1:end-1,:) + MAT.rhoFel(2:end,:))/2 ...
     -  (MAT.rho   (1:end-1,:) + MAT.rho   (2:end,:))/2)...
-    .*((Ksgr_f    (1:end-1,:) + Ksgr_f    (2:end,:))/2)  .*  PHY.gz; % iron particle settling speed
+    .* (Ksgr_f    (1:end-1,:) .*Ksgr_f    (2:end,:)).^0.5  .*  PHY.gz; % iron particle settling speed
 
 
 for nsmooth = 1:nvsmooth
