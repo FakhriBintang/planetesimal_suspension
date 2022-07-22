@@ -63,12 +63,18 @@ if RUN.plot
         
         fh2 = figure(2); clf;
         subplot(1,4,1)
-        plot(mean(CHM.fFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title(['$f_{Fe}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(CHM.fFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.fSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        title(['$f_{j}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('Fe', 'Si')
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(CHM.fSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title(['$f_{Si}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(MAT.phiFes(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(MAT.phiFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.phiSis(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.phiSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        title(['$\phi_{j}^i$ [vol\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
         subplot(1,4,3)
         plot(mean(CHM.GFe(2:end-1,2:end-1)./MAT.rho(2:end-1,2:end-1).*100.*NUM.yr,2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$\Gamma_{Fe}$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});

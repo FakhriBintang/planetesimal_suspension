@@ -103,12 +103,6 @@ diff_CFe = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component diffusion rate
 Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
 Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
 
-%% initialise previous solution and auxiliary fields
-rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
-Ho        = ones(NUM.Nz+2,NUM.Nx+2);
-dHdto     = dHdt;
-Div_rhoVo = Div_rhoV;
-
 % initialise counting variables
 RUN.frame = 0;      % initialise output frame count
 NUM.time  = 0;      % initialise time count
@@ -142,10 +136,11 @@ switch SOL.Ttype
 end
 
 % set initial component weight fraction [kg/kg]
-CHM.cFe = CHM.cFe0 + dcFe.*rp; % Fe component
-CHM.cSi = CHM.cSi0 + dcSi.*rp; % Si component
 CHM.xFe = CHM.xFe0 + dxFe.*rp; % Fe system
 CHM.xSi = 1 - CHM.xFe;         % Si system
+CHM.cFe = CHM.cFe0.*(CHM.xFe>0) + dcFe.*rp; % Fe component
+CHM.cSi = CHM.cSi0.*(CHM.xSi>0) + dcSi.*rp; % Si component
+
 
 % estimate mixture density from Fe/Si system fractions
 MAT.rho = CHM.xFe.*PHY.rhoFes + CHM.xSi.*PHY.rhoSis;
@@ -168,17 +163,6 @@ while res > tol
 
     up2date;
     
-%     % update T and chemical-dependent density
-%     MAT.rhoSis = PHY.rhoSis.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.csSi-CHM.cphsSi1));
-%     MAT.rhoSil = PHY.rhoSil.*(1 - PHY.aTSi.*(SOL.T-CHM.TSi1) - PHY.gCSi.*(CHM.clSi-CHM.cphsSi1));
-%     MAT.rhoFes = PHY.rhoFes.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.csFe-CHM.cphsFe1));
-%     MAT.rhoFel = PHY.rhoFel.*(1 - PHY.aTFe.*(SOL.T-CHM.TFe1) - PHY.gCFe.*(CHM.clFe-CHM.cphsFe1));
-%     
-%     % update mixture density
-%     MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel ...
-%         + CHM.xSi.*CHM.fSis./MAT.rhoSis + CHM.xSi.*CHM.fSil./MAT.rhoSil);
-%     MAT.rho([1 end],:) = MAT.rho([2 end-1],:);  MAT.rho(:,[1 end]) = MAT.rho(:,[2 end-1]);
-    
     res        = rhoRef - mean(mean(MAT.rho(2:end-1,2:end-1)));
     it = it+1;
     disp([num2str(it), 'iter'])
@@ -190,7 +174,7 @@ MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
 MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
 MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
 
-MAT.Ds    = (CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrSi)...        % mixture latent heat capacity density
+MAT.Ds    = (CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrFe)...        % mixture latent heat capacity density
           +  CHM.xSi.*(CHM.fSis.*0 + CHM.fSil.*CHM.dEntrSi));
     
 SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                                  % mixture enthalpy density
@@ -234,7 +218,3 @@ up2date;
 
 %% initialise recording of model history
 history;
-
-%% output initial condition
-% output;
-

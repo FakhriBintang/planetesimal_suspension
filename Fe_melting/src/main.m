@@ -56,7 +56,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
         
         % solve thermo-chemical equations
-        solve_thermochem;
+        solve_thermochem2;
         if RUN.rad; radioactive_decay; end
      
         % update non-linear parameters and auxiliary variables
