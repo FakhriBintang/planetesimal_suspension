@@ -103,6 +103,12 @@ diff_CFe = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component diffusion rate
 Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
 Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
 
+%% initialise previous solution and auxiliary fields
+rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
+Ho        = ones(NUM.Nz+2,NUM.Nx+2);
+dHdto     = dHdt;
+Div_rhoVo = Div_rhoV;
+
 % initialise counting variables
 RUN.frame = 0;      % initialise output frame count
 NUM.time  = 0;      % initialise time count
