@@ -3,10 +3,10 @@
 % equal grid spacing
 clear;% close all
 
-RUN.ID          =  'test_1D_cold';            % run identifier
+RUN.ID          =  'test_2D_cold';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  20;                   % output every 'nop' grid steps of transport
+RUN.nop         =  10;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -42,24 +42,23 @@ dxFe            = -0e-3;                 % amplitude of initial random perturbat
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
-
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
-CHM.TSi1    = 910;  CHM.TSi2    = 1810;  % silicate system melting limits
-CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
-CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
-CHM.perClSi = 0.5785;                      % silicate peritectic liquidus composition [wt SiO2]
-CHM.perCsSi = 0.5079;                      % silicate peritectic solidus  composition [wt SiO2]
-CHM.perTSi  = 1189;                      % silicate peritectic temperature
-CHM.PhDgSi  = [19.925,10.168,1.006,0.93];                       % silicate phase diagram curvature factor (> 1)
+CHM.TSi1    = 891;  CHM.TSi2    = 1839;  % silicate system melting limits
+CHM.cphsSi1 = 0.4080; CHM.cphsSi2 = 0.8282;  % silicate system limits
+CHM.cphsFe1 = 0     ; CHM.cphsFe2 = 0.35;  % iron system limits
+CHM.perClSi = 0.5776;                      % silicate peritectic liquidus composition [wt SiO2]
+CHM.perCsSi = 0.5006;                      % silicate peritectic solidus  composition [wt SiO2]
+CHM.perTSi  = 1193;                      % silicate peritectic temperature
+CHM.PhDgSi  = [25.9784 10.7034 0.7618 1.3523];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.5;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
-CHM.tau_r   = 0.5e-3*NUM.yr;                % reaction time scale [s]
+CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
 SOL.T0      =  1100;                      % reference/top potential temperature [C]
@@ -107,7 +106,7 @@ CCP             =  [ 0.30, 0.30, 0.30; ...
 
 % thermochemical parameters
 PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
-PHY.kTFe        =  7;                  % Thermal conductivity [W/m/K]
+PHY.kTFe        =  7;                   % Thermal conductivity [W/m/K]
 PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
 PHY.Cp          = 1000;                 % mixture heat capacity
@@ -136,14 +135,14 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
+NUM.reltol    	= 1e-5;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-8;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 20;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.7;     % iterative lagging parameters
-nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
+nvsmooth        = 15;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 %% start model
 % create output directory

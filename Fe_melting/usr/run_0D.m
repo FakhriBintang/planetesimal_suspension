@@ -3,9 +3,9 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  'test_0D';            % run identifier
+RUN.ID          =  '0D_box';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
-RUN.save        =  0;                    % switch on to save output files
+RUN.save        =  1;                    % switch on to save output files
 RUN.nop         =  100;                  % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
@@ -36,7 +36,7 @@ NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
 % set initial system and component fractions
 CHM.xFe0        =  0.20;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.20;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-CHM.cSi0        =  0.50;                 % Si system fertile component fraction [wt% SiO2]
+CHM.cSi0        =  0.52;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
@@ -47,20 +47,19 @@ smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random pert
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
-CHM.TSi1    = 750;  CHM.TSi2    = 1750;  % silicate system melting limits
-CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
-CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.32;  % iron system limits
-CHM.perClSi = 0.51;                      % silicate peritectic liquidus composition [wt SiO2]
-CHM.perCsSi = 0.48;                      % silicate peritectic solidus  composition [wt SiO2]
-CHM.perTSi  = 1100;                      % silicate peritectic temperature
-CHM.PhDgSi  = [7.0,4.2,1.0,0.93]; %5.0;                       % silicate phase diagram curvature factor (> 1)
+CHM.TSi1    = 891;  CHM.TSi2    = 1839;  % silicate system melting limits
+CHM.cphsSi1 = 0.4080; CHM.cphsSi2 = 0.8282;  % silicate system limits
+CHM.cphsFe1 = 0     ; CHM.cphsFe2 = 0.35;  % iron system limits
+CHM.perClSi = 0.5776;                      % silicate peritectic liquidus composition [wt SiO2]
+CHM.perCsSi = 0.5006;                      % silicate peritectic solidus  composition [wt SiO2]
+CHM.perTSi  = 1193;                      % silicate peritectic temperature
+CHM.PhDgSi  = [25.9784 10.7034 0.7618 1.3523];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
 CHM.PhDgFe  = 5.5;                       % iron hase diagram curvature factor (> 1)
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
-CHM.dEntrSi = 300;                       % silicate entropy of melting
-CHM.dEntrFe = 200;                       % iron entropy of melting
+
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
@@ -112,10 +111,10 @@ PHY.kTSi        =  4;                   % Thermal conductivity silicate [W/m/K]
 PHY.kTFe        =  70;                  % Thermal conductivity [W/m/K]
 PHY.kC          =  1e-7;                % chemical diffusivity [m^2/s]
 
-PHY.CpFes       =   800;                % Volumetric heat capacity [J/kg/K]
-PHY.CpFel       =  1000;                % melt heat capacity [J/kg/K]
-PHY.CpSis       =  1000;                % xtal heat capacity [J/kg/K]
-PHY.CpSil       =  1200;                % mvp  heat capacity [J/kg/K]
+CHM.dEntrSi = 300;                      % silicate entropy of melting
+CHM.dEntrFe = 200;                      % iron entropy of melting
+
+PHY.Cp          = 1000;                 % mixture heat capacity
 
 PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
@@ -138,13 +137,16 @@ NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second u
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.5;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
+NUM.reltol    	= 1e-3;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 20*NUM.yr; % maximum time step
-etamin          = 1e2;      % minimum viscosity for stabilisation
-etamax          = 1e16;     % maximum viscosity for stabilisation
-alpha           = 0.75;     % iterative lagging parameters
+dtmax           = 50*NUM.yr; % maximum time step
+etamin          = 1e3;      % minimum viscosity for stabilisation
+etamax          = 1e15;     % maximum viscosity for stabilisation
+alpha           = 0.80;     % iterative lagging parameters
+nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
+
+
 
 
 %% start model

@@ -6,7 +6,7 @@ clear; close all
 RUN.ID          =  'thickcooling 1300';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  50;                   % output every 'nop' grid steps of transport
+RUN.nop         =  5;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -22,8 +22,8 @@ NUM.dt          =  0.1*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
-NUM.D           =  100;                 % domain depth
-NUM.L           =  100;                 % domain length
+NUM.D           =  10;                 % domain depth
+NUM.L           =  10;                 % domain length
 NUM.N           =  150;                  % number of real x block nodes
 
 % [do not modify]
@@ -38,7 +38,7 @@ CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([w
 CHM.cSi0        =  0.53;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
+dxFe            = -1e-3;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random perturbation
@@ -46,13 +46,13 @@ smth            =  ((NUM.N+2)/20)^2;     % regularisation of initial random pert
 % set phase diagram parameters
 %   Fertile   ||  Refractory
 CHM.TFe1    = 1000; CHM.TFe2    = 1540;  % iron system melting limits
-CHM.TSi1    = 910;  CHM.TSi2    = 1810;  % silicate system melting limits
-CHM.cphsSi1 = 0.36; CHM.cphsSi2 = 0.72;  % silicate system limits
-CHM.cphsFe1 = 0   ; CHM.cphsFe2 = 0.35;  % iron system limits
-CHM.perClSi = 0.5785;                      % silicate peritectic liquidus composition [wt SiO2]
-CHM.perCsSi = 0.5079;                      % silicate peritectic solidus  composition [wt SiO2]
-CHM.perTSi  = 1189;                      % silicate peritectic temperature
-CHM.PhDgSi  = [19.925,10.168,1.006,0.93];                       % silicate phase diagram curvature factor (> 1)
+CHM.TSi1    = 891;  CHM.TSi2    = 1839;  % silicate system melting limits
+CHM.cphsSi1 = 0.4080; CHM.cphsSi2 = 0.8282;  % silicate system limits
+CHM.cphsFe1 = 0     ; CHM.cphsFe2 = 0.35;  % iron system limits
+CHM.perClSi = 0.5776;                      % silicate peritectic liquidus composition [wt SiO2]
+CHM.perCsSi = 0.5006;                      % silicate peritectic solidus  composition [wt SiO2]
+CHM.perTSi  = 1193;                      % silicate peritectic temperature
+CHM.PhDgSi  = [25.9784 10.7034 0.7618 1.3523];                       % silicate phase diagram curvature factor (> 1)
 CHM.perClFe = CHM.cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 CHM.perCsFe = CHM.cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 CHM.perTFe  = CHM.TFe1;                  % iron peritectic temperature
