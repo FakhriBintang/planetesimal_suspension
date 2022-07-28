@@ -3,14 +3,14 @@
 % equal grid spacing
 clear; close all
 
-RUN.ID          =  '0D_box';            % run identifier
+RUN.ID          =  '0D_Box_attempt';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  1;                    % switch on to save output files
-RUN.nop         =  100;                  % output every 'nop' grid steps of transport
+RUN.nop         =  50;                  % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
-RUN.rad         =  1; %radiogenic heating
+RUN.rad         =  0; %radiogenic heating
 
 
 %% set model timing
@@ -143,7 +143,7 @@ NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 50*NUM.yr; % maximum time step
 etamin          = 1e3;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
-alpha           = 0.80;     % iterative lagging parameters
+alpha           = 0.5;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 
