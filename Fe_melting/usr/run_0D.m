@@ -145,7 +145,8 @@ etamin          = 1e3;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.5;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
-
+% temporary - option for 3rd order runge-kutta
+RK3 = 1;
 
 
 

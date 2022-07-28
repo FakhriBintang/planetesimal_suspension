@@ -144,6 +144,9 @@ etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.7;     % iterative lagging parameters
 nvsmooth        = 15;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
+% temporary - option for 3rd order runge-kutta
+RK3 = 1;
+
 %% start model
 % create output directory
 [~,systemname] = system('hostname');

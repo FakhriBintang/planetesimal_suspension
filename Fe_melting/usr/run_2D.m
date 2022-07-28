@@ -88,7 +88,7 @@ PHY.gx          =  0;               	 % x-gravity
 
 % rheology parameters
 PHY.EtaSil0     =  1e2;                  % reference silicate melt viscosity [Pas]
-PHY.EtaFel0     =  1.0;                  % reference metal melt viscosity [Pas]
+PHY.EtaFel0     =  100;                  % reference metal melt viscosity [Pas]
 PHY.EtaSol0     =  1e15;                 % reference silicate/iron crystal viscosity
 Em              =  150e3;                % activation energy melt viscosity [J/mol]
 
@@ -143,7 +143,8 @@ etamin          = 1e3;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.80;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
-
+% temporary - option for 3rd order runge-kutta
+RK3 = 1;
 
 %% start model
 % create output directory
