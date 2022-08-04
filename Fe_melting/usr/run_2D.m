@@ -145,6 +145,7 @@ alpha           = 0.80;     % iterative lagging parameters
 nvsmooth        = 10;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 % temporary - option for 3rd order runge-kutta
 RK3 = 1;
+Siseg = 0; % multiplier to liquid silicate segregation velocity, zero or one;
 
 %% start model
 % create output directory

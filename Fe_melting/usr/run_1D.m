@@ -3,10 +3,10 @@
 % equal grid spacing
 clear;% close all
 
-RUN.ID          =  'test_2D_cold';            % run identifier
+RUN.ID          =  ['test_1_cold'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  10;                   % output every 'nop' grid steps of transport
+RUN.nop         =  100;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -61,8 +61,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1100;                      % reference/top potential temperature [C]
-SOL.T1      =  1200;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1250;                      % reference/top potential temperature [C]
+SOL.T1      =  1250;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -137,7 +137,7 @@ NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-5;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-8;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 20;       % maximum iteration count
+NUM.maxit       = 25;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
@@ -145,7 +145,8 @@ alpha           = 0.7;     % iterative lagging parameters
 nvsmooth        = 15;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
 
 % temporary - option for 3rd order runge-kutta
-RK3 = 1;
+RK3 = 0;
+Siseg = 0; % multiplier to liquid silicate segregation velocity, zero or one;
 
 %% start model
 % create output directory
