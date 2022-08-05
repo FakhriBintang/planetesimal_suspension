@@ -130,19 +130,9 @@ for RK = 1:1:3
         advn_fFe    = advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
         dfFedtRK(:,:,RK)   = - advn_fFe + CHM.GFe;
 
-        CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
-        CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
-        CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
-
         CHM.GSi     = alpha.*CHM.GSi + (1-alpha).*((fSilq-CHM.fSil).*MAT.rho.*CHM.xSi./max(4.*NUM.dt,CHM.tau_r));
         advn_fSi    = advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
         dfSidtRK(:,:,RK)   = - advn_fSi + CHM.GSi;                                       % total rate of change
-
-        CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
-        CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
-        CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
-
-        CHM.fFes = 1-CHM.fFel; CHM.fSis = 1-CHM.fSil;
 
         if NUM.step>0
             if (RK == 1)
@@ -153,6 +143,14 @@ for RK = 1:1:3
                 CHM.fSil = (XSia.*fSila + (2.*dfSidtRK(:,:,2) - dfSidtRK(:,:,1).*NUM.dt))./(CHM.xSi+TINY)./MAT.rho;
             end  % explicit update of crystal fraction
         end
+        CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
+        CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
+        CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
+        CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
+        CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
+        CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
+
+        CHM.fFes = 1-CHM.fFel; CHM.fSis = 1-CHM.fSil;
     else
         % lag equilibrium phase fractions
         CHM.fFes = alpha.*CHM.fFes + (1-alpha).*fFesq;

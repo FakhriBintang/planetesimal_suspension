@@ -144,10 +144,6 @@ if RUN.diseq
     advn_fFe = advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
     
     dfFedt   = - advn_fFe + CHM.GFe;            
-               
-    CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
-    CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
-    CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
 
     CHM.GSi = alpha.*CHM.GSi + (1-alpha).*((fSilq-CHM.fSil).*CHM.XSi./max(4.*NUM.dt,CHM.tau_r));
     
@@ -159,8 +155,13 @@ if RUN.diseq
 
     if NUM.step>0; CHM.fFel = (rhoo.*xFeo.*fFelo + (NUM.theta.*dfFedt + (1-NUM.theta).*dfFedto).*NUM.dt)./(CHM.xFe+TINY)./MAT.rho; 
                    CHM.fSil = (rhoo.*xSio.*fSilo + (NUM.theta.*dfSidt + (1-NUM.theta).*dfSidto).*NUM.dt)./(CHM.xSi+TINY)./MAT.rho;end  % explicit update of crystal fractionCHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
+    CHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
     CHM.fSil([1 end],:) = CHM.fSil([2 end-1],:);                           % apply boundary conditions
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
+
+    CHM.fFel = min(1-TINY,max(TINY,CHM.fFel));                             % enforce [0,1] limit
+    CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
+    CHM.fFel(:,[1 end]) = CHM.fFel(:,[2 end-1]);
     
     CHM.fFes = 1-CHM.fFel; CHM.fSis = 1-CHM.fSil;
 
