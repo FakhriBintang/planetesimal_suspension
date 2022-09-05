@@ -92,6 +92,7 @@ DEF.tII = zeros(NUM.nzP,NUM.nxP);               % stress magnitude on centre nod
 
 %% setup heating rates
 dHdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % enthalpy rate of change
+dSdt     = zeros(NUM.Nz+2,NUM.Nx+2);
 dXdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron system rate of change 
 dCSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component density rate of change
 dCFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component density rate of change
@@ -107,6 +108,7 @@ Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
 rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
 Ho        = ones(NUM.Nz+2,NUM.Nx+2);
 dHdto     = dHdt;
+dSdto     = dSdt;
 Div_rhoVo = Div_rhoV;
 
 % initialise counting variables
@@ -123,8 +125,7 @@ pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
 zlay     =  0.03;                 % layer thickness (relative to domain depth D)
 wlay_T   =  0.05;                % thickness of smooth layer boundary (relative to domain depth D)
 % wlay_c   =  2*NUM.h/NUM.D;       % thickness of smooth layer boundary (relative to domain depth D)
-
-
+rhoRef = PHY.rhoSil;
 switch SOL.Ttype
     case 'constant'     % constant temperature
 %         SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1 + (SOL.T0-SOL.T1).*exp(-NUM.ZP./(10*NUM.h));
@@ -149,15 +150,21 @@ CHM.cSi = CHM.cSi0.*(CHM.xSi>0) + dcSi.*rp; % Si component
 
 
 % estimate mixture density from Fe/Si system fractions
-MAT.rho = CHM.xFe.*PHY.rhoFes + CHM.xSi.*PHY.rhoSis;
+SOL.Pt = rhoRef.*PHY.gzP.*NUM.ZP + P0;
 
+% real temperature (+adiabatic)
+SOL.T = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
+
+% initialise loop
+[CHM.fFes,CHM.csFe,CHM.clFe] = equilibrium_single(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                               CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+[CHM.fSis,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+                                               CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
 res = 1e3;
-tol = 1e-16;
+tol = 1e-4;
 it = 0;
 while res > tol
-    
-    rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
-    SOL.Pt     = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P;
+    fFesi = CHM.fFes; fSisi = CHM.fSis; 
     if NUM.Nx<=10; SOL.Pt = mean(mean(SOL.Pt(2:end-1,2:end-1))).*ones(size(SOL.Pt)); end
 
     % output crystal fraction and fertile solid and liquid concentrations
@@ -169,7 +176,10 @@ while res > tol
 
     up2date;
     
-    res        = rhoRef - mean(mean(MAT.rho(2:end-1,2:end-1)));
+    rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
+    SOL.Pt     = rhoRef.*PHY.gzP.*NUM.ZP + P0;
+    SOL.T      = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
+    res  = (norm(CHM.fFes(:)-fFesi(:),2) + norm(CHM.fSis(:)-fSisi(:),2))./sqrt(2*length(CHM.fFes(:)))
     it = it+1;
     disp([num2str(it), 'iter'])
 
@@ -180,9 +190,14 @@ MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
 MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
 MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
 
-MAT.Ds    = (CHM.xFe.*(CHM.fFes.*0 + CHM.fFel.*CHM.dEntrFe)...        % mixture latent heat capacity density
-          +  CHM.xSi.*(CHM.fSis.*0 + CHM.fSil.*CHM.dEntrSi));
-    
+MAT.Ds    = CHM.xFe.* CHM.fFel.*CHM.dEntrFe...        % mixture latent heat capacity density
+          + CHM.xSi.* CHM.fSil.*CHM.dEntrSi;
+
+SOL.S   = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
+SOL.sFes = SOL.S./MAT.rho -MAT.Ds;% CHM.xFe.*CHM.fFel.*CHM.dEntrFe;
+SOL.sSis = SOL.S./MAT.rho -MAT.Ds;% CHM.xSi.*CHM.fSil.*CHM.dEntrSi;
+SOL.sFel = SOL.sFes + CHM.dEntrFe;
+SOL.sSil = SOL.sSis + CHM.dEntrSi;
 SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                                  % mixture enthalpy density
 CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
 CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
@@ -202,9 +217,9 @@ NAl     = zeros(NUM.nzP,NUM.nxP);
 NAl     = NAl + nAl*rAl0 .* mean(MAT.rho(:)); % initial NAl per m^3
 dNdt = zeros(NUM.nzP,NUM.nxP);
 
-MAT.Hr = zeros(NUM.nzP,NUM.nxP) + PHY.Hr0;
+MAT.Hr = zeros(NUM.nzP,NUM.nxP);
 HIST.Hr = 0;
-if ~RUN.rad; MAT.Hr + PHY.Hr0;  end
+if ~RUN.rad;MAT.Hr = MAT.Hr + PHY.Hr0;  end
 
 %% initialise previous solution and auxiliary fields
 rhoo      = MAT.rho;
@@ -212,13 +227,12 @@ Ho        = SOL.H;
 dHdto     = dHdt;
 Div_rhoVo = Div_rhoV;
 
+
 % initialise counting variables
 RUN.frame = 0;      % initialise output frame count
 NUM.time  = 0;      % initialise time count
 NUM.step  = 0;      % initialise time step count
 iter      = 0;      % initialise iteration count
-
-
 %% update nonlinear material properties
 up2date;
 
