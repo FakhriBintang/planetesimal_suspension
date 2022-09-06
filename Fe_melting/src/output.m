@@ -55,10 +55,14 @@ if RUN.plot
         plot(mean(CHM.xFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(CHM.cFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.cFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.clFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2)
+        plot(mean(CHM.csFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2)
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(CHM.cSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CHM.cSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.clSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2)
+        plot(mean(CHM.csSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2)
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         
         fh2 = figure(2); clf;
