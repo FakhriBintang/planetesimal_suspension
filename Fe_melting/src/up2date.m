@@ -40,7 +40,7 @@ Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
 thtv = squeeze(prod(Mv.^Xf,2));
 
 % get momentum flux and transfer coefficients
-Cv = ((1-ff)./[PHY.dx;1e-16;PHY.df].^2.*kv.*thtv).^-1;
+Cv = ((1-ff)./[PHY.dx;.1e-16;PHY.df].^2.*kv.*thtv).^-1;
 
 % compose effective viscosity, segregation coefficients
 MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                             % effective magma viscosity
@@ -63,7 +63,7 @@ Ksgr_f = squeeze(Cv(3,:,:)) + 1e-18;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  
 
 %% other bulk thermochemical properties
 % Update pressure
-SOL.Pt      = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P + P0;
+SOL.Pt      = rhoRef.*MAT.gzP.*NUM.ZP + SOL.P + P0;
 
 % update heat capacities
 % MAT.rhoCp = (MAT.rho.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...  % mixture sensible heat capacity density
@@ -71,7 +71,7 @@ SOL.Pt      = rhoRef.*PHY.gzP.*NUM.ZP + SOL.P + P0;
 % MAT.rhoDs = (MAT.rho.*CHM.xFe.*CHM.fFel.*CHM.dEntrFe...                        % mixture latent heat capacity density
 %           +  MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.dEntrSi);
 MAT.Ds    =  CHM.xFe.*CHM.fFel.*CHM.dEntrFe + CHM.xSi.*CHM.fSil.*CHM.dEntrSi;   % mixture entropy
-MAT.kT    =  (CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi)./SOL.T;                            % magma thermal conductivity
+MAT.ks    =  (CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi)./SOL.T;                            % magma thermal conductivity
 
 %% calculate stokes settling velocity
 sds = SOL.BCsides;      % side boundary type 
@@ -151,7 +151,7 @@ DEF.txz = MAT.EtaC.* DEF.exz;
 
 % entropy production/heat dissipation rate
 [grdTx,grdTz] = gradient(SOL.T,NUM.h);
-EntProd = MAT.kT(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:end-1).^2)...
+EntProd = MAT.ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:end-1).^2)...
         + DEF.exx(2:end-1,2:end-1).*DEF.txx(2:end-1,2:end-1) + DEF.exx(2:end-1,2:end-1).*DEF.txx(2:end-1,2:end-1)...
         + 2.*(DEF.exz(1:end-1,1:end-1)+DEF.exz(2:end,1:end-1)+DEF.exz(1:end-1,2:end)+DEF.exz(2:end,2:end))./4 ...
            .*(DEF.txz(1:end-1,1:end-1)+DEF.txz(2:end,1:end-1)+DEF.txz(1:end-1,2:end)+DEF.txz(2:end,2:end))./4 ...
@@ -161,7 +161,7 @@ EntProd = MAT.kT(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:
 
 %% update physical time step
 dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
-dtdiff = (NUM.h/2)^2/max(MAT.kT(:)./MAT.rho(:)./PHY.Cp);                         % stable time step for T diffusion
+dtdiff = (NUM.h/2)^2/max(max(PHY.kTFe,PHY.kTSi)./MAT.rho(:)./PHY.Cp);                         % stable time step for T diffusion
 
 NUM.dt = min(min(0.75*dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
 

@@ -244,21 +244,21 @@ RR = [RR; rr(:)];
 KP = sparse(II,JJ,AA,NP,NP);
 RP = sparse(IR,ones(size(IR)),RR,NP,1);
 
-% Pscale = sqrt(geomean(MAT.Eta(:))/NUM.h^2);
+Pscale = sqrt(geomean(MAT.Eta(:))/NUM.h^2);
 
 nzp = round((NUM.nzP-2)/2)+1;
 nxp = round((NUM.nxP-2)/2)+1;
 DD(indP(nzp,nxp),:) = 0;
 KP(indP(nzp,nxp),:) = 0;
-KP(indP(nzp,nxp),indP(nzp,nxp)) = 1;
+KP(indP(nzp,nxp),indP(nzp,nxp)) = Pscale;
 RP(indP(nzp,nxp),:) = 0;
 if RUN.bnchm; RP(indP(nzp,nxp),:) = P_mms(nzp,nxp); end
 
 %% assemble global coefficient matrix and right-hand side vector
-LL =  [ KV -GG ; ...
-       -DD  KP ];
+LL =  [ KV         -Pscale.*GG ; ...
+       -Pscale.*DD  Pscale.*KP ];
 
-RR = [RV; RP];
+RR = [RV; RP.*Pscale];
 
 
 %% get residual
@@ -272,19 +272,20 @@ res_P  = full(reshape(FF(NUM.MapP(:)),NUM.nzP,NUM.nxP));   % dynamic pressure re
 
 
 %% Solve linear system of equations for vx, vz, P
-SS = sqrt(abs(diag(LL)));
-SS = diag(sparse(1./(SS+1)));
-
-LL = SS*LL*SS;
-RR = SS*RR;
-
-S = SS*(LL\RR);  % update solution
+S = LL\RR;  % update solution
+% SS = sqrt(abs(diag(LL)));
+% SS = diag(sparse(1./(SS+1)));
+% 
+% LL = SS*LL*SS;
+% RR = SS*RR;
+% 
+% S = SS*(LL\RR);  % update solution
 
 % Read out solution
 % map solution vector to 2D arrays
 SOL.W  = full(reshape(S(NUM.MapW(:)),NUM.nzW, NUM.nxW));         % matrix z-velocity
 SOL.U  = full(reshape(S(NUM.MapU(:)),NUM.nzU, NUM.nxU));         % matrix x-velocity
-SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP, NUM.nxP));         % matrix dynamic pressure
+SOL.P  = full(reshape(S(NUM.MapP(:)),NUM.nzP, NUM.nxP)).*Pscale;         % matrix dynamic pressure
 
 SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
 SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;

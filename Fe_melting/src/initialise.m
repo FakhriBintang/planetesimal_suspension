@@ -60,8 +60,8 @@ rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
 
 %% setup material property arrays
 % gravity
-PHY.gxP = zeros(NUM.nzP,NUM.nxP) + PHY.gx;      PHY.gzP = zeros(NUM.nzP,NUM.nxP) + PHY.gz;
-PHY.gx  = zeros(NUM.nzU,NUM.nxU) + PHY.gx;      PHY.gz  = zeros(NUM.nzW,NUM.nxW) + PHY.gz;
+MAT.gxP = zeros(NUM.nzP,NUM.nxP) + PHY.gx;      MAT.gzP = zeros(NUM.nzP,NUM.nxP) + PHY.gz;
+MAT.gx  = zeros(NUM.nzU,NUM.nxU) + PHY.gx;      MAT.gz  = zeros(NUM.nzW,NUM.nxW) + PHY.gz;
 
       
 
@@ -98,7 +98,7 @@ dCSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component density rat
 dCFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component density rate of change
 dFFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron melt fraction rate of change
 dFSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate melt fraction rate of change
-diff_T   = zeros(NUM.Nz+2,NUM.Nx+2);            % Temperature diffusion rate
+diff_S   = zeros(NUM.Nz+2,NUM.Nx+2);            % Temperature diffusion rate
 diff_CSi = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component diffusion rate
 diff_CFe = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component diffusion rate
 Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
@@ -106,8 +106,6 @@ Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
 
 %% initialise previous solution and auxiliary fields
 rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
-Ho        = ones(NUM.Nz+2,NUM.Nx+2);
-dHdto     = dHdt;
 dSdto     = dSdt;
 Div_rhoVo = Div_rhoV;
 
@@ -150,7 +148,7 @@ CHM.cSi = CHM.cSi0.*(CHM.xSi>0) + dcSi.*rp; % Si component
 
 
 % estimate mixture density from Fe/Si system fractions
-SOL.Pt = rhoRef.*PHY.gzP.*NUM.ZP + P0;
+SOL.Pt = rhoRef.*MAT.gzP.*NUM.ZP + P0;
 
 % real temperature (+adiabatic)
 SOL.T = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
@@ -177,12 +175,10 @@ while res > tol
     up2date;
     
     rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
-    SOL.Pt     = rhoRef.*PHY.gzP.*NUM.ZP + P0;
+    SOL.Pt     = rhoRef.*MAT.gzP.*NUM.ZP + P0;
     SOL.T      = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
-    res  = (norm(CHM.fFes(:)-fFesi(:),2) + norm(CHM.fSis(:)-fSisi(:),2))./sqrt(2*length(CHM.fFes(:)))
+    res  = (norm(CHM.fFes(:)-fFesi(:),2) + norm(CHM.fSis(:)-fSisi(:),2))./sqrt(2*length(CHM.fFes(:)));
     it = it+1;
-    disp([num2str(it), 'iter'])
-
 end
 
 MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
@@ -190,15 +186,15 @@ MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
 MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
 MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
 
-MAT.Ds    = CHM.xFe.* CHM.fFel.*CHM.dEntrFe...        % mixture latent heat capacity density
+MAT.Ds    = CHM.xFe.* CHM.fFel.*CHM.dEntrFe...                             % mixture latent heat capacity density
           + CHM.xSi.* CHM.fSil.*CHM.dEntrSi;
 
 SOL.S   = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
-SOL.sFes = SOL.S./MAT.rho -MAT.Ds;% CHM.xFe.*CHM.fFel.*CHM.dEntrFe;
-SOL.sSis = SOL.S./MAT.rho -MAT.Ds;% CHM.xSi.*CHM.fSil.*CHM.dEntrSi;
+SOL.sFes = SOL.S./MAT.rho -MAT.Ds;
+SOL.sSis = SOL.S./MAT.rho -MAT.Ds;
 SOL.sFel = SOL.sFes + CHM.dEntrFe;
 SOL.sSil = SOL.sSis + CHM.dEntrSi;
-SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                                  % mixture enthalpy density
+SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
 CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
 CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
