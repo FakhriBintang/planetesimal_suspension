@@ -114,15 +114,15 @@ if NUM.step>0
 
     % apply boundaries
     CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
-    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
+    CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]); 
 end
 
 if NUM.step>0
     CHM.XSi = MAT.rho - CHM.XFe;
     CHM.xFe = CHM.XFe./MAT.rho;
     CHM.xSi = 1-CHM.xFe;
-    CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho;
-    CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho;
+    CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho .*(CHM.xSi>0);
+    CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho .*(CHM.xSi>0);
     SOL.T    = SOL.T0.*exp(SOL.S./MAT.rho./PHY.Cp ...
              + PHY.aT.*(SOL.Pt - P0)./rhoRef./PHY.Cp...
              - MAT.Ds./PHY.Cp);
