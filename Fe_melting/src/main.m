@@ -14,7 +14,7 @@ if RUN.bnchm
     mms; return;
 end
 
-while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
+while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep 
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr,dtlimit);
 
@@ -141,7 +141,13 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
             figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
         end
     end
-
+    
+    % break script for NaN
+    if isnan(resnorm)
+        print('Error, Breaking script')
+        output
+        return
+    end
     % increment time
     NUM.dt
     NUM.step = NUM.step + 1;

@@ -128,7 +128,6 @@ SOL.BCsides     = -1;                     % side boundaries
 SOL.BCtop       = -1;                     % top boundary
 SOL.BCbot       = -1;                     % bottom boundary
 
-
 %% set solver options
 % advection scheme
 NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
@@ -143,9 +142,6 @@ etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.40;     % iterative lagging parameters
 nvsmooth        = 20;       % smoothing interations for the vseg boundaries. 10 rcommended for thermal boundaries, 20 for isothermal
-% temporary - option for 3rd order runge-kutta
-RK3 = 0;
-Siseg = 0; % multiplier to liquid silicate segregation velocity, zero or one;
 
 %% start model
 % create output directory

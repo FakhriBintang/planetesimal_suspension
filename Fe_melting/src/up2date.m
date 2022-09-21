@@ -83,7 +83,15 @@ segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MA
 segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
 segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:)).*Siseg;
 segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:));
-
+% zero boundary condition
+segSis([1 end],:) = 0;
+segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
+segFes([1 end],:) = 0;
+segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
+segSil([1 end],:) = 0;
+segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
+segFel([1 end],:) = 0;
+segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
 % zero segregation at the boundaries for accumulation
 for nsmooth = 1:nvsmooth
