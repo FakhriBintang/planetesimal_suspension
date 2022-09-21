@@ -56,12 +56,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
 
         % solve thermo-chemical equations
-        if RK3
-            solve_thermochem2;
-        else
-            solve_thermochem_entr;
-%             solve_thermochem;
-        end
+            solve_thermochem;
+
         if RUN.rad; radioactive_decay; end
 
         % update non-linear parameters and auxiliary variables
@@ -70,7 +66,6 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 
         if ~mod(iter,1) || iter ==0
             % solve fluid-mechanics equations
-%             solve_fluidmech_2;
             solve_fluidmech;
             % update non-linear parameters and auxiliary variables
             up2date;

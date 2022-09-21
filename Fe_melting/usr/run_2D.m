@@ -6,7 +6,7 @@ clear; %close all
 RUN.ID          =  'thickcooling 1300';            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  200;                   % output every 'nop' grid steps of transport
+RUN.nop         =  1;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary

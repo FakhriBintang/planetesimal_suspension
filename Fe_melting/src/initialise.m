@@ -43,7 +43,7 @@ NUM.zU          =  NUM.zP;                              % Vertical   coordinates
 NUM.Map         =  reshape(1:NUM.NP,NUM.nzP,NUM.nxP);
 NUM.MapW        =  reshape(1:NUM.NW,NUM.nzW,NUM.nxW);
 NUM.MapU        =  reshape(1:NUM.NU,NUM.nzU,NUM.nxU) + NUM.NW;
-NUM.MapP        =  reshape(1:NUM.NP,NUM.nzP,NUM.nxP) + NUM.NW + NUM.NU;
+NUM.MapP        =  reshape(1:NUM.NP,NUM.nzP,NUM.nxP);
 
 % get smoothed initialisation field
 rng(15);
