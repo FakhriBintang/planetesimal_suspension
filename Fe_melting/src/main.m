@@ -149,7 +149,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         return
     end
     % increment time
-    NUM.dt
+    NUM.dt;
     NUM.step = NUM.step + 1;
     NUM.time = NUM.time + NUM.dt;
 

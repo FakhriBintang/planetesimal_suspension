@@ -42,9 +42,10 @@ thtv = squeeze(prod(Mv.^Xf,2));
 % get momentum flux and transfer coefficients
 Cv = ((1-ff)./[PHY.dx;PHY.dm;PHY.df].^2.*kv.*thtv).^-1;
 
+etareg = 1; 
 % compose effective viscosity, segregation coefficients
 MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                             % effective magma viscosity
-MAT.Eta  = (1./etamax + 1./(MAT.Eta + etamin)).^(-1);                       % limit viscosity range
+MAT.Eta  = (1./etamax + 1./(MAT.Eta + etareg)).^(-1);                       % limit viscosity range
 MAT.Eta([1 end],:) = MAT.Eta([2 end-1],:);  
 MAT.Eta(:,[1 end]) = MAT.Eta(:,[2 end-1]);
 MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
@@ -81,8 +82,10 @@ kappaseg = 100;
 % test alternative
 segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
 segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
-segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:)).*Siseg;
-segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:));
+segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:))...
+        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./2).^2; % multiplied by crystalinity
+segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:))...
+        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./2).^2; % multiplied by crystalinity
 % zero boundary condition
 segSis([1 end],:) = 0;
 segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
