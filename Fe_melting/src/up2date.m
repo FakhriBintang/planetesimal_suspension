@@ -51,10 +51,7 @@ MAT.Eta(:,[1 end]) = MAT.Eta(:,[2 end-1]);
 MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
          +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
 
-% Ksgr_x   = max(1e-15,min(1e-6,(MAT.phiSis+MAT.phiFes)./squeeze(Cv(1,:,:))));
-% Ksgr_m   = max(1e-15,min(1e-6, MAT.phiSil            ./squeeze(Cv(2,:,:))));
-% Ksgr_f   = max(1e-15,min(1e-6, MAT.phiFel            ./squeeze(Cv(3,:,:))));
-%test alternative
+% get segregation cofficients
 Ksgr_x = squeeze(Cv(1,:,:)) + 1e-18;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]);
 Ksgr_m = squeeze(Cv(2,:,:)) + 1e-18;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]);
 Ksgr_f = squeeze(Cv(3,:,:)) + 1e-18;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]);
@@ -80,12 +77,12 @@ sds = SOL.BCsides;      % side boundary type
 kappaseg = 100;
 
 % test alternative
-segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
-segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
-segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:))...
-        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./2).^2; % multiplied by crystalinity
-segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:))...
-        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./2).^2; % multiplied by crystalinity
+segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
+segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
+segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_m(1:end-1,:),Ksgr_m(2:end,:))...
+        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./4).^2; % multiplied by crystalinity
+segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_f(1:end-1,:),Ksgr_f(2:end,:))...
+        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./4).^2; % multiplied by crystalinity
 % zero boundary condition
 segSis([1 end],:) = 0;
 segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
@@ -97,24 +94,24 @@ segFel([1 end],:) = 0;
 segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
 % zero segregation at the boundaries for accumulation
-for nsmooth = 1:nvsmooth
-    segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
-    segSis([1 end],:) = 0;
-    segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
-
-    segFes(2:end-1,2:end-1)   = segFes(2:end-1,2:end-1) + diff(segFes(:,2:end-1),2,1)./8 + diff(segFes(2:end-1,:),2,2)./8;
-    segFes([1 end],:) = 0;
-    segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
-
-    segSil(2:end-1,2:end-1)   = segSil(2:end-1,2:end-1) + diff(segSil(:,2:end-1),2,1)./8 + diff(segSil(2:end-1,:),2,2)./8;
-    segSil([1 end],:) = 0;
-    segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
-
-    segFel(2:end-1,2:end-1)   = segFel(2:end-1,2:end-1) + diff(segFel(:,2:end-1),2,1)./8 + diff(segFel(2:end-1,:),2,2)./8;
-    segFel([1 end],:) = 0;
-    segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
-
-end
+% for nsmooth = 1:nvsmooth
+%     segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
+%     segSis([1 end],:) = 0;
+%     segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
+% 
+%     segFes(2:end-1,2:end-1)   = segFes(2:end-1,2:end-1) + diff(segFes(:,2:end-1),2,1)./8 + diff(segFes(2:end-1,:),2,2)./8;
+%     segFes([1 end],:) = 0;
+%     segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
+% 
+%     segSil(2:end-1,2:end-1)   = segSil(2:end-1,2:end-1) + diff(segSil(:,2:end-1),2,1)./8 + diff(segSil(2:end-1,:),2,2)./8;
+%     segSil([1 end],:) = 0;
+%     segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
+% 
+%     segFel(2:end-1,2:end-1)   = segFel(2:end-1,2:end-1) + diff(segFel(:,2:end-1),2,1)./8 + diff(segFel(2:end-1,:),2,2)./8;
+%     segFel([1 end],:) = 0;
+%     segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
+% 
+% end
 
 % update phase velocities
 WlSi        = SOL.W + segSil;
@@ -166,9 +163,10 @@ EntProd = MAT.ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:
         + DEF.exx(2:end-1,2:end-1).*DEF.txx(2:end-1,2:end-1) + DEF.exx(2:end-1,2:end-1).*DEF.txx(2:end-1,2:end-1)...
         + 2.*(DEF.exz(1:end-1,1:end-1)+DEF.exz(2:end,1:end-1)+DEF.exz(1:end-1,2:end)+DEF.exz(2:end,2:end))./4 ...
            .*(DEF.txz(1:end-1,1:end-1)+DEF.txz(2:end,1:end-1)+DEF.txz(1:end-1,2:end)+DEF.txz(2:end,2:end))./4 ...
-        +  CHM.xFe(2:end-1,2:end-1).*CHM.fFes(2:end-1,2:end-1).^2./Ksgr_x(2:end-1,2:end-1) .* ((segFes(1:end-1,2:end-1)+segFes(2:end,2:end-1))./2).^2  ...
-        +  CHM.xFe(2:end-1,2:end-1).*CHM.fFel(2:end-1,2:end-1).^2./Ksgr_f(2:end-1,2:end-1) .* ((segFel(1:end-1,2:end-1)+segFel(2:end,2:end-1))./2).^2  ...
-        +  CHM.xSi(2:end-1,2:end-1).*CHM.fSis(2:end-1,2:end-1).^2./Ksgr_x(2:end-1,2:end-1) .* ((segFes(1:end-1,2:end-1)+segFes(2:end,2:end-1))./2).^2 ;
+        +  MAT.phiFes(2:end-1,2:end-1).^2./Ksgr_x(2:end-1,2:end-1) .* ((segFes(1:end-1,2:end-1)+segFes(2:end,2:end-1))./2).^2  ...
+        +  MAT.phiFel(2:end-1,2:end-1).^2./Ksgr_f(2:end-1,2:end-1) .* ((segFel(1:end-1,2:end-1)+segFel(2:end,2:end-1))./2).^2  ...
+        +  MAT.phiSis(2:end-1,2:end-1).^2./Ksgr_x(2:end-1,2:end-1) .* ((segSis(1:end-1,2:end-1)+segSis(2:end,2:end-1))./2).^2  ...
+        +  MAT.phiSil(2:end-1,2:end-1).^2./Ksgr_m(2:end-1,2:end-1) .* ((segSil(1:end-1,2:end-1)+segSil(2:end,2:end-1))./2).^2;
 
 %% update physical time step
 dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
