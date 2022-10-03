@@ -52,7 +52,7 @@ end
 
 % Record conservation error (mass - mass change)/initial mass
 HST.EM  (t)     = (HST.Mass  (t) - HST.dM  (t))./HST.Mass  (1) - 1;
-HST.ES  (t)     = (HST.sumS  (t) - HST.dH  (t))./HST.sumS  (1) - 1;
+HST.ES  (t)     = (HST.sumS  (t) - HST.dS  (t))./HST.sumS  (1) - 1;
 HST.EXFe(t)     = (HST.sumXFe(t) - HST.dXFe(t))./HST.sumXFe(1) - 1;
 HST.ECSi(t)     = (HST.sumCSi(t) - HST.dCSi(t))./HST.sumCSi(1) - 1;
 HST.ECFe(t)     = (HST.sumCFe(t) - HST.dCFe(t))./HST.sumCFe(1) - 1;
