@@ -401,8 +401,8 @@ if RUN.plot
     plot(HST.time./NUM.yr,HST.EM  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $Mass$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
     subplot(5,1,2)
-    plot(HST.time./NUM.yr,HST.EH  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
-    ylabel('consv. $H$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
+    plot(HST.time./NUM.yr,HST.ES  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+    ylabel('consv. $S$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
     subplot(5,1,3)
     plot(HST.time./NUM.yr,HST.EXFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $X_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);

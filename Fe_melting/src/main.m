@@ -88,9 +88,6 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 
     % update mass and energy errors
     history;
-    %temporary
-    HIST.Hr = [HIST.Hr mean(MAT.Hr(:))];
-
 
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;

@@ -213,7 +213,7 @@ dNdt = zeros(NUM.nzP,NUM.nxP);
 
 MAT.Hr = zeros(NUM.nzP,NUM.nxP);
 HIST.Hr = 0;
-if ~RUN.rad;MAT.Hr = MAT.Hr + PHY.Hr0;  end
+if RUN.rad;MAT.Hr = MAT.Hr + PHY.Hr0;  end
 
 %% initialise previous solution and auxiliary fields
 rhoo      = MAT.rho;

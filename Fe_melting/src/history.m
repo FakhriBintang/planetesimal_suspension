@@ -4,7 +4,7 @@ HST.time(t) = NUM.time;
 
 % record conserved masses at current timestep
 HST.Mass  (t)      = sum(sum(MAT.rho(2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
-HST.sumH  (t)      = sum(sum(SOL.H  (2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
+HST.sumS  (t)      = sum(sum(SOL.S  (2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
 HST.sumXFe(t)      = sum(sum(CHM.XFe(2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
 HST.sumCFe(t)      = sum(sum(CHM.CFe(2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
 HST.sumCSi(t)      = sum(sum(CHM.CSi(2:end-1,2:end-1))) .*NUM.h.*NUM.h.*1;
@@ -15,11 +15,11 @@ dMassdt     = sum(MAT.rho(2,2:end-1)    .*SOL.W(1,2:end-1)  .*NUM.h.*1) ...
             + sum(MAT.rho(2:end-1,2)    .*SOL.U(2:end-1,1)  .*NUM.h.*1) ...
             - sum(MAT.rho(2:end-1,end-1).*SOL.U(2:end-1,end).*NUM.h.*1);
 
-dsumHdt     = sum(sum(MAT.Hr(2:end-1,2:end-1)*NUM.h*NUM.h*1)) ...
-            + sum(SOL.H(2,2:end-1)      .*SOL.W(1,2:end-1)  .*NUM.h.*1) ...
-            - sum(SOL.H(end-1,2:end-1)  .*SOL.W(end,2:end-1).*NUM.h.*1) ...
-            + sum(SOL.H(2:end-1,2)      .*SOL.U(2:end-1,1)  .*NUM.h.*1) ...
-            - sum(SOL.H(2:end-1,end-1)  .*SOL.U(2:end-1,end).*NUM.h.*1);
+dsumSdt     = sum(sum(MAT.Hr(2:end-1,2:end-1)*NUM.h*NUM.h*1)) ...
+            + sum(SOL.S(2,2:end-1)      .*SOL.W(1,2:end-1)  .*NUM.h.*1) ...
+            - sum(SOL.S(end-1,2:end-1)  .*SOL.W(end,2:end-1).*NUM.h.*1) ...
+            + sum(SOL.S(2:end-1,2)      .*SOL.U(2:end-1,1)  .*NUM.h.*1) ...
+            - sum(SOL.S(2:end-1,end-1)  .*SOL.U(2:end-1,end).*NUM.h.*1);
 
 dsumXFedt   = sum(CHM.XFe(2,2:end-1)    .*SOL.W(1,2:end-1)  .*NUM.h.*1) ...
             - sum(CHM.XFe(end-1,2:end-1).*SOL.W(end,2:end-1).*NUM.h.*1) ...
@@ -38,13 +38,13 @@ dsumCSidt   = sum(CHM.CSi(2,2:end-1)    .*SOL.W(1,2:end-1)  .*NUM.h.*1) ...
 
 if NUM.step>0
     HST.dM  (t) = HST.dM  (t-1) + dMassdt   .*NUM.dt;
-    HST.dH  (t) = HST.dH  (t-1) + dsumHdt   .*NUM.dt;
+    HST.dS  (t) = HST.dS  (t-1) + dsumSdt   .*NUM.dt;
     HST.dXFe(t) = HST.dXFe(t-1) + dsumXFedt .*NUM.dt;
     HST.dCFe(t) = HST.dCFe(t-1) + dsumCFedt .*NUM.dt;
     HST.dCSi(t) = HST.dCSi(t-1) + dsumCSidt .*NUM.dt;
 else
     HST.dM  (1) = 0;
-    HST.dH  (1) = 0;
+    HST.dS  (1) = 0;
     HST.dXFe(1) = 0;
     HST.dCFe(1) = 0;
     HST.dCSi(1) = 0;
@@ -52,7 +52,7 @@ end
 
 % Record conservation error (mass - mass change)/initial mass
 HST.EM  (t)     = (HST.Mass  (t) - HST.dM  (t))./HST.Mass  (1) - 1;
-HST.EH  (t)     = (HST.sumH  (t) - HST.dH  (t))./HST.sumH  (1) - 1;
+HST.ES  (t)     = (HST.sumS  (t) - HST.dH  (t))./HST.sumS  (1) - 1;
 HST.EXFe(t)     = (HST.sumXFe(t) - HST.dXFe(t))./HST.sumXFe(1) - 1;
 HST.ECSi(t)     = (HST.sumCSi(t) - HST.dCSi(t))./HST.sumCSi(1) - 1;
 HST.ECFe(t)     = (HST.sumCFe(t) - HST.dCFe(t))./HST.sumCFe(1) - 1;
