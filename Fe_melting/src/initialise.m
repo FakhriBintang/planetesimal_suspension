@@ -93,7 +93,8 @@ DEF.tII = zeros(NUM.nzP,NUM.nxP);               % stress magnitude on centre nod
 %% setup heating rates
 dHdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % enthalpy rate of change
 dSdt     = zeros(NUM.Nz+2,NUM.Nx+2);
-dXdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron system rate of change 
+dXFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron system rate of change 
+dXSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Si system rate of change 
 dCSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component density rate of change
 dCFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component density rate of change
 dFFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron melt fraction rate of change
@@ -170,8 +171,9 @@ while res > tol
                                                CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
     [CHM.fSis,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
                                                CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+    CHM.fSis = min(1,max(0,CHM.fSis)); CHM.fFes = min(1,max(0,CHM.fFes));
     CHM.fFel = 1-CHM.fFes;  CHM.fSil = 1-CHM.fSis;
-
+    
     up2date;
     
     rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));

@@ -15,10 +15,10 @@ MAT.rho    = 1./(CHM.xFe.*CHM.fFes./MAT.rhoFes + CHM.xFe.*CHM.fFel./MAT.rhoFel .
 MAT.rho([1 end],:) = MAT.rho([2 end-1],:);  MAT.rho(:,[1 end]) = MAT.rho(:,[2 end-1]);
 
 % update volume fractions
-MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
-MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
-MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
-MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil; 
+MAT.phiFes = max(TINY,min(1-TINY,CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes));
+MAT.phiFel = max(TINY,min(1-TINY,CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel));
+MAT.phiSis = max(TINY,min(1-TINY,CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis));
+MAT.phiSil = max(TINY,min(1-TINY,CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil)); 
 
 
 %% update viscosity
@@ -42,7 +42,7 @@ thtv = squeeze(prod(Mv.^Xf,2));
 % get momentum flux and transfer coefficients
 Cv = ((1-ff)./[PHY.dx;PHY.dm;PHY.df].^2.*kv.*thtv).^-1;
 
-etareg = 1; 
+etareg = 1e8; 
 % compose effective viscosity, segregation coefficients
 MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                             % effective magma viscosity
 MAT.Eta  = (1./etamax + 1./(MAT.Eta + etareg)).^(-1);                       % limit viscosity range
@@ -55,7 +55,9 @@ MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % vis
 Ksgr_x = squeeze(Cv(1,:,:)) + 1e-18;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]);
 Ksgr_m = squeeze(Cv(2,:,:)) + 1e-18;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]);
 Ksgr_f = squeeze(Cv(3,:,:)) + 1e-18;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]);
-
+% lag liquid segregation at low crystalinities
+Ksgr_m = Ksgr_m.*(MAT.phiFes+MAT.phiSis).^2; Ksgr_m = min(1,max(TINY,Ksgr_m));
+% Ksgr_f = Ksgr_f.*(MAT.phiFes+MAT.phiSis).^2;
 
 
 
@@ -63,26 +65,31 @@ Ksgr_f = squeeze(Cv(3,:,:)) + 1e-18;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  
 % Update pressure
 SOL.Pt      = rhoRef.*MAT.gzP.*NUM.ZP + SOL.P + P0;
 
-% update heat capacities
-% MAT.rhoCp = (MAT.rho.*CHM.xFe.*(CHM.fFes.*PHY.CpFes + CHM.fFel.*PHY.CpFel)...  % mixture sensible heat capacity density
-%           +  MAT.rho.*CHM.xSi.*(CHM.fSis.*PHY.CpSis + CHM.fSil.*PHY.CpSil));
-% MAT.rhoDs = (MAT.rho.*CHM.xFe.*CHM.fFel.*CHM.dEntrFe...                        % mixture latent heat capacity density
-%           +  MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.dEntrSi);
 MAT.Ds    =  CHM.xFe.*CHM.fFel.*CHM.dEntrFe + CHM.xSi.*CHM.fSil.*CHM.dEntrSi;   % mixture entropy
-MAT.ks    =  (CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi)./SOL.T;                            % magma thermal conductivity
 
+% diffusivity parameters
+MAT.ks    =  (CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi)./SOL.T;                % magma thermal conductivity
+% MAT.kc    = 
 %% calculate stokes settling velocity
 sds = SOL.BCsides;      % side boundary type 
 % also runge kutta advection time stepping
-kappaseg = 100;
+kappaseg = 500;
 
-% test alternative
+% test alternative interpolations for segregation coefficients
+% minimum  segregation coefficient
 segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
 segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
-segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_m(1:end-1,:),Ksgr_m(2:end,:))...
-        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./4).^2; % multiplied by crystalinity
-segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_f(1:end-1,:),Ksgr_f(2:end,:))...
-        .*((MAT.phiFes(2:end,:) + MAT.phiSis(2:end,:) + MAT.phiFes(1:end-1,:)+MAT.phiSis(1:end-1,:))./4).^2; % multiplied by crystalinity
+% segFes = segFes.*(MAT.phiFes(1:end-1,:)+MAT.phiFes(2:end,:))./2; % should be zero
+
+segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_m(1:end-1,:),Ksgr_m(2:end,:)); %.*0; 
+segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*min(Ksgr_f(1:end-1,:),Ksgr_f(2:end,:)); 
+
+% % harmonic average
+% segSis = (((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
+% segFes = (((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
+% segSil = (((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:)); 
+% segFel = (((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz).*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:));
+
 % zero boundary condition
 segSis([1 end],:) = 0;
 segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
@@ -94,24 +101,24 @@ segFel([1 end],:) = 0;
 segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
 % zero segregation at the boundaries for accumulation
-% for nsmooth = 1:nvsmooth
-%     segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
-%     segSis([1 end],:) = 0;
-%     segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
-% 
-%     segFes(2:end-1,2:end-1)   = segFes(2:end-1,2:end-1) + diff(segFes(:,2:end-1),2,1)./8 + diff(segFes(2:end-1,:),2,2)./8;
-%     segFes([1 end],:) = 0;
-%     segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
-% 
-%     segSil(2:end-1,2:end-1)   = segSil(2:end-1,2:end-1) + diff(segSil(:,2:end-1),2,1)./8 + diff(segSil(2:end-1,:),2,2)./8;
-%     segSil([1 end],:) = 0;
-%     segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
-% 
-%     segFel(2:end-1,2:end-1)   = segFel(2:end-1,2:end-1) + diff(segFel(:,2:end-1),2,1)./8 + diff(segFel(2:end-1,:),2,2)./8;
-%     segFel([1 end],:) = 0;
-%     segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
-% 
-% end
+for nsmooth = 1:nvsmooth
+    segSis(2:end-1,2:end-1)   = segSis(2:end-1,2:end-1) + diff(segSis(:,2:end-1),2,1)./8 + diff(segSis(2:end-1,:),2,2)./8;
+    segSis([1 end],:) = 0;
+    segSis(:,[1 end]) = sds*segSis(:,[2 end-1]);
+
+    segFes(2:end-1,2:end-1)   = segFes(2:end-1,2:end-1) + diff(segFes(:,2:end-1),2,1)./8 + diff(segFes(2:end-1,:),2,2)./8;
+    segFes([1 end],:) = 0;
+    segFes(:,[1 end]) = sds*segFes(:,[2 end-1]);
+
+    segSil(2:end-1,2:end-1)   = segSil(2:end-1,2:end-1) + diff(segSil(:,2:end-1),2,1)./8 + diff(segSil(2:end-1,:),2,2)./8;
+    segSil([1 end],:) = 0;
+    segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
+
+    segFel(2:end-1,2:end-1)   = segFel(2:end-1,2:end-1) + diff(segFel(:,2:end-1),2,1)./8 + diff(segFel(2:end-1,:),2,2)./8;
+    segFel([1 end],:) = 0;
+    segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
+
+end
 
 % update phase velocities
 WlSi        = SOL.W + segSil;

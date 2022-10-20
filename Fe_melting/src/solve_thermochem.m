@@ -6,9 +6,13 @@ end
 
 % store previous iteration
 Ti    = SOL.T;
+xFei  = CHM.xFe;
+xSii  = CHM.xSi;
+cFei  = CHM.cFe;
+cSii  = CHM.cSi;
 fFeli = CHM.fFel;
 fSili = CHM.fSil;
-
+rhoi  = MAT.rho;
 
 %% update entropy and Temperature
 advn_S  = -advection(MAT.rho.*CHM.xSi.*CHM.fSis.*SOL.sSis ,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
@@ -61,17 +65,35 @@ end
 % equation 7
 adv_XFe     = advection(MAT.rho.*CHM.xFe.*CHM.fFes,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
             + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
-dXdt        = - adv_XFe;
+dXFedt        = - adv_XFe;
 
 if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
     % update solution
-    CHM.XFe = XFeo + (NUM.theta.*dXdt + (1-NUM.theta).*dXdto) .* NUM.dt;
+    CHM.XFe = XFeo + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
 else
     CHM.XFe = CHM.xFe.*MAT.rho;
 end
+
+
+
+% % test out advecting X_Si instead
+% adv_XSi     = advection(MAT.rho.*CHM.xSi.*CHM.fSis,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%             + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
+% dXSidt        = - adv_XSi;
+% 
+% if NUM.step>0 && any(CHM.xSi(:)>0) && any(CHM.xSi(:)<1)
+%     % update solution
+%     CHM.XSi = XSio + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+% 
+%     % apply boundaries
+%     CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
+% else
+%     CHM.XSi = CHM.xSi.*MAT.rho;
+% end
+
 
 % update fertile chemical components
 % equations 8a, 8b
@@ -118,11 +140,14 @@ if NUM.step>0
 end
 
 if NUM.step>0
+%     CHM.xSi = CHM.XSi./MAT.rho;
     CHM.XSi = MAT.rho - CHM.XFe;
     CHM.xFe = CHM.XFe./MAT.rho;
     CHM.xSi = 1-CHM.xFe;
-    CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho ;
-    CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho ;
+    CHM.cSi = CHM.CSi./CHM.XSi ;
+    CHM.cFe = CHM.CFe./CHM.XFe ;
+%     CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho ;
+%     CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho ;
     SOL.T    = SOL.T0.*exp(SOL.S./MAT.rho./PHY.Cp ...
              + PHY.aT.*(SOL.Pt - P0)./rhoRef./PHY.Cp...
              - MAT.Ds./PHY.Cp);
@@ -143,6 +168,7 @@ end
 [fSisq,csSiq,clSiq] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
     CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
 
+% CHM.fSis = min(1,max(TINY,CHM.fSis)); CHM.fFes = min(1,max(TINY,CHM.fFes));
 fFelq = 1-fFesq;
 fSilq = 1-fSisq;
 
@@ -163,11 +189,11 @@ if RUN.diseq
 
 
     if NUM.step>0 % update phase 
-        FFe = rhoo.*xFeo.*fFelo + (NUM.theta.*dFFedt + (1-NUM.theta).*dFFedto).*NUM.dt; FFe = min(MAT.rho-TINY,max(TINY,FFe));
-        FSi = rhoo.*xSio.*fSilo + (NUM.theta.*dFSidt + (1-NUM.theta).*dFSidto).*NUM.dt; FSi = min(MAT.rho-TINY,max(TINY,FSi));
-        CHM.fFel = FFe./(CHM.xFe+TINY)./MAT.rho;
-        CHM.fSil = FSi./(CHM.xSi+TINY)./MAT.rho;  % explicit update of crystal fractionCHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
-        CHM.fSil = min(1,max(0,CHM.fSil)); CHM.fFel = min(1,max(0,CHM.fFel));
+        FFe = rhoo.*xFeo.*fFelo + (NUM.theta.*dFFedt + (1-NUM.theta).*dFFedto).*NUM.dt; FFe = min(MAT.rho,max(0,FFe));
+        FSi = rhoo.*xSio.*fSilo + (NUM.theta.*dFSidt + (1-NUM.theta).*dFSidto).*NUM.dt; FSi = min(MAT.rho,max(0,FSi));
+        CHM.fFel = FFe./(CHM.xFe)./MAT.rho;
+        CHM.fSil = FSi./(CHM.xSi)./MAT.rho;  % explicit update of crystal fractionCHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
+%         CHM.fSil = min(1,max(TINY,CHM.fSil)); CHM.fFel = min(1,max(TINY,CHM.fFel));
     end
 
     CHM.fFel([1 end],:) = CHM.fFel([2 end-1],:);                           % apply boundary conditions
@@ -177,6 +203,8 @@ if RUN.diseq
     CHM.fSil(:,[1 end]) = CHM.fSil(:,[2 end-1]);
     
     CHM.fFes = 1-CHM.fFel; CHM.fSis = 1-CHM.fSil;
+    CHM.fFel = max(0,min(CHM.fFel,1)); CHM.fSil = max(0,min(CHM.fSil,1));
+    CHM.fFes = max(0,min(CHM.fFes,1)); CHM.fSis = max(0,min(CHM.fSis,1));
 
 else
     % lag equilibrium phase fractions
@@ -206,6 +234,17 @@ SOL.sSil = SOL.sSis + CHM.dEntrSi;
 sumS = MAT.rho.*(CHM.xSi.*CHM.fSis.*SOL.sSis +CHM.xSi.*CHM.fSil.*SOL.sSil + CHM.xFe.*CHM.fFes.*SOL.sFes +CHM.xFe.*CHM.fFel.*SOL.sFel);
 
 % get residual of thermochemical equations from iterative update
-resnorm_TC  = norm(SOL.T    - Ti   ,2)./norm(SOL.T   ,2) ...
-            + norm(CHM.fFel - fFeli,2)./norm(CHM.fFel,2) ...
-            + norm(CHM.fSil - fSili,2)./norm(CHM.fSil,2);
+normT   = norm(SOL.T    - Ti   ,2)./norm(SOL.T   ,2);
+normxFe = norm(CHM.xFe  - xFei ,2)./norm(CHM.xFe ,2);
+normxSi = norm(CHM.xSi  - xSii ,2)./norm(CHM.xSi ,2);
+normcFe = norm(CHM.cFe  - cFei ,2)./norm(CHM.cFe ,2);
+normcSi = norm(CHM.cSi  - cSii ,2)./norm(CHM.cSi ,2);
+normfFe = norm(CHM.fFel - fFeli,2)./norm(CHM.fFel,2);
+normfSi = norm(CHM.fSil - fSili,2)./norm(CHM.fSil,2);
+normrho = norm(MAT.rho  - rhoi ,2)./norm(MAT.rho ,2);
+resnorm_TC  = normT + normxFe + normxSi + normcSi + normcFe + normrho;
+
+% if NUM.step >0
+% suppfigs;
+% drawnow
+% end
