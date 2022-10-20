@@ -111,6 +111,7 @@ qCSix     = - PHY.kC.* (MAT.rho (:,1:end-1)+MAT.rho (:,2:end))/2 ...
 diff_CSi(2:end-1,2:end-1) = (- ddz(qCSiz(:,2:end-1),NUM.h) ...             % chemical diffusion
                              - ddx(qCSix(2:end-1,:),NUM.h));
 
+
 dCSidt    = advn_CSi + diff_CSi;
 
 advn_CFe  = - advection(MAT.rho.*CHM.xFe.*CHM.fFes.*CHM.csFe,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
@@ -140,24 +141,24 @@ if NUM.step>0
 end
 
 if NUM.step>0
-%     CHM.xSi = CHM.XSi./MAT.rho;
     CHM.XSi = MAT.rho - CHM.XFe;
-    CHM.xFe = CHM.XFe./MAT.rho;
+    CHM.xFe = max(0,min(1,CHM.XFe./MAT.rho));
+%     CHM.xSi = CHM.XSi./MAT.rho;
     CHM.xSi = 1-CHM.xFe;
-    CHM.cSi = CHM.CSi./CHM.XSi ;
-    CHM.cFe = CHM.CFe./CHM.XFe ;
-%     CHM.cSi = CHM.CSi./(CHM.xSi+TINY)./MAT.rho ;
-%     CHM.cFe = CHM.CFe./(CHM.xFe+TINY)./MAT.rho ;
+%     CHM.cSi = CHM.CSi./CHM.XSi ;
+%     CHM.cFe = CHM.CFe./CHM.XFe ;
+    CHM.cSi = CHM.CSi./max(CHM.xSi,TINY)./MAT.rho ;
+    CHM.cFe = CHM.CFe./max(CHM.xFe,TINY)./MAT.rho ;
     SOL.T    = SOL.T0.*exp(SOL.S./MAT.rho./PHY.Cp ...
              + PHY.aT.*(SOL.Pt - P0)./rhoRef./PHY.Cp...
              - MAT.Ds./PHY.Cp);
 else
-    SOL.S   = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds);
-    SOL.H   = SOL.T.*(MAT.rho.*(PHY.Cp + MAT.Ds));
-    CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;
-    CHM.XSi = MAT.rho - CHM.XFe;
-    CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;
-    CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;
+%     SOL.S   = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds);
+%     SOL.H   = SOL.T.*(MAT.rho.*(PHY.Cp + MAT.Ds));
+%     CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;
+%     CHM.XSi = MAT.rho - CHM.XFe;
+%     CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;
+%     CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;
 end
 
 
@@ -191,8 +192,8 @@ if RUN.diseq
     if NUM.step>0 % update phase 
         FFe = rhoo.*xFeo.*fFelo + (NUM.theta.*dFFedt + (1-NUM.theta).*dFFedto).*NUM.dt; FFe = min(MAT.rho,max(0,FFe));
         FSi = rhoo.*xSio.*fSilo + (NUM.theta.*dFSidt + (1-NUM.theta).*dFSidto).*NUM.dt; FSi = min(MAT.rho,max(0,FSi));
-        CHM.fFel = FFe./(CHM.xFe)./MAT.rho;
-        CHM.fSil = FSi./(CHM.xSi)./MAT.rho;  % explicit update of crystal fractionCHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
+        CHM.fFel = FFe./max(TINY,CHM.xFe)./MAT.rho;
+        CHM.fSil = FSi./max(TINY,CHM.xSi)./MAT.rho;  % explicit update of crystal fractionCHM.fSil = min(1-TINY,max(TINY,CHM.fSil));                             % enforce [0,1] limit
 %         CHM.fSil = min(1,max(TINY,CHM.fSil)); CHM.fFel = min(1,max(TINY,CHM.fFel));
     end
 
@@ -213,8 +214,8 @@ else
 
     CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
 
-    CHM.GFe = (MAT.rho.*CHM.fFel-rhoo.*fFelo)./NUM.dt + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct iron melting rate
-    CHM.GSi = (MAT.rho.*CHM.fSil-rhoo.*fSilo)./NUM.dt + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct silicate melting rate
+    CHM.GFe = (MAT.rho.*CHM.XFe.*CHM.fFel-rhoo.*xFeo.*fFelo)./NUM.dt + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct iron melting rate
+    CHM.GSi = (MAT.rho.*CHM.XSi.*CHM.fSil-rhoo.*xSio.*fSilo)./NUM.dt + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct silicate melting rate
 end
 
 % update phase compositions
