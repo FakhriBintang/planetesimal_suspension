@@ -19,9 +19,7 @@ fh32 = figure(32); clf
         plot(mean(SOL.sFel(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
         plot(mean(SOL.sSis(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
         plot(mean(SOL.sSil(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
-%         name = [outpath '/',RUN.ID,'_dSdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
-%         print(fh32,name,'-dpng','-r300','-opengl');
-% 
+
         fh33 = figure(33); clf
         subplot(1,7,1)
         plot(mean(CHM.cFe(2:end-1,2:end-1),2) - mean(cFeo(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
@@ -56,9 +54,6 @@ fh32 = figure(32); clf
         plot(mean(cSio(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'--b','LineWidth',1); axis ij tight; box on; hold on
         plot(mean(CHM.cSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
         legend('cSio', 'cSi')
-% 
-%         name = [outpath '/',RUN.ID,'_dCdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
-%         print(fh33,name,'-dpng','-r300','-opengl');
 
 fh34 = figure(34); clf
 %         subplot(1,4,1)
@@ -109,6 +104,19 @@ fh34 = figure(34); clf
         end
         legend('dXFedt', 'dXSidt')
         title('dXdt')
+
+        if RUN.save
+
+        name = [outpath '/',RUN.ID,'_dSdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh32,name,'-dpng','-r300','-opengl');
+
+        name = [outpath '/',RUN.ID,'_dCdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh33,name,'-dpng','-r300','-opengl');
+
+        name = [outpath '/',RUN.ID,'_dXdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh34,name,'-dpng','-r300','-opengl');
+        end
+
 
 %         subplot(1,5,5)
 %         plot(1-mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
