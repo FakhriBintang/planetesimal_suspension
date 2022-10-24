@@ -73,7 +73,7 @@ fh34 = figure(34); clf
 % %         plot(mean(advn_FSi(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-r','LineWidth',1.5);
 %         title('dFSidt')
 %         legend('dFSidt', '$\Gamma_{Si}$','adv ')
-
+        if ~XSolve
         subplot(1,5,1)
         XSialt = MAT.rho - CHM.XFe;
         plot(mean(CHM.XSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
@@ -88,13 +88,30 @@ fh34 = figure(34); clf
         title('xSi')
         legend('xSi', 'xSialt')
 
+        end
+
         subplot(1,5,3)
-        plot(mean(CHM.XSi(2:end-1,2:end-1),2) - mean(XSialt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        title('XSi')
+        plot(mean(MAT.rho(2:end-1,2:end-1),2) - mean(CHM.XSi(2:end-1,2:end-1),2) - mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+        title('Xerror')
         subplot(1,5,4)
-        plot(mean(CHM.xSi(2:end-1,2:end-1),2) - mean(xSialt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+        plot(1 - mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on;
+        title('xerror')
+
         subplot(1,5,5)
-        plot(1-mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(dXFedt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on;
+        if XSolve
+           plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
+        else
+            % reconstruct Chemical density rate of change
+            dXSidt = (CHM.XSi - XSio)./NUM.dt;
+            plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
+
+        end
+        legend('dXFedt', 'dXSidt')
+        title('dXdt')
+
+%         subplot(1,5,5)
+%         plot(1-mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
 
 
 %         subplot(1,4,3)

@@ -78,22 +78,22 @@ else
 end
 
 
+if XSolve
+% test out advecting X_Si instead
+adv_XSi     = advection(MAT.rho.*CHM.xSi.*CHM.fSis,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+            + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
+dXSidt        = - adv_XSi;
 
-% % test out advecting X_Si instead
-% adv_XSi     = advection(MAT.rho.*CHM.xSi.*CHM.fSis,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-%             + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
-% dXSidt        = - adv_XSi;
-% 
-% if NUM.step>0 && any(CHM.xSi(:)>0) && any(CHM.xSi(:)<1)
-%     % update solution
-%     CHM.XSi = XSio + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
-% 
-%     % apply boundaries
-%     CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
-% else
-%     CHM.XSi = CHM.xSi.*MAT.rho;
-% end
+if NUM.step>0 && any(CHM.xSi(:)>0) && any(CHM.xSi(:)<1)
+    % update solution
+    CHM.XSi = XSio + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
 
+    % apply boundaries
+    CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
+else
+    CHM.XSi = CHM.xSi.*MAT.rho;
+end
+end
 
 % update fertile chemical components
 % equations 8a, 8b
@@ -141,10 +141,14 @@ if NUM.step>0
 end
 
 if NUM.step>0
-    CHM.XSi = MAT.rho - CHM.XFe;
+    if XSolve
     CHM.xFe = max(0,min(1,CHM.XFe./MAT.rho));
-%     CHM.xSi = CHM.XSi./MAT.rho;
-    CHM.xSi = 1-CHM.xFe;
+    CHM.xSi = max(0,min(1,CHM.XSi./MAT.rho));
+    else
+    CHM.XSi = MAT.rho - CHM.XFe;
+    CHM.xFe = max(0,min(1,CHM.XFe./MAT.rho));    
+    CHM.xSi = 1 - CHM.xFe;
+    end
 %     CHM.cSi = CHM.CSi./CHM.XSi ;
 %     CHM.cFe = CHM.CFe./CHM.XFe ;
     CHM.cSi = CHM.CSi./max(CHM.xSi,TINY)./MAT.rho ;
@@ -214,8 +218,8 @@ else
 
     CHM.fFel = 1-CHM.fFes; CHM.fSil = 1-CHM.fSis;
 
-    CHM.GFe = (MAT.rho.*CHM.XFe.*CHM.fFel-rhoo.*xFeo.*fFelo)./NUM.dt + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct iron melting rate
-    CHM.GSi = (MAT.rho.*CHM.XSi.*CHM.fSil-rhoo.*xSio.*fSilo)./NUM.dt + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct silicate melting rate
+    CHM.GFe = (MAT.rho.*CHM.xFe.*CHM.fFel-rhoo.*xFeo.*fFelo)./NUM.dt + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct iron melting rate
+    CHM.GSi = (MAT.rho.*CHM.xSi.*CHM.fSil-rhoo.*xSio.*fSilo)./NUM.dt + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');  % reconstruct silicate melting rate
 end
 
 % update phase compositions
