@@ -5,7 +5,7 @@ clear;% close all
 
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
-RUN.save        =  1;                    % switch on to save output files
+RUN.save        =  0;                    % switch on to save output files
 RUN.nop         =  200;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
@@ -97,7 +97,7 @@ AAP             =  [ 0.25, 0.25, 0.25; ...
                      0.25, 0.25, 0.25; ];  % permission slopes
 
 BBP             =  [ 0.44, 0.18, 0.38; ...
-                     0.60, 0.03, 0.37; ...
+                     0.61, 0.01, 0.38; ...
                      0.70, 0.24, 0.06; ];  % permission step locations
 
 CCP             =  [ 0.30, 0.30, 0.30; ...

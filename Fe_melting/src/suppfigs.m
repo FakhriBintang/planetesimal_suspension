@@ -55,7 +55,7 @@ fh32 = figure(32); clf
         plot(mean(CHM.cSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
         legend('cSio', 'cSi')
 
-fh34 = figure(34); clf
+% fh34 = figure(34); clf
 %         subplot(1,4,1)
 %         plot(mean(dFFedt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
 %         plot(mean(CHM.GFe(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
@@ -68,42 +68,42 @@ fh34 = figure(34); clf
 % %         plot(mean(advn_FSi(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-r','LineWidth',1.5);
 %         title('dFSidt')
 %         legend('dFSidt', '$\Gamma_{Si}$','adv ')
-        if ~XSolve
-        subplot(1,5,1)
-        XSialt = MAT.rho - CHM.XFe;
-        plot(mean(CHM.XSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(XSialt(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
-        title('XSi')
-        legend('XSi', 'XSialt')
+%         if ~XSolve
+%         subplot(1,5,1)
+%         XSialt = MAT.rho - CHM.XFe;
+%         plot(mean(CHM.XSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         plot(mean(XSialt(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
+%         title('XSi')
+%         legend('XSi', 'XSialt')
+% 
+%         subplot(1,5,2)
+%         xSialt = 1-CHM.xFe;
+%         plot(mean(CHM.xSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         plot(mean(xSialt(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
+%         title('xSi')
+%         legend('xSi', 'xSialt')
+% 
+%         end
+% 
+%         subplot(1,5,3)
+%         plot(mean(MAT.rho(2:end-1,2:end-1),2) - mean(CHM.XSi(2:end-1,2:end-1),2) - mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         title('Xerror')
+%         subplot(1,5,4)
+%         plot(1 - mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on;
+%         title('xerror')
 
-        subplot(1,5,2)
-        xSialt = 1-CHM.xFe;
-        plot(mean(CHM.xSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(xSialt(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
-        title('xSi')
-        legend('xSi', 'xSialt')
+%         subplot(1,5,5)
+%         plot(mean(dXFedt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on;
+%         if XSolve
+%            plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
+%         else
+%             % reconstruct Chemical density rate of change
+%             dXSidt = (CHM.XSi - XSio)./NUM.dt;
+%             plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
 
-        end
-
-        subplot(1,5,3)
-        plot(mean(MAT.rho(2:end-1,2:end-1),2) - mean(CHM.XSi(2:end-1,2:end-1),2) - mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        title('Xerror')
-        subplot(1,5,4)
-        plot(1 - mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on;
-        title('xerror')
-
-        subplot(1,5,5)
-        plot(mean(dXFedt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on;
-        if XSolve
-           plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
-        else
-            % reconstruct Chemical density rate of change
-            dXSidt = (CHM.XSi - XSio)./NUM.dt;
-            plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
-
-        end
-        legend('dXFedt', 'dXSidt')
-        title('dXdt')
+%         end
+%         legend('dXFedt', 'dXSidt')
+%         title('dXdt')
 
         if RUN.save
 
@@ -113,8 +113,8 @@ fh34 = figure(34); clf
         name = [outpath '/',RUN.ID,'_dCdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
         print(fh33,name,'-dpng','-r300','-opengl');
 
-        name = [outpath '/',RUN.ID,'_dXdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
-        print(fh34,name,'-dpng','-r300','-opengl');
+%         name = [outpath '/',RUN.ID,'_dXdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+%         print(fh34,name,'-dpng','-r300','-opengl');
         end
 
 
