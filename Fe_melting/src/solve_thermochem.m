@@ -15,25 +15,29 @@ fSili = CHM.fSil;
 rhoi  = MAT.rho;
 
 %% update entropy and Temperature
-advn_S  = -advection(MAT.rho.*CHM.xSi.*CHM.fSis.*SOL.sSis ,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        -  advection(MAT.rho.*CHM.xFe.*CHM.fFes.*SOL.sFes ,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        -  advection(MAT.rho.*CHM.xSi.*CHM.fSil.*SOL.sSil ,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-        -  advection(MAT.rho.*CHM.xFe.*CHM.fFel.*SOL.sFel ,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
+advn_S  = - advect(MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSis(inz,inx).*SOL.sSis(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,SCHM,[1,2],BCA) ...  % heat advection
+          - advect(MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFes(inz,inx).*SOL.sFes(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,SCHM,[1,2],BCA) ...
+          - advect(MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSil(inz,inx).*SOL.sSil(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,SCHM,[1,2],BCA) ...  % heat advection
+          - advect(MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFel(inz,inx).*SOL.sFel(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,SCHM,[1,2],BCA);
+% advn_S  = -advection(MAT.rho.*CHM.xSi.*CHM.fSis.*SOL.sSis ,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%         -  advection(MAT.rho.*CHM.xFe.*CHM.fFes.*SOL.sFes ,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%         -  advection(MAT.rho.*CHM.xSi.*CHM.fSil.*SOL.sSil ,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%         -  advection(MAT.rho.*CHM.xFe.*CHM.fFel.*SOL.sFel ,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
 % enthalpy on the outside
 qSz    = - (MAT.ks(1:end-1,:)+MAT.ks(2:end,:))./2 .* ddz(SOL.T,NUM.h);                     % heat diffusion z-flux
 qSx    = - (MAT.ks(:,1:end-1)+MAT.ks(:,2:end))./2 .* ddx(SOL.T,NUM.h);                     % heat diffusion x-flux
-diff_S(2:end-1,2:end-1) = (- ddz(qSz(:,2:end-1),NUM.h)  ...                    % heat diffusion
-                           - ddx(qSx(2:end-1,:),NUM.h));
+diff_S =(- ddz(qSz(:,2:end-1),NUM.h)  ...                    % heat diffusion
+         - ddx(qSx(2:end-1,:),NUM.h));
 
 
-diss_T = zeros(size(SOL.T));
-diss_T(2:end-1,2:end-1) = EntProd ./SOL.T(2:end-1,2:end-1);
+% diss_T = zeros(size(SOL.T));
+diss_T = EntProd ./SOL.T(2:end-1,2:end-1);
 
 dSdt   = advn_S + diff_S + diss_T; % + MAT.Hr;
 
 if NUM.step>0
     % update solution
-    SOL.S = So + (NUM.theta.*dSdt + (1-NUM.theta).*dSdto) .* NUM.dt;
+    SOL.S(inz,inx) = So(inz,inx) + (NUM.theta.*dSdt + (1-NUM.theta).*dSdto) .* NUM.dt;
 
     %apply boundaries
     switch SOL.BCTTop
@@ -65,13 +69,16 @@ end
 % equation 7
 
 if any(CHM.xFe(:)>0 | CHM.xFe(:)<1)
-adv_XFe     = advection(MAT.rho.*CHM.xFe.*CHM.fFes,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
-            + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
-dXFedt        = - adv_XFe;
+
+adv_XFe     = - advect(MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFes(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,SCHM,[1,2],BCA) ...
+              - advect(MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFel(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,SCHM,[1,2],BCA);
+% adv_XFe     = advection(MAT.rho.*CHM.xFe.*CHM.fFes,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%             + advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
+dXFedt        = adv_XFe;
 
 if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
     % update solution
-    CHM.XFe = XFeo + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
+    CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
@@ -80,28 +87,32 @@ else
 end
 end
 
-
-if XSolve
-% test out advecting X_Si instead
-adv_XSi     = advection(MAT.rho.*CHM.xSi.*CHM.fSis,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-            + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
-dXSidt        = - adv_XSi;
-
-if NUM.step>0 && any(CHM.xSi(:)>0) && any(CHM.xSi(:)<1)
-    % update solution
-    CHM.XSi = XSio + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
-
-    % apply boundaries
-    CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
-else
-    CHM.XSi = CHM.xSi.*MAT.rho;
-end
-end
+% 
+% if XSolve
+% % test out advecting X_Si instead
+% adv_XSi     = advection(MAT.rho.*CHM.xSi.*CHM.fSis,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%             + advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
+% dXSidt        = - adv_XSi;
+% 
+% if NUM.step>0 && any(CHM.xSi(:)>0) && any(CHM.xSi(:)<1)
+%     % update solution
+%     CHM.XSi = XSio + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+% 
+%     % apply boundaries
+%     CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
+% else
+%     CHM.XSi = CHM.xSi.*MAT.rho;
+% end
+% end
 
 % update fertile chemical components
 % equations 8a, 8b
-advn_CSi  = - advection(MAT.rho.*CHM.xSi.*CHM.fSis.*CHM.csSi,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
-            - advection(MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.clSi,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
+
+advn_CSi    =-advect (MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSis(inz,inx).*CHM.csSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,SCHM,[1,2],BCA) ...
+             -advect (MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSil(inz,inx).*CHM.clSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,SCHM,[1,2],BCA);
+
+% advn_CSi  = - advection(MAT.rho.*CHM.xSi.*CHM.fSis.*CHM.csSi,UsSi,WsSi,NUM.h,NUM.h,NUM.ADVN,'flx')...
+%             - advection(MAT.rho.*CHM.xSi.*CHM.fSil.*CHM.clSi,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');
 
 qCSiz     = - PHY.kC.* (MAT.rho (1:end-1,:)+MAT.rho (2:end,:))/2 ...
           .* (CHM.xSi (1:end-1,:)+CHM.xSi (2:end,:))/2 ...
@@ -111,14 +122,14 @@ qCSix     = - PHY.kC.* (MAT.rho (:,1:end-1)+MAT.rho (:,2:end))/2 ...
           .* (CHM.xSi (:,1:end-1)+CHM.xSi (:,2:end))/2 ...
           .* (CHM.fSil(:,1:end-1)+CHM.fSil(:,2:end))/2 ...
           .* ddx(CHM.cSi,NUM.h);
-diff_CSi(2:end-1,2:end-1) = (- ddz(qCSiz(:,2:end-1),NUM.h) ...             % chemical diffusion
-                             - ddx(qCSix(2:end-1,:),NUM.h));
+diff_CSi = (- ddz(qCSiz(:,2:end-1),NUM.h) ...             % chemical diffusion
+            - ddx(qCSix(2:end-1,:),NUM.h));
 
 
 dCSidt    = advn_CSi + diff_CSi;
 
-advn_CFe  = - advection(MAT.rho.*CHM.xFe.*CHM.fFes.*CHM.csFe,UsFe,WsFe,NUM.h,NUM.h,NUM.ADVN,'flx')...
-            - advection(MAT.rho.*CHM.xFe.*CHM.fFel.*CHM.clFe,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');
+advn_CFe    =-advect (MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFes(inz,inx).*CHM.csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,SCHM,[1,2],BCA) ...
+             -advect (MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFel(inz,inx).*CHM.clFe(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,SCHM,[1,2],BCA);
 
 qCFez     = - PHY.kC.* (MAT.rho (1:end-1,:)+MAT.rho (2:end,:))/2 ...
           .* (CHM.xFe (1:end-1,:)+CHM.xFe (2:end,:))/2 ...
@@ -128,15 +139,15 @@ qCFex     = - PHY.kC.* (MAT.rho (:,1:end-1)+MAT.rho (:,2:end))/2 ...
           .* (CHM.xFe (:,1:end-1)+CHM.xFe (:,2:end))/2 ...
           .* (CHM.fFel(:,1:end-1)+CHM.fFel(:,2:end))/2 ...
           .* ddx(CHM.cFe,NUM.h);                                 % chemical diffusion z-flux
-diff_CFe(2:end-1,2:end-1) = (- ddz(qCFez(:,2:end-1),NUM.h) ...             % chemical diffusion
-                             - ddx(qCFex(2:end-1,:),NUM.h));
+diff_CFe  = (- ddz(qCFez(:,2:end-1),NUM.h) ...             % chemical diffusion
+             - ddx(qCFex(2:end-1,:),NUM.h));
 
 dCFedt      = advn_CFe + diff_CFe;
 
 if NUM.step>0
     % update solution
-    CHM.CSi = CSio + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto) .* NUM.dt;
-    CHM.CFe = CFeo + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto) .* NUM.dt;
+    CHM.CSi(inz,inx) = CSio(inz,inx) + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto) .* NUM.dt;
+    CHM.CFe(inz,inx) = CFeo(inz,inx) + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto) .* NUM.dt;
 
     % apply boundaries
     CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
@@ -160,22 +171,24 @@ fSilq = 1-fSisq;
 % update phase fractions
 if RUN.diseq
     CHM.GFe     = alpha.*CHM.GFe + (1-alpha).*((fFelq-CHM.fFel).*CHM.XFe./(4.*NUM.dt));
+    advn_FFe    = - advect (MAT.rho(inz,inx).*CHM.xFe(inz,inx).*CHM.fFel(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,SCHM,[1,2],BCA);
+%     advn_FFe    = - advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
 
-    advn_FFe    = - advection(MAT.rho.*CHM.xFe.*CHM.fFel,UlFe,WlFe,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
-
-    dFFedt      = advn_FFe + CHM.GFe;
+    dFFedt      = advn_FFe + CHM.GFe(inz,inx);
 
     CHM.GSi     = alpha.*CHM.GSi + (1-alpha).*((fSilq-CHM.fSil).*CHM.XSi./(4.*NUM.dt));
+    advn_FSi    = - advect (MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSil(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,SCHM,[1,2],BCA);
+%     advn_FSi    = - advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
 
-    advn_FSi    = - advection(MAT.rho.*CHM.xSi.*CHM.fSil,UlSi,WlSi,NUM.h,NUM.h,NUM.ADVN,'flx');            % get advection term
-
-    dFSidt      = advn_FSi + CHM.GSi;                                       % total rate of change
+    dFSidt      = advn_FSi + CHM.GSi(inz,inx);                                       % total rate of change
 
 
 
     if NUM.step>0 % update phase 
-        FFe = rhoo.*xFeo.*fFelo + (NUM.theta.*dFFedt + (1-NUM.theta).*dFFedto).*NUM.dt; FFe = min(MAT.rho,max(0,FFe));
-        FSi = rhoo.*xSio.*fSilo + (NUM.theta.*dFSidt + (1-NUM.theta).*dFSidto).*NUM.dt; FSi = min(MAT.rho,max(0,FSi));
+        FFe(inz,inx) = FFeo(inz,inx) + (NUM.theta.*dFFedt + (1-NUM.theta).*dFFedto).*NUM.dt; FFe = min(MAT.rho,max(0,FFe));
+        FSi(inz,inx) = FSio(inz,inx) + (NUM.theta.*dFSidt + (1-NUM.theta).*dFSidto).*NUM.dt; FSi = min(MAT.rho,max(0,FSi));
+        FFe([1 end],:) = FFe([2 end-1],:);  FFe(:,[1 end]) = FFe(:,[2 end-1]); % apply boundary conditions
+        FSi([1 end],:) = FSi([2 end-1],:);  FSi(:,[1 end]) = FSi(:,[2 end-1]); % apply boundary conditions
         CHM.fFel = FFe./max(TINY,CHM.XFe);
         CHM.fSil = FSi./max(TINY,CHM.XSi);
 %         CHM.fFel = FFe./max(TINY,CHM.xFe)./MAT.rho;

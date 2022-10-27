@@ -45,6 +45,9 @@ NUM.MapW        =  reshape(1:NUM.NW,NUM.nzW,NUM.nxW);
 NUM.MapU        =  reshape(1:NUM.NU,NUM.nzU,NUM.nxU) + NUM.NW;
 NUM.MapP        =  reshape(1:NUM.NP,NUM.nzP,NUM.nxP);
 
+inz = 2:length(NUM.zP)-1;
+inx = 2:length(NUM.xP)-1;
+
 % get smoothed initialisation field
 rng(15);
 rp = randn(NUM.nzP,NUM.nxP);
@@ -91,19 +94,19 @@ DEF.tII = zeros(NUM.nzP,NUM.nxP);               % stress magnitude on centre nod
 
 
 %% setup heating rates
-dHdt     = zeros(NUM.Nz+2,NUM.Nx+2);            % enthalpy rate of change
-dSdt     = zeros(NUM.Nz+2,NUM.Nx+2);
-dXFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron system rate of change 
-dXSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Si system rate of change 
-dCSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component density rate of change
-dCFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component density rate of change
-dFFedt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron melt fraction rate of change
-dFSidt   = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate melt fraction rate of change
-diff_S   = zeros(NUM.Nz+2,NUM.Nx+2);            % Temperature diffusion rate
-diff_CSi = zeros(NUM.Nz+2,NUM.Nx+2);            % Silicate component diffusion rate
-diff_CFe = zeros(NUM.Nz+2,NUM.Nx+2);            % Iron component diffusion rate
+dHdt     = zeros(NUM.Nz,NUM.Nx);            % enthalpy rate of change
+dSdt     = zeros(NUM.Nz,NUM.Nx);
+dXFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron system rate of change 
+dXSidt   = zeros(NUM.Nz,NUM.Nx);            % Si system rate of change 
+dCSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate component density rate of change
+dCFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron component density rate of change
+dFFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron melt fraction rate of change
+dFSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate melt fraction rate of change
+diff_S   = zeros(NUM.Nz,NUM.Nx);            % Temperature diffusion rate
+diff_CSi = zeros(NUM.Nz,NUM.Nx);            % Silicate component diffusion rate
+diff_CFe = zeros(NUM.Nz,NUM.Nx);            % Iron component diffusion rate
 Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
-Div_rhoV = zeros(NUM.Nz+2,NUM.Nx+2);            % Mixture mass flux divergence
+Div_rhoV = zeros(NUM.Nz,NUM.Nx);            % Mixture mass flux divergence
 
 %% initialise previous solution and auxiliary fields
 rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
@@ -190,16 +193,18 @@ MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
 
 MAT.Ds    = CHM.xFe.* CHM.fFel.*CHM.dEntrFe...                             % mixture latent heat capacity density
           + CHM.xSi.* CHM.fSil.*CHM.dEntrSi;
-
-SOL.S   = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
-SOL.sFes = SOL.S./MAT.rho -MAT.Ds;
-SOL.sSis = SOL.S./MAT.rho -MAT.Ds;
-SOL.sFel = SOL.sFes + CHM.dEntrFe;
-SOL.sSil = SOL.sSis + CHM.dEntrSi;
-SOL.H   = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
-CHM.XFe = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
-CHM.CFe = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
-CHM.CSi = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
+% set conserved quantities
+SOL.S       = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
+SOL.sFes    = SOL.S./MAT.rho -MAT.Ds;
+SOL.sSis    = SOL.S./MAT.rho -MAT.Ds;
+SOL.sFel    = SOL.sFes + CHM.dEntrFe;
+SOL.sSil    = SOL.sSis + CHM.dEntrSi;
+SOL.H       = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
+CHM.XFe     = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
+CHM.CFe     = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
+CHM.CSi     = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
+FFe         = MAT.rho.*CHM.xFe.*CHM.fFel;
+FSi         = MAT.rho.*CHM.xSi.*CHM.fSil;
 
 CHM.GFe = 0.*CHM.fFel;
 CHM.GSi = 0.*CHM.fSil;

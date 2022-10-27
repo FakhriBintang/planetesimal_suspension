@@ -1,14 +1,14 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear;% close all
+clear all;% close all
 
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  200;                   % output every 'nop' grid steps of transport
+RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
-RUN.diseq       =  0;                    % switch to disequilibrium approach to thermochemical evolution
+RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
 RUN.rad         =  0; %radiogenic heating
 
@@ -24,11 +24,11 @@ NUM.dt          =  0.05*NUM.yr;          % (initial) time step [s]
 %% set model domain
 NUM.D           =  10;                 % domain depth
 % NUM.L           =  5;                    % domain length
-NUM.N           =  200;                  % number of real x block nodes
+NUM.N           =  200;                  % number of real x/z block nodes
 
 % [do not modify]
-NUM.h           =  NUM.D/NUM.N;          % spacing of x coordinates
-NUM.L = NUM.h*3;
+NUM.h           =  NUM.D/NUM.N;          % spacing of x/z  coordinates
+NUM.L = NUM.D*3./NUM.N;
 
 %% set thermochemical parameters
 
@@ -61,8 +61,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1700;                      % reference/top potential temperature [C]
-SOL.T1      =  1700;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1750;                      % reference/top potential temperature [C]
+SOL.T1      =  1750;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -132,7 +132,8 @@ SOL.BCbot       = -1;                     % bottom boundary
 
 %% set solver options
 % advection scheme
-NUM.ADVN        = 'fromm';  % advection scheme ('fromm','first upwind','second upwind','third upwind','flxdiv')
+SCHM     =  {'weno5',''};        % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+BCA      =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.25;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
@@ -143,9 +144,9 @@ dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
 alpha           = 0.4;     % iterative lagging parameters
-nvsmooth        = 3;       % smoothing interations for the vseg boundaries
+nvsmooth        = 0;       % smoothing interations for the vseg boundaries
 
-XSolve          = 1; % !!test!! switch 1 to solve full conservation of XSi, 0 to resolve as a sum with XFe
+% XSolve          = 1; % !!test!! switch 1 to solve full conservation of XSi, 0 to resolve as a sum with XFe
 
 %% start model
 % create output directory

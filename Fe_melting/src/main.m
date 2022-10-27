@@ -31,6 +31,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     CFeo      = CHM.CFe;
     XFeo      = CHM.XFe;
     XSio      = CHM.XSi;
+    FFeo      = FFe;
+    FSio      = FSi;
     xFeo      = CHM.xFe;
     xSio      = CHM.xSi;
     So        = SOL.S;
@@ -81,11 +83,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
             fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
             figure(100); if iter==1; clf; else; hold on; end
-            plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
-% plot(iter,log10(normT),'r.',iter,log10(normxFe),'g.',iter,log10(normxSi),'b.'...
-%     ,iter,log10(normcFe),'c.',iter,log10(normcSi),'m.',iter,log10(normfFe),'y.',iter,log10(normfSi),'k*',...
-%      iter, log10(normrho),'ok','MarkerSize',15,'LineWidth',1.5); box on; axis tight;            
-drawnow;
+            plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;  
+            drawnow;
         end
 
         iter = iter+1;
@@ -98,7 +97,6 @@ drawnow;
         output;
  
         suppfigs;
-
         if RUN.rad
             figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
         end
