@@ -1,12 +1,12 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear all;% close all
+clear all; close all
 
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  50;                   % output every 'nop' grid steps of transport
+RUN.nop         =  100;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -33,7 +33,7 @@ NUM.L = NUM.D*3./NUM.N;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
+CHM.xFe0        =  0;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 CHM.cSi0        =  0.46;                 % Si system fertile component fraction [wt% SiO2]
 
@@ -61,8 +61,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1750;                      % reference/top potential temperature [C]
-SOL.T1      =  1750;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1650;                      % reference/top potential temperature [C]
+SOL.T1      =  1650;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -77,7 +77,7 @@ PHY.rhoFes      =  8000;                 % reference desnity solid refractory ir
 PHY.rhoFel      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
 PHY.gCSi        =  0.50;                 % compositional expansivity silicate
 PHY.gCFe        =  0.65;                 % compositional expansivity iron
-PHY.aT          =  0;%3e-5;                 % thermal expansivity silicate [1/K]
+PHY.aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 PHY.dx          =  1e-4;                 % solid grain size [m]
 PHY.df          =  1e-4;                 % metal droplet size [m]
 PHY.dm          =  1e-3;                 % melt film size [m]
@@ -134,12 +134,12 @@ SOL.BCbot       = -1;                     % bottom boundary
 % advection scheme
 SCHM     =  {'weno5',''};        % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA      =  {'',''};             % boundary condition on advection (top/bot, sides)
-TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 0.25;   	% Courant number to limit physical time step
+TINY            = 1e-17;    % tiny number to safeguard [0,1] limits
+NUM.CFL         = 0.2;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
 NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
 NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 30;       % maximum iteration count
+NUM.maxit       = 25;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation

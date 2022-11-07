@@ -32,8 +32,8 @@ fh32 = figure(32); clf
         legend('\Delta CFe', '\Delta CSi')
         title('dC')
         subplot(1,7,3)
-        plot(mean(dCFedt,2) - mean(dCFedto,2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(dCSidt,2) - mean(dCSidto,2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
+        plot(mean(dCFedt,2) ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(dCSidt,2) ,NUM.zP(2:end-1),'-b','LineWidth',2);
         legend('dCFedt', 'dCSidt')
         title('dCdt')
 
