@@ -83,6 +83,8 @@ if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
+    % enforce 0,rho limits
+    CHM.XFe = min(MAT.rho,max(0,CHM.XFe));   
 else
     CHM.XFe = CHM.xFe.*MAT.rho;
 end
@@ -133,6 +135,10 @@ if NUM.step>0
     % apply boundaries
     CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
     CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]); 
+
+    % enforce 0,rho limits
+    CHM.CFe = min(MAT.rho,max(0,CHM.CFe));   
+    CHM.CSi = min(MAT.rho,max(0,CHM.CSi));   
 end
 
 

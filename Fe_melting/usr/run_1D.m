@@ -6,7 +6,7 @@ clear all; close all
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  100;                   % output every 'nop' grid steps of transport
+RUN.nop         =  50;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -137,9 +137,9 @@ BCA      =  {'',''};             % boundary condition on advection (top/bot, sid
 TINY            = 1e-17;    % tiny number to safeguard [0,1] limits
 NUM.CFL         = 0.2;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 25;       % maximum iteration count
+NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 20;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation

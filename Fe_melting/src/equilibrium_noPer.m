@@ -23,7 +23,7 @@ cmq = max(TINY,min(1-TINY,          perCm .*erf((1.0+PhDg/10).*(1   -T))./erf((1
 cxq = min(c,cphs0 + cxq.*(cphs1-cphs0));
 cmq = max(c,cphs0 + cmq.*(cphs1-cphs0));
 
-xq  = max(TINY,min(1-TINY, (c-cmq)./(cxq-cmq) ));
+xq  = max(0,min(1, (c-cmq)./(cxq-cmq) ));
 
 if size(xq,1)>1
     xq([1 end],:) = xq([2 end-1],:);
