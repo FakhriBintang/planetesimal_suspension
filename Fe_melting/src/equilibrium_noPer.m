@@ -4,14 +4,16 @@ T   = max(0,min(1,(T0 - P*clap -Tphs0)./(Tphs1-Tphs0))) ;
 
 % cx1 = max(TINY,min(1-TINY,          perCx .*erfc((2+PhDg).*(T-perT)./(1-perT)))); 
 % cx2 = max(TINY,min(1-TINY, perCx+(1-perCx).*erfc((1+PhDg).*(T     )./   perT) ));
-cxq = max(TINY,min(1-TINY,          erfc((2+PhDg).*T))); 
+cxq = max(0,min(1,          erfc((2+PhDg).*T))); 
 
 
 % cxq = zeros(size(T));
 % cxq(T>=perT) = cx1(T>=perT);
 % cxq(T< perT) = cx2(T< perT);
 
-cmq = max(TINY,min(1-TINY,          perCm .*erf((1.0+PhDg/10).*(1   -T))./erf((1.0+PhDg/10))));
+% cmq = max(TINY,min(1-TINY,          perCm .*erf((1.0+PhDg/10).*(1   -T))./erf((1.0+PhDg/10))));
+cmq = max(0,min(1,          perCm .*erf((1.0+PhDg/10).*(1   -T))./erf((1.0+PhDg/10))));
+
 % cm1 = max(TINY,min(1-TINY,          perCm .*erf((1.0+PhDg/10).*(1   -T)./(1-perT))./erf((1.0+PhDg/10))));
 % 
 % cm2 = max(TINY,min(1-TINY, perCm+(1-perCm).*erf((0.9+PhDg/10).*(perT-T)./(  perT))./erf((0.9+PhDg/10))));

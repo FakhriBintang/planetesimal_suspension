@@ -84,7 +84,7 @@ if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
     % enforce 0,rho limits
-    CHM.XFe = min(MAT.rho,max(0,CHM.XFe));   
+    CHM.XFe = min(MAT.rho-TINY,max(TINY,CHM.XFe));   
 else
     CHM.XFe = CHM.xFe.*MAT.rho;
 end
@@ -123,7 +123,7 @@ qCFex     = - PHY.kC.* (MAT.rho (:,1:end-1)+MAT.rho (:,2:end))/2 ...
           .* (CHM.fFel(:,1:end-1)+CHM.fFel(:,2:end))/2 ...
           .* ddx(CHM.cFe,NUM.h);                                 % chemical diffusion z-flux
 diff_CFe  = (- ddz(qCFez(:,2:end-1),NUM.h) ...             % chemical diffusion
-             - ddx(qCFex(2:end-1,:),NUM.h));
+             - ddx(qCFex(2:end-1,:),NUM.h)).*0;
 
 dCFedt      = advn_CFe + diff_CFe;
 
@@ -137,8 +137,8 @@ if NUM.step>0
     CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]); 
 
     % enforce 0,rho limits
-    CHM.CFe = min(MAT.rho,max(0,CHM.CFe));   
-    CHM.CSi = min(MAT.rho,max(0,CHM.CSi));   
+    CHM.CFe = min((MAT.rho-TINY).*cFeo,max(TINY.*cFeo,CHM.CFe));   
+    CHM.CSi = min((MAT.rho-TINY).*cFeo,max(TINY.*cSio,CHM.CSi));   
 end
 
 
@@ -241,12 +241,8 @@ CHM.xFe = max(0,min(1,CHM.XFe./MAT.rho));
 % CHM.xSi = max(TINY,min(1-TINY,CHM.XSi./MAT.rho));
 CHM.xSi = 1 - CHM.xFe;
 % update chemical composition
-CHM.cSi = max(0,min(CHM.cphsSi2,CHM.CSi./CHM.XSi)).*(CHM.xSi>0);
-% CHM.cSi2 = CHM.CSi./(MAT.rho.*max(TINY,CHM.xSi));
-CHM.cFe = max(0,min(CHM.cphsFe2,CHM.CFe./CHM.XFe)).*(CHM.xFe>0);
-% CHM.cFe2 = CHM.CFe./(MAT.rho.*max(TINY,CHM.xFe));
-% CHM.cSi = CHM.CSi./max(CHM.xSi,TINY)./MAT.rho ;
-% CHM.cFe = CHM.CFe./max(CHM.xFe,TINY)./MAT.rho ;
+CHM.cSi = CHM.CSi./max(TINY,CHM.XSi);
+CHM.cFe = CHM.CFe./max(TINY,CHM.XFe);
 % update temperature
 SOL.T   = SOL.T0.*exp(SOL.S./MAT.rho./PHY.Cp ...
     + PHY.aT.*(SOL.Pt - P0)./rhoRef./PHY.Cp...

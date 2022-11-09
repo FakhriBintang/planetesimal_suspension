@@ -6,7 +6,7 @@ clear all; close all
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  50;                   % output every 'nop' grid steps of transport
+RUN.nop         =  100;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -33,7 +33,7 @@ NUM.L = NUM.D*3./NUM.N;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-CHM.xFe0        =  0;                 % Fe-FeS system fraction
+CHM.xFe0        =  0.2;                 % Fe-FeS system fraction
 CHM.cFe0        =  0.22;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 CHM.cSi0        =  0.46;                 % Si system fertile component fraction [wt% SiO2]
 
@@ -61,8 +61,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1650;                      % reference/top potential temperature [C]
-SOL.T1      =  1650;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1850;                      % reference/top potential temperature [C]
+SOL.T1      =  1850;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
