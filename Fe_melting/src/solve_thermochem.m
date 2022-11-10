@@ -138,7 +138,7 @@ if NUM.step>0
 
     % enforce 0,rho limits
     CHM.CFe = min((MAT.rho-TINY).*cFeo,max(TINY.*cFeo,CHM.CFe));   
-    CHM.CSi = min((MAT.rho-TINY).*cFeo,max(TINY.*cSio,CHM.CSi));   
+    CHM.CSi = min((MAT.rho-TINY).*cSio,max(TINY.*cSio,CHM.CSi));   
 end
 
 
