@@ -104,8 +104,9 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     
     % break script for NaN
     if isnan(resnorm)
-        print('Error, Breaking script')
         output
+        print('Error, Breaking script')
+%         output
         return
     end
     % increment time
