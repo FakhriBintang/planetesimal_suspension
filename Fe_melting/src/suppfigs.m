@@ -55,7 +55,7 @@ fh32 = figure(32); clf
         plot(mean(CHM.cSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
         legend('cSio', 'cSi')
 
-fh34 = figure(34); clf
+% fh34 = figure(34); clf
 %         subplot(1,4,1)
 %         plot(mean(dFFedt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
 %         plot(mean(CHM.GFe(2:end-1,2:end-1),2)   ,NUM.zP(2:end-1),'-b','LineWidth',1.5);
@@ -69,21 +69,21 @@ fh34 = figure(34); clf
 %         title('dFSidt')
 %         legend('dFSidt', '$\Gamma_{Si}$','adv ')
 %         if ~XSolve
-        subplot(1,5,1)
-        plot(mean(CHM.XSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        title('XSi')
-        subplot(1,5,2)
-        plot(mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        title('XFe')
-        subplot(1,5,3)
-        plot(mean(MAT.rho(2:end-1,2:end-1),2) - mean(CHM.XSi(2:end-1,2:end-1),2) - mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
-        title('Xerror')
-        subplot(1,5,4)
-        plot(1 - mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on;
-        title('xerror')
-
-        subplot(1,5,5)
-        plot(mean(dXFedt,2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on;
+%         subplot(1,5,1)
+%         plot(mean(CHM.XSi(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         title('XSi')
+%         subplot(1,5,2)
+%         plot(mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         title('XFe')
+%         subplot(1,5,3)
+%         plot(mean(MAT.rho(2:end-1,2:end-1),2) - mean(CHM.XSi(2:end-1,2:end-1),2) - mean(CHM.XFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         title('Xerror')
+%         subplot(1,5,4)
+%         plot(1 - mean(CHM.xSi(2:end-1,2:end-1),2) - mean(CHM.xFe(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on;
+%         title('xerror')
+% 
+%         subplot(1,5,5)
+%         plot(mean(dXFedt,2)  ,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on;
 %         if XSolve
 %            plot(mean(dXSidt(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-b','LineWidth',2);
 %         else
@@ -96,20 +96,23 @@ fh34 = figure(34); clf
 %         title('dXdt')
 
 fh39 = figure(39); clf
-        subplot(1,4,1)
+        subplot(1,5,1)
         plot(mean(dSdt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
         title('dSdt')
-        subplot(1,4,2)
+        subplot(1,5,2)
         plot(mean(dXFedt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
         title('dFedt')
-        subplot(1,4,3)
+        subplot(1,5,3)
         plot(mean(dCFedt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
         plot(mean(dCSidt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2);
         title('dCFedt','dCSidt')
-        subplot(1,4,4)
+        subplot(1,5,4)
         plot(mean(dFFedt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
         title('dFdt')
-
+% %         subplot(1,5,5)
+% %         plot(mean(dXSidt-dXSidt_1(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         plot(mean(dXSidt,2)  ,NUM.zP(2:end-1),'-k','LineWidth',2); axis ij tight; box on; hold on
+%         plot(mean(dXSidt_1(2:end-1,2:end-1),2)  ,NUM.zP(2:end-1),'--b','LineWidth',2);
 
         if RUN.save
 
@@ -119,8 +122,8 @@ fh39 = figure(39); clf
         name = [outpath '/',RUN.ID,'_dCdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
         print(fh33,name,'-dpng','-r300','-opengl');
 
-%         name = [outpath '/',RUN.ID,'_dXdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
-%         print(fh34,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RUN.ID,'_dMdt_',num2str(floor(NUM.step/RUN.nop))]; % figure 4
+        print(fh39,name,'-dpng','-r300','-opengl');
         end
 
 

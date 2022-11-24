@@ -54,10 +54,10 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     resnorm0  = resnorm;
     iter      = 0;
 
+    if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
+
     % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
-
-        if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
 
         % solve thermo-chemical equations
             solve_thermochem;
@@ -95,8 +95,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 
     if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
         output;
- 
-        suppfigs;
+%        suppfigs; % supplementary figures for testing
         if RUN.rad
             figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
         end

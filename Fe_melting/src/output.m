@@ -468,7 +468,8 @@ if RUN.save
     name = [outpath '/',RUN.ID,'_cont'];
     save(name,'NUM','PHY','SOL','MAT','CHM','HST','rhoo','To','fFelo','fSilo', ...
         'cFeo','cSio','CSio','CFeo','XFeo','XSio','FFeo','FSio','xFeo','xSio', ...
-        'So','dSdto','dXFedto','dXSidto','dCSidto','dCFedto','dFFedto','dFSidto','Pto');
+        'So','dSdto','dXFedto','dXSidto','dCSidto','dCFedto','dFFedto','dFSidto',...
+        'segFel','segFes','segSil','segSis','Pto');
     
     if NUM.step == 0
         logfile = [outpath '/',RUN.ID,'.log'];

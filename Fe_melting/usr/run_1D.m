@@ -1,7 +1,7 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear all; close all
+clear all; %close all
 
 RUN.ID          =  ['Point of failure'];            % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
@@ -24,7 +24,7 @@ NUM.dt          =  0.05*NUM.yr;          % (initial) time step [s]
 %% set model domain
 NUM.D           =  10;                 % domain depth
 % NUM.L           =  5;                    % domain length
-NUM.N           =  200;                  % number of real x/z block nodes
+NUM.N           =  400;                  % number of real x/z block nodes
 
 % [do not modify]
 NUM.h           =  NUM.D/NUM.N;          % spacing of x/z  coordinates
@@ -61,8 +61,8 @@ CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of m
 CHM.tau_r   = 1e-3*NUM.yr;                % reaction time scale [s]
 
 % set temperature initial condition
-SOL.T0      =  1850;                      % reference/top potential temperature [C]
-SOL.T1      =  1850;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1900;                      % reference/top potential temperature [C]
+SOL.T1      =  1800;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -120,8 +120,8 @@ PHY.Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-SOL.BCTTop      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
-SOL.BCTBot      = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTTop      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTBot      = 'isothermal';          % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';          % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
@@ -132,21 +132,18 @@ SOL.BCbot       = -1;                     % bottom boundary
 
 %% set solver options
 % advection scheme
-SCHM     =  {'weno5',''};        % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+ADVN     =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA      =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY            = 1e-17;    % tiny number to safeguard [0,1] limits
-NUM.CFL         = 0.2;   	% Courant number to limit physical time step
+NUM.CFL         = 1/6;   	% Courant number to limit physical time step
 NUM.theta     	= 0.5;      % 0 = backwards Euler, 0.5 = Crank-Nicholson, 1 = Forward Euler
-NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-6;     % absolute residual tolerance for nonlinear iterations
+NUM.reltol    	= 1e-5;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
 NUM.maxit       = 20;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etamin          = 1e2;      % minimum viscosity for stabilisation
 etamax          = 1e15;     % maximum viscosity for stabilisation
-alpha           = 0.4;     % iterative lagging parameters
-nvsmooth        = 0;       % smoothing interations for the vseg boundaries
-
-% XSolve          = 1; % !!test!! switch 1 to solve full conservation of XSi, 0 to resolve as a sum with XFe
+alpha           = 0.7;     % iterative lagging parameters
 
 %% start model
 % create output directory

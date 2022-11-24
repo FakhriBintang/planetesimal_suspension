@@ -66,8 +66,6 @@ rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
 MAT.gxP = zeros(NUM.nzP,NUM.nxP) + PHY.gx;      MAT.gzP = zeros(NUM.nzP,NUM.nxP) + PHY.gz;
 MAT.gx  = zeros(NUM.nzU,NUM.nxU) + PHY.gx;      MAT.gz  = zeros(NUM.nzW,NUM.nxW) + PHY.gz;
 
-      
-
 
 %% setup velocity-pressure solution arrays
 SOL.W           = zeros(NUM.nzW,NUM.nxW);               % z-velocity on z-face nodes
@@ -130,7 +128,6 @@ wlay_T   =  0.05;                % thickness of smooth layer boundary (relative 
 rhoRef = PHY.rhoSil;
 switch SOL.Ttype
     case 'constant'     % constant temperature
-%         SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T1 + (SOL.T0-SOL.T1).*exp(-NUM.ZP./(10*NUM.h));
         SOL.T      = SOL.T0 + (SOL.T1-SOL.T0) .* (1+erf((NUM.ZP/NUM.D-zlay)/wlay_T))/2; % + dT.*rp;
         SOL.T(1,:) = SOL.T0;
     case 'linear'       % linear temperature gradient with depth
@@ -141,14 +138,14 @@ switch SOL.Ttype
     case 'hot bottom'
         SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T0;
         SOL.T(end-10:end,:) = SOL.T0+100;
-%         SOL.T = SOL.T + 1./(1+exp(-(NUM.ZP-SOL.zT+pert)./(NUM.D/50))) .* (SOL.T1-SOL.T0);
 end
 
 % set initial component weight fraction [kg/kg]
 CHM.xFe = CHM.xFe0 + dxFe.*rp; % Fe system
 CHM.xSi = 1 - CHM.xFe;         % Si system
-CHM.cFe = CHM.cFe0.*(CHM.xFe>0) + dcFe.*rp; % Fe component
-CHM.cSi = CHM.cSi0.*(CHM.xSi>0) + dcSi.*rp; % Si component
+CHM.cFe = zeros(size(CHM.xFe)) + CHM.cFe0 + dcFe.*rp; % Fe component
+CHM.cSi = zeros(size(CHM.xSi)) + CHM.cSi0 + dcSi.*rp; % Si component
+
 
 
 % estimate mixture density from Fe/Si system fractions
@@ -201,6 +198,7 @@ SOL.sFel    = SOL.sFes + CHM.dEntrFe;
 SOL.sSil    = SOL.sSis + CHM.dEntrSi;
 SOL.H       = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
 CHM.XFe     = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
+XFe1        = CHM.XFe;          XSi1    = CHM.XSi;
 CHM.CFe     = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi     = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
 FFe         = MAT.rho.*CHM.xFe.*CHM.fFes;
