@@ -103,6 +103,15 @@ segSil(:,[1 end]) = sds*segSil(:,[2 end-1]);
 segFel([1 end],:) = 0;
 segFel(:,[1 end]) = sds*segFel(:,[2 end-1]);
 
+%% update diffusivity
+% magma velocity magnitude
+% Vel  = sqrt(((SOL.W([1,1:end],:)+SOL.W([1:end,end],:))/2).^2 ...
+%           + ((SOL.U(:,[1,1:end])+SOL.U(:,[1:end,end]))/2).^2);
+% kW   = Vel*NUM.h/100;
+% kwFe = Vel.*abs((MAT.rhoFes-MAT.rho).*PHY.gz.*Ksgr_x.*PHY.dx);
+% kwSi = Vel.*abs((MAT.rhoSis-MAT.rho).*PHY.gz.*Ksgr_x.*PHY.dx);
+
+%% velocity and volume source
 % update phase velocities
 WlSi        = SOL.W + segSil;
 UlSi        = SOL.U;
@@ -165,7 +174,7 @@ EntProd = MAT.ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:
 dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
 dtdiff = (NUM.h/2)^2/max(max(PHY.kTFe,PHY.kTSi)./MAT.rho(:)./PHY.Cp);                         % stable time step for T diffusion
 
-NUM.dt = min(min(0.75*dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
+NUM.dt = min(min(dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
 
 if NUM.dt==dtmax
     dtlimit = 'max step limited';

@@ -160,7 +160,6 @@ end
 [fSisq,csSiq,clSiq] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
     CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
 
-% CHM.fSis = min(1,max(TINY,CHM.fSis)); CHM.fFes = min(1,max(TINY,CHM.fFes));
 fFelq = 1-fFesq;
 fSilq = 1-fSisq;
 
