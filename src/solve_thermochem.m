@@ -77,23 +77,12 @@ dXSidt      = - advect(MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSis(inz,inx),UsS
               - advect(MAT.rho(inz,inx).*CHM.xSi(inz,inx).*CHM.fSil(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
 if NUM.step>0 && any(CHM.xFe(:)>0) && any(CHM.xFe(:)<1)
     % update solution
-    XFe1(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
+    CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
     % apply boundaries
-    XFe1([1 end],:) = XFe1([2 end-1],:);  XFe1(:,[1 end]) = XFe1(:,[2 end-1]);
+    CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
     % enforce 0,rho limits
-    XFe1 = min(MAT.rho,max(0,XFe1));   
+    CHM.XFe = min(MAT.rho,max(0,CHM.XFe));   
 
-        % update solution
-    XSi1(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
-    % apply boundaries
-    XSi1([1 end],:) = XSi1([2 end-1],:);  XSi1(:,[1 end]) = XSi1(:,[2 end-1]);
-    % enforce 0,rho limits
-    XSi1 = min(MAT.rho,max(0,XSi1)); 
-
-    % normalise system densities
-    XFenorm = XFe1./(XFe1+XSi1); XSinorm = XSi1./(XFe1+XSi1); 
-
-    CHM.XFe = MAT.rho.*XFenorm; CHM.XSi = MAT.rho.*XSinorm;
 else
     CHM.XFe = CHM.xFe.*MAT.rho;
     CHM.XSi = MAT.rho - CHM.XFe;

@@ -198,7 +198,6 @@ SOL.sFel    = SOL.sFes + CHM.dEntrFe;
 SOL.sSil    = SOL.sSis + CHM.dEntrSi;
 SOL.H       = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
 CHM.XFe     = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
-XFe1        = CHM.XFe;          XSi1    = CHM.XSi;
 CHM.CFe     = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
 CHM.CSi     = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
 FFe         = MAT.rho.*CHM.xFe.*CHM.fFes;
