@@ -71,8 +71,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         if ~mod(iter,1) || iter ==0
             % solve fluid-mechanics equations
             solve_fluidmech;
-            % update non-linear parameters and auxiliary variables
-            up2date;
+%             % update non-linear parameters and auxiliary variables
+%             up2date;
         end
 
         if ~RUN.bnchm

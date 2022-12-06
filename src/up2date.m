@@ -19,10 +19,6 @@ MAT.phiFes = max(0,min(1,CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes));
 MAT.phiFel = max(0,min(1,CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel));
 MAT.phiSis = max(0,min(1,CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis));
 MAT.phiSil = max(0,min(1,CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil)); 
-MAT.phiFes = max(TINY,min(1-TINY,CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes));
-MAT.phiFel = max(TINY,min(1-TINY,CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel));
-MAT.phiSis = max(TINY,min(1-TINY,CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis));
-MAT.phiSil = max(TINY,min(1-TINY,CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil)); 
 
 
 %% update viscosity
