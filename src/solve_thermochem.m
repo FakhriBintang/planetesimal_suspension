@@ -40,6 +40,7 @@ dSdt   = advn_S + diff_S + MAT.Hr;
 SOL.S(inz,inx) = So(inz,inx) + (NUM.theta.*dSdt + (1-NUM.theta).*dSdto) .* NUM.dt;
 
 % apply boundaries
+MAT.Ds = CHM.xFe.*CHM.fsFe.*CHM.dEntrFe + CHM.xSi.*CHM.fsSi.*CHM.dEntrSi;
 switch SOL.BCTTop
     case 'isothermal'
         SOL.S(1,:) = MAT.rho(1,:).*(PHY.Cp.*log(SOL.T0./SOL.T0)+PHY.aT./rhoRef.*(SOL.Pt(1,:)-P0) + MAT.Ds(1,:));

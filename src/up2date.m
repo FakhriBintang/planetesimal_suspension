@@ -47,8 +47,9 @@ MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                        
 MAT.Eta  = (1./etamax + 1./(MAT.Eta * etareg)).^(-1);                       % limit viscosity range
 MAT.Eta([1 end],:) = MAT.Eta([2 end-1],:);  
 MAT.Eta(:,[1 end]) = MAT.Eta(:,[2 end-1]);
-MAT.EtaC = (MAT.Eta(1:end-1,1:end-1)+MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
-         +  MAT.Eta(1:end-1,2:end  )+MAT.Eta(2:end,2:end  ))./4;
+MAT.EtaC = (MAT.Eta(1:end-1,1:end-1).*MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
+         .* MAT.Eta(1:end-1,2:end  ).*MAT.Eta(2:end,2:end  )).^0.25;
+
 
 %% update segregation cofficients
 Ksgr_x = squeeze(Cv(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]);
@@ -62,22 +63,11 @@ Ksgr_f = Ksgr_f.*(1-MAT.philFe).^2; Ksgr_f = max(TINY^2,Ksgr_f);
 %% calculate stokes settling velocity
 sds = SOL.BCsides;      % side boundary type 
 
-% also runge kutta advection time stepping
-kappaseg = 500;
-
 % test alternative interpolations for segregation coefficients
-% minimum  segregation coefficient
-% segSis = ((MAT.rhoSis(1:end-1,:)+MAT.rhoSis(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
-% segFes = ((MAT.rhoFes(1:end-1,:)+MAT.rhoFes(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*min(Ksgr_x(1:end-1,:),Ksgr_x(2:end,:));
-% 
-% segSil = ((MAT.rhoSil(1:end-1,:)+MAT.rhoSil(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*min(Ksgr_m(1:end-1,:),Ksgr_m(2:end,:)); 
-% segFel = ((MAT.rhoFel(1:end-1,:)+MAT.rhoFel(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*min(Ksgr_f(1:end-1,:),Ksgr_f(2:end,:)); 
-
-% harmonic average
-MAT.segsSi = ((MAT.rhosSi(1:end-1,:)+MAT.rhosSi(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
-MAT.segsFe = ((MAT.rhosFe(1:end-1,:)+MAT.rhosFe(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*2./(1./Ksgr_x(1:end-1,:)+1./Ksgr_x(2:end,:));
-MAT.seglSi = ((MAT.rholSi(1:end-1,:)+MAT.rholSi(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*2./(1./Ksgr_m(1:end-1,:)+1./Ksgr_m(2:end,:)); 
-MAT.seglFe = ((MAT.rholFe(1:end-1,:)+MAT.rholFe(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*2./(1./Ksgr_f(1:end-1,:)+1./Ksgr_f(2:end,:));
+MAT.segsSi = ((MAT.rhosSi(1:end-1,:)+MAT.rhosSi(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*(Ksgr_x(1:end-1,:).*Ksgr_x(2:end,:)).^0.5;
+MAT.segsFe = ((MAT.rhosFe(1:end-1,:)+MAT.rhosFe(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*(Ksgr_x(1:end-1,:).*Ksgr_x(2:end,:)).^0.5;
+MAT.seglSi = ((MAT.rholSi(1:end-1,:)+MAT.rholSi(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*(Ksgr_m(1:end-1,:).*Ksgr_m(2:end,:)).^0.5; 
+MAT.seglFe = ((MAT.rholFe(1:end-1,:)+MAT.rholFe(2:end,:))./2-(MAT.rho(1:end-1,:)+MAT.rho(2:end,:))./2).*PHY.gz.*(Ksgr_f(1:end-1,:).*Ksgr_f(2:end,:)).^0.5;
 
 % zero boundary condition
 MAT.segsSi([1 end],:) = 0;
@@ -92,15 +82,6 @@ MAT.seglFe(:,[1 end]) = sds*MAT.seglFe(:,[2 end-1]);
 
 %% update diffusion parameters
 MAT.ks    =  (CHM.xFe.*PHY.kTFe + CHM.xSi.*PHY.kTSi)./SOL.T;               % magma thermal conductivity
-
-% magma velocity magnitude
-% Vel  = sqrt(((SOL.W([1,1:end],:)+SOL.W([1:end,end],:))/2).^2 ...
-%           + ((SOL.U(:,[1,1:end])+SOL.U(:,[1:end,end]))/2).^2);
-% kW   = Vel*NUM.h/100;
-% kwFe = Vel.*abs((MAT.rhoFes-MAT.rho).*PHY.gz.*Ksgr_x.*PHY.dx);
-% kwSi = Vel.*abs((MAT.rhoSis-MAT.rho).*PHY.gz.*Ksgr_x.*PHY.dx);
-
-MAT.Ds = CHM.xFe.*CHM.fsFe.*CHM.dEntrFe + CHM.xSi.*CHM.fsSi.*CHM.dEntrSi;
 
 
 %% velocity divergence and volume source

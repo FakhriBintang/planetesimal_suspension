@@ -23,7 +23,7 @@ NUM.dt          =  1e-4*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
-NUM.D           =  200;                  % domain depth
+NUM.D           =  500;                  % domain depth
 NUM.N           =  100;                  % number of real x/z block nodes
 
 % [do not modify]
@@ -138,9 +138,9 @@ BCA      =  {'',''};        % boundary condition on advection (top/bot, sides)
 TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
 NUM.theta       = 0.5;   	% time stepping mode
 NUM.CFL         = 0.25;   	% Courant number to limit physical time step
-NUM.reltol    	= 1e-4;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-7;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 20;       % maximum iteration count
+NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 50;       % maximum iteration count
 dtmax           = 0.5*NUM.yr; % maximum time step
 etareg          = 1e0;      % regularisation factor for viscosity
 etamin          = 1e0;      % minimum viscosity for stabilisation

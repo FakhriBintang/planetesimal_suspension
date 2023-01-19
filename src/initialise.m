@@ -188,6 +188,8 @@ CHM.flFe(CHM.xFe==0) = 0;
 CHM.fsSi(CHM.xSi==0) = 0;
 CHM.flSi(CHM.xSi==0) = 0;
 
+MAT.Ds = CHM.xFe.*CHM.fsFe.*CHM.dEntrFe + CHM.xSi.*CHM.fsSi.*CHM.dEntrSi;
+
 MAT.phisFe = CHM.xFe.* CHM.fsFe .* MAT.rho ./ MAT.rhosFe;
 MAT.philFe = CHM.xFe.* CHM.flFe .* MAT.rho ./ MAT.rholFe;
 MAT.phisSi = CHM.xSi.* CHM.fsSi .* MAT.rho ./ MAT.rhosSi;
