@@ -92,8 +92,7 @@ DEF.tII = zeros(NUM.nzP,NUM.nxP);               % stress magnitude on centre nod
 
 
 %% setup heating rates
-dHdt     = zeros(NUM.Nz,NUM.Nx);            % enthalpy rate of change
-dSdt     = zeros(NUM.Nz,NUM.Nx);
+dSdt     = zeros(NUM.Nz,NUM.Nx);            % entropy rate of change
 dXFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron system rate of change 
 dXSidt   = zeros(NUM.Nz,NUM.Nx);            % Si system rate of change 
 dCSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate component density rate of change
@@ -103,13 +102,9 @@ dFSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate melt fraction rate of cha
 diff_S   = zeros(NUM.Nz,NUM.Nx);            % Temperature diffusion rate
 diff_CSi = zeros(NUM.Nz,NUM.Nx);            % Silicate component diffusion rate
 diff_CFe = zeros(NUM.Nz,NUM.Nx);            % Iron component diffusion rate
-Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);            % Stokes velocity divergence
+Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);        % Stokes velocity divergence
 Div_rhoV = zeros(NUM.Nz,NUM.Nx);            % Mixture mass flux divergence
-
-%% initialise previous solution and auxiliary fields
-rhoo      = ones(NUM.Nz+2,NUM.Nx+2);
-dSdto     = dSdt;
-Div_rhoVo = Div_rhoV;
+VolSrc   = zeros(NUM.Nz,NUM.Nx);            % volume source term
 
 % initialise counting variables
 RUN.frame = 0;      % initialise output frame count
@@ -125,7 +120,7 @@ pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
 zlay     =  0.03;                 % layer thickness (relative to domain depth D)
 wlay_T   =  0.05;                % thickness of smooth layer boundary (relative to domain depth D)
 % wlay_c   =  2*NUM.h/NUM.D;       % thickness of smooth layer boundary (relative to domain depth D)
-rhoRef = PHY.rhoSil;
+rhoRef = PHY.rholSi;
 switch SOL.Ttype
     case 'constant'     % constant temperature
         SOL.T      = SOL.T0 + (SOL.T1-SOL.T0) .* (1+erf((NUM.ZP/NUM.D-zlay)/wlay_T))/2; % + dT.*rp;
@@ -139,6 +134,7 @@ switch SOL.Ttype
         SOL.T      = zeros(NUM.nzP,NUM.nxP) + SOL.T0;
         SOL.T(end-10:end,:) = SOL.T0+100;
 end
+Tp = SOL.T;  % initial condition sets potential temperature [C]
 
 % set initial component weight fraction [kg/kg]
 CHM.xFe = CHM.xFe0 + dxFe.*rp; % Fe system
@@ -147,64 +143,83 @@ CHM.cFe = zeros(size(CHM.xFe)) + CHM.cFe0 + dcFe.*rp; % Fe component
 CHM.cSi = zeros(size(CHM.xSi)) + CHM.cSi0 + dcSi.*rp; % Si component
 
 
-
-% estimate mixture density from Fe/Si system fractions
+% initialise total pressure
 SOL.Pt = rhoRef.*MAT.gzP.*NUM.ZP + P0;
 
-% real temperature (+adiabatic)
-SOL.T = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
+% initialise adiabatic temperature
+SOL.T = Tp .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
 
 % initialise loop
-[CHM.fFes,CHM.csFe,CHM.clFe] = equilibrium_single(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-                                               CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
-[CHM.fSis,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-                                               CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+[CHM.fsFe,CHM.csFe,CHM.clFe] = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                           CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe);
+[CHM.fsSi,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+                                           CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi);
 res = 1e3;
 tol = 1e-4;
 it = 0;
 while res > tol
-    fFesi = CHM.fFes; fSisi = CHM.fSis; 
+    fsFei = CHM.fsFe; fsSii = CHM.fsSi; Pi = SOL.Pt;
+
     if NUM.Nx<=10; SOL.Pt = mean(mean(SOL.Pt(2:end-1,2:end-1))).*ones(size(SOL.Pt)); end
 
     % output crystal fraction and fertile solid and liquid concentrations
-    [CHM.fFes,CHM.csFe,CHM.clFe] = equilibrium_single(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-                                               CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
-    [CHM.fSis,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-                                               CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
-    CHM.fSis = min(1,max(0,CHM.fSis)); CHM.fFes = min(1,max(0,CHM.fFes));
-    CHM.fFel = 1-CHM.fFes;  CHM.fSil = 1-CHM.fSis;
+    [CHM.fsFe,CHM.csFe,CHM.clFe] = equilibrium(SOL.T,CHM.cFe,SOL.Pt,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                               CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe);
+    [CHM.fsSi,CHM.csSi,CHM.clSi] = equilibrium(SOL.T,CHM.cSi,SOL.Pt,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
+                                               CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi);
+    CHM.fsSi = min(1,max(0,CHM.fsSi)); 
+    CHM.fFes = min(1,max(0,CHM.fsFe));
+    CHM.flFe = 1-CHM.fsFe;  
+    CHM.flSi = 1-CHM.fsSi;
     
     up2date;
     
-    rhoRef     = mean(mean(MAT.rho(2:end-1,2:end-1)));
-    SOL.Pt     = rhoRef.*MAT.gzP.*NUM.ZP + P0;
-    SOL.T      = SOL.T .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
-    res  = (norm(CHM.fFes(:)-fFesi(:),2) + norm(CHM.fSis(:)-fSisi(:),2))./sqrt(2*length(CHM.fFes(:)));
-    it = it+1;
+    rhoRef = mean(mean(MAT.rho(2:end-1,2:end-1)));
+    SOL.Pt = rhoRef.*MAT.gzP.*NUM.ZP + P0;
+    SOL.T  = Tp .* exp(PHY.aT./rhoRef./PHY.Cp.*SOL.Pt);
+    res    = norm(CHM.fsFe(:)-fsFei(:),2)./norm(CHM.fsFe(:)+TINY,2) ...
+           + norm(CHM.fsSi(:)-fsSii(:),2)./norm(CHM.fsSi(:)+TINY,2) ...
+           + norm(SOL.Pt(:)  -Pi(:)   ,2)./norm(SOL.Pt(:)  +TINY,2);
+    it     = it+1;
 end
 
-MAT.phiFes = CHM.xFe.* CHM.fFes .* MAT.rho ./ MAT.rhoFes;
-MAT.phiFel = CHM.xFe.* CHM.fFel .* MAT.rho ./ MAT.rhoFel;
-MAT.phiSis = CHM.xSi.* CHM.fSis .* MAT.rho ./ MAT.rhoSis;
-MAT.phiSil = CHM.xSi.* CHM.fSil .* MAT.rho ./ MAT.rhoSil;
+CHM.fsFe(CHM.xFe==0) = 0;
+CHM.flFe(CHM.xFe==0) = 0;
+CHM.fsSi(CHM.xSi==0) = 0;
+CHM.flSi(CHM.xSi==0) = 0;
 
-MAT.Ds    = CHM.xFe.* CHM.fFel.*CHM.dEntrFe...                             % mixture latent heat capacity density
-          + CHM.xSi.* CHM.fSil.*CHM.dEntrSi;
+MAT.phisFe = CHM.xFe.* CHM.fsFe .* MAT.rho ./ MAT.rhosFe;
+MAT.philFe = CHM.xFe.* CHM.flFe .* MAT.rho ./ MAT.rholFe;
+MAT.phisSi = CHM.xSi.* CHM.fsSi .* MAT.rho ./ MAT.rhosSi;
+MAT.philSi = CHM.xSi.* CHM.flSi .* MAT.rho ./ MAT.rholSi;
+
 % set conserved quantities
-SOL.S       = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
-SOL.sFes    = SOL.S./MAT.rho -MAT.Ds;
-SOL.sSis    = SOL.S./MAT.rho -MAT.Ds;
-SOL.sFel    = SOL.sFes + CHM.dEntrFe;
-SOL.sSil    = SOL.sSis + CHM.dEntrSi;
-SOL.H       = SOL.T.*MAT.rho.*(MAT.Ds + PHY.Cp);                               % mixture enthalpy density
-CHM.XFe     = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
-CHM.CFe     = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
-CHM.CSi     = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
-FFe         = MAT.rho.*CHM.xFe.*CHM.fFes;
-FSi         = MAT.rho.*CHM.xSi.*CHM.fSis;
+CHM.FsFe  = MAT.rho.*CHM.xFe.*CHM.fsFe;
+CHM.FsSi  = MAT.rho.*CHM.xSi.*CHM.fsSi;
+CHM.FlFe  = MAT.rho.*CHM.xFe.*CHM.flFe;
+CHM.FlSi  = MAT.rho.*CHM.xSi.*CHM.flSi;
+SOL.S     = MAT.rho.*(PHY.Cp.*log(SOL.T/SOL.T0) - PHY.aT./rhoRef.*(SOL.Pt-P0) + MAT.Ds); 
+S0        = MAT.rho.*(PHY.Cp.*log(SOL.T0) - PHY.aT./rhoRef.*(P0)); 
+SOL.slFe  = SOL.S./MAT.rho - MAT.Ds;
+SOL.slSi  = SOL.S./MAT.rho - MAT.Ds;
+SOL.ssFe  = SOL.slFe + CHM.dEntrFe;
+SOL.ssSi  = SOL.slSi + CHM.dEntrSi;
+CHM.XFe   = MAT.rho.*CHM.xFe; CHM.XSi = MAT.rho.*CHM.xSi;                    % mixture Fe/Si system densities
+CHM.CFe   = MAT.rho.*CHM.cFe.*CHM.xFe;                                       % mixture Fe component density
+CHM.CSi   = MAT.rho.*CHM.cSi.*CHM.xSi;                                       % mixture Si component density
 
-CHM.GFe = 0.*CHM.fFel;
-CHM.GSi = 0.*CHM.fSil;
+CHM.GFe = 0.*CHM.flFe;
+CHM.GSi = 0.*CHM.flSi;
+
+
+%% initialise previous solution and auxiliary fields
+rhoo       = MAT.rho;
+dSdto      = dSdt;
+dsumMdt    = 0;
+dsumSdt    = 0;
+dsumXFedt  = 0;
+dsumCFedt  = 0;
+dsumCSidt  = 0;
 
 
 %% initialise radioactive decay (make sure to cleanup)
@@ -215,24 +230,25 @@ NAl     = zeros(NUM.nzP,NUM.nxP);
 NAl     = NAl + nAl*rAl0 .* mean(MAT.rho(:)); % initial NAl per m^3
 dNdt = zeros(NUM.nzP,NUM.nxP);
 
-MAT.Hr = zeros(NUM.nzP,NUM.nxP);
+MAT.Hr  = PHY.Hr0;
 HIST.Hr = 0;
-if RUN.rad;MAT.Hr = MAT.Hr + PHY.Hr0;  end
+if RUN.rad; MAT.Hr = MAT.Hr + PHY.Hr0; end
 
 %% initialise previous solution and auxiliary fields
 rhoo      = MAT.rho;
-Ho        = SOL.H;
-dHdto     = dHdt;
 Div_rhoVo = Div_rhoV;
 
-
-% initialise counting variables
-RUN.frame = 0;      % initialise output frame count
-NUM.time  = 0;      % initialise time count
-NUM.step  = 0;      % initialise time step count
-iter      = 0;      % initialise iteration count
 %% update nonlinear material properties
 up2date;
+solve_fluidmech;
 
 %% initialise recording of model history
 history;
+output;
+
+%% initialise counting variables
+RUN.frame = 0;      % initialise output frame count
+NUM.time  = 0;      % initialise time count
+NUM.step  = 1;      % initialise time step count
+iter      = 1;      % initialise iteration count
+dtlimit   = 'none'; % initialise time limiter

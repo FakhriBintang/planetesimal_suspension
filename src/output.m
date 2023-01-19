@@ -31,10 +31,10 @@ if RUN.plot
         
         fh2 = figure(2); clf;
         subplot(4,1,1)
-        plot(HST.time/NUM.yr,HST.fFel(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/NUM.yr,HST.flFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
         title(['$f_{Fe}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,2)
-        plot(HST.time/NUM.yr,HST.fSil(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/NUM.yr,HST.flSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
         title(['$f_{Si}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,3)
         plot(HST.time/NUM.yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
@@ -55,28 +55,28 @@ if RUN.plot
         plot(mean(CHM.xFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(CHM.cFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(CHM.clFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2)
-        plot(mean(CHM.csFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2)
+        plot(mean(CHM.clFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.csFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2);
+        plot(mean(CHM.cFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'k-','LineWidth',2);
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(CHM.cSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(CHM.clSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2)
-        plot(mean(CHM.csSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2)
+        plot(mean(CHM.clSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.csSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'-b','LineWidth',2);
+        plot(mean(CHM.cSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'k-','LineWidth',2);
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         
         fh2 = figure(2); clf;
         subplot(1,4,1)
-        plot(mean(CHM.fFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(CHM.fSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(CHM.flFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(CHM.flSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
         title(['$f_{j}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('Fe', 'Si')
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(MAT.phiFes(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(MAT.phiFel(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
-        plot(mean(MAT.phiSis(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
-        plot(mean(MAT.phiSil(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.phisFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(MAT.philFe(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.phisSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.philSi(2:end-1,2:end-1),2).*100,NUM.zP(2:end-1),'LineWidth',2);
         title(['$\phi_{j}^i$ [vol\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
         subplot(1,4,3)
@@ -88,7 +88,11 @@ if RUN.plot
         
         fh3 = figure(3); clf;
         subplot(1,4,1)
-        plot(mean(-SOL.W(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(MAT.philFe(1:end-1,2:end-1)+MAT.philFe(2:end,2:end-1))/2.*MAT.seglFe(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); hold on
+        plot(mean(-(MAT.phisFe(1:end-1,2:end-1)+MAT.phisFe(2:end,2:end-1))/2.*MAT.segsFe(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2);
+        plot(mean(-(MAT.philSi(1:end-1,2:end-1)+MAT.philSi(2:end,2:end-1))/2.*MAT.seglSi(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2);
+        plot(mean(-(MAT.phisSi(1:end-1,2:end-1)+MAT.phisSi(2:end,2:end-1))/2.*MAT.segsSi(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2);
+        plot(mean(-SOL.W(:,2:end-1),2)*NUM.yr,NUM.zW,'k','LineWidth',2); axis ij tight; box on;
         title(['$W$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
@@ -103,17 +107,17 @@ if RUN.plot
         
         fh4 = figure(4); clf;
         subplot(1,4,1)
-        plot(mean(-(MAT.phiFel(1:end-1,2:end-1)+MAT.phiFel(2:end,2:end-1))/2.*segFel(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(MAT.philFe(1:end-1,2:end-1)+MAT.philFe(2:end,2:end-1))/2.*MAT.seglFe(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
         title(['$w_{\Delta,Fe}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(-(MAT.phiFes(1:end-1,2:end-1)+MAT.phiFes(2:end,2:end-1))/2.*segFes(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(MAT.phisFe(1:end-1,2:end-1)+MAT.phisFe(2:end,2:end-1))/2.*MAT.segsFe(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
         title(['$w_{\Delta,Fe}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(-(MAT.phiSil(1:end-1,2:end-1)+MAT.phiSil(2:end,2:end-1))/2.*segSil(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(MAT.philSi(1:end-1,2:end-1)+MAT.philSi(2:end,2:end-1))/2.*MAT.seglSi(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
         title(['$w_{\Delta,Si}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(-(MAT.phiSis(1:end-1,2:end-1)+MAT.phiSis(2:end,2:end-1))/2.*segSis(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(MAT.phisSi(1:end-1,2:end-1)+MAT.phisSi(2:end,2:end-1))/2.*MAT.segsSi(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
         title(['$w_{\Delta,Si}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         
     else
@@ -178,22 +182,22 @@ if RUN.plot
         fh2 = figure(2); clf;
         figure(2) % plot phase fractions
         subplot(2,2,1);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiSil(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.philSi(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^l')
         subplot(2,2,2);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiSis(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phisSi(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Si}^s')
         subplot(2,2,3);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiFel(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.philFe(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^l')
         subplot(2,2,4);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phiFes(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.phisFe(2:end-1,2:end-1));
         colorbar
         axis ij equal tight;
         title('\phi_{Fe}^s')
@@ -203,22 +207,22 @@ if RUN.plot
         fh3 = figure(3); clf
         figure(3) % plot phase fractions
         subplot(2,2,1);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fSil(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.flSi(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Si}^l [wt]')
         subplot(2,2,2);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fSis(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fsSi(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Si}^s [wt]')
         subplot(2,2,3);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fFel(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.flFe(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Fe}^l [wt]')
         subplot(2,2,4);
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fFes(2:end-1,2:end-1));
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),CHM.fsFe(2:end-1,2:end-1));
         colorbar
         axis ij equal tight
         title('f_{Fe}^s [wt]')
@@ -228,25 +232,25 @@ if RUN.plot
         fh4 = figure(4); clf
         figure(4) % plot phase segregation
         subplot(2,2,1);
-        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segSil(:,2:end-1)*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-MAT.seglSi(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Si}^l [m/yr]')
         
         subplot(2,2,2);
-        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segSis(:,2:end-1)*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-MAT.segsSi(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Si}^s [m/yr]')
         
         subplot(2,2,3);
-        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segFel(:,2:end-1)*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-MAT.seglFe(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Fe}^l [m/yr]')
         
         subplot(2,2,4);
-        imagesc(NUM.xW(2:end-1),NUM.zW(:),-segFes(:,2:end-1)*NUM.yr);
+        imagesc(NUM.xW(2:end-1),NUM.zW(:),-MAT.segsFe(:,2:end-1)*NUM.yr);
         colorbar
         axis ij equal tight
         title('\Delta v_{Fe}^s [m/yr]')
@@ -284,25 +288,25 @@ if RUN.plot
         fh6 = figure(6); clf
         figure(6)
         subplot(2,2,1)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoSil(2:end-1,2:end-1))
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rholSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Si}^l')
         
         subplot(2,2,2)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoSis(2:end-1,2:end-1))
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhosSi(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Si}^s')
         
         subplot(2,2,3)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoFel(2:end-1,2:end-1))
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rholFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Fe}^l')
         
         subplot(2,2,4)
-        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhoFes(2:end-1,2:end-1))
+        imagesc(NUM.xP(2:end-1),NUM.zP(2:end-1),MAT.rhosFe(2:end-1,2:end-1))
         colorbar
         axis ij equal tight
         title('\rho_{Fe}^s')
@@ -370,12 +374,12 @@ if RUN.plot
     TT = linspace(CHM.TSi1,CHM.TSi2,1e3);
     cc = [linspace(CHM.cphsSi2,(CHM.perCsSi+CHM.perClSi)/2,round((CHM.perTSi-CHM.TSi1)./(CHM.TSi2-CHM.TSi1)*1e3)),linspace((CHM.perCsSi+CHM.perClSi)/2,CHM.cphsSi1,round((CHM.perTSi-CHM.TSi2)./(CHM.TSi1-CHM.TSi2)*1e3))];
     [~,CCxSi,CClSi] = equilibrium(TT,cc,0.*TT,CHM.TSi1,CHM.TSi2,CHM.cphsSi1,CHM.cphsSi2,...
-                                  CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi,TINY);
+                                  CHM.perTSi,CHM.perCsSi,CHM.perClSi,CHM.clap,CHM.PhDgSi);
     
     TT2 = linspace(CHM.TFe1,CHM.TFe2,1000);
     cc2 = linspace(CHM.cphsFe2,CHM.cphsFe1,length(TT2));
-    [~,CCxFe,CClFe] = equilibrium_single(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
-                                  CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe,TINY);
+    [~,CCxFe,CClFe] = equilibrium(TT2,cc2,0.*TT2,CHM.TFe1,CHM.TFe2,CHM.cphsFe1,CHM.cphsFe2,...
+                                  CHM.perTFe,CHM.perCsFe,CHM.perClFe,CHM.clap,CHM.PhDgFe);
     subplot(1,2,1)
     plot(CCxSi,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClSi,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
@@ -466,10 +470,7 @@ if RUN.save
     name = [outpath '/',RUN.ID,'_',num2str(NUM.step/RUN.nop)];
     save(name,'NUM','PHY','SOL','MAT','CHM','HST');
     name = [outpath '/',RUN.ID,'_cont'];
-    save(name,'NUM','PHY','SOL','MAT','CHM','HST','rhoo','To','fFelo','fSilo', ...
-        'cFeo','cSio','CSio','CFeo','XFeo','XSio','FFeo','FSio','xFeo','xSio', ...
-        'So','dSdto','dXFedto','dXSidto','dCSidto','dCFedto','dFFedto','dFSidto',...
-        'segFel','segFes','segSil','segSis','Pto');
+    save(name,'NUM','PHY','SOL','MAT','CHM','HST');
     
     if NUM.step == 0
         logfile = [outpath '/',RUN.ID,'.log'];

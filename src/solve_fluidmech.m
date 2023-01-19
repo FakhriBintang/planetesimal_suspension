@@ -2,6 +2,7 @@ Wi = SOL.W; Ui = SOL.U; Pi = SOL.P;
 % get mapping arrays
 NW = NUM.NW; NU = NUM.NU; NP = NUM.NP;
 % profile on
+
 %% assemble coefficients for matrix velocity diagonal and right-hand side
 II  = [];       % equation indeces into A
 JJ  = [];       % variable indeces into A
@@ -234,7 +235,7 @@ aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; ii(:)];    AA = [AA; aa(:)];  % P on stencil centre
 
 % RHS
-rr = - VolSrc(2:end-1,2:end-1);
+rr = - VolSrc;
 if RUN.bnchm; rr = rr + src_P_mms(2:end-1,2:end-1); end
 
 IR = [IR; ii(:)];
@@ -267,6 +268,7 @@ RR  = SCL*RR;
 
 %% Solve linear system of equations for vx, vz, P
 S = SCL*(LL\RR);  % update solution
+
 % Read out solution
 % map solution vector to 2D arrays
 SOL.W  = full(reshape(S(NUM.MapW(:)),NUM.nzW, NUM.nxW));         % matrix z-velocity
@@ -278,9 +280,35 @@ SOL.UP(:,2:end-1) = (SOL.U(:,1:end-1)+SOL.U(:,2:end))./2;
 SOL.WP(2:end-1,:) = (SOL.W(1:end-1,:)+SOL.W(2:end,:))./2;
 
 % get residual of fluid mechanics equations from iterative update
-resnorm_VP = norm(SOL.W - Wi,2)./(norm(SOL.W,2)+TINY) ...
-           + norm(SOL.U - Ui,2)./(norm(SOL.U,2)+TINY) ...
+resnorm_VP = norm((SOL.W - Wi).*any(SOL.W(:)>1e-12),2)./(norm(SOL.W,2)+TINY) ...
+           + norm((SOL.U - Ui).*any(SOL.U(:)>1e-12),2)./(norm(SOL.U,2)+TINY) ...
            + norm(SOL.P - Pi,2)./(norm(SOL.P,2)+TINY);
+
+
+% update phase velocities
+WlSi = SOL.W + MAT.seglSi;
+UlSi = SOL.U;
+WsSi = SOL.W + MAT.segsSi;
+UsSi = SOL.U;
+WlFe = SOL.W + MAT.seglFe;
+UlFe = SOL.U;
+WsFe = SOL.W + MAT.segsFe;
+UsFe = SOL.U;
+
+
+%% update physical time step
+dtadvn =  NUM.h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
+dtdiff = (NUM.h/2)^2/max(max(MAT.ks(:).*SOL.T(:))./MAT.rho(:)./PHY.Cp);                         % stable time step for T diffusion
+
+NUM.dt = min(min(dtdiff,NUM.CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
+
+if NUM.dt==dtmax
+    dtlimit = 'max step limited';
+elseif dtdiff<dtadvn
+    dtlimit = 'diffusion limited';
+else
+    dtlimit = 'advection limited';
+end
 
 % profile report
 % profile off

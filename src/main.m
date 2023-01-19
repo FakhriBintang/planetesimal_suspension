@@ -9,11 +9,6 @@ fprintf(1,    '************************************************************\n\n'
 % %% initialise model run
 initialise;
 
-% run manufactured solution benchmark on fluid mechanics solver if specified
-if RUN.bnchm
-    mms; return;
-end
-
 while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep 
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr,dtlimit);
@@ -21,21 +16,13 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     figure(100);clf
 
     % store previous solution and auxiliary fields
-    rhoo      = MAT.rho;
-    To        = SOL.T;
-    fFelo     = CHM.fFel;
-    fSilo     = CHM.fSil;
-    cFeo      = CHM.cFe;
-    cSio      = CHM.cSi;
-    CSio      = CHM.CSi;
-    CFeo      = CHM.CFe;
+    So        = SOL.S;
     XFeo      = CHM.XFe;
     XSio      = CHM.XSi;
-    FFeo      = FFe;
-    FSio      = FSi;
-    xFeo      = CHM.xFe;
-    xSio      = CHM.xSi;
-    So        = SOL.S;
+    CSio      = CHM.CSi;
+    CFeo      = CHM.CFe;
+    FFeo      = CHM.FsFe;
+    FSio      = CHM.FsSi;
     dSdto     = dSdt;
     dXFedto   = dXFedt;
     dXSidto   = dXSidt;
@@ -43,10 +30,11 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     dCFedto   = dCFedt;
     dFFedto   = dFFedt;
     dFSidto   = dFSidt;
-    Pto       = SOL.Pt;
+    rhoo      = MAT.rho;
+    Div_rhoVo = Div_rhoV;
 
     % temp for radioactive decay
-    NAlo = NAl;
+    NAlo  = NAl;
     dNdto = dNdt;
 
     % reset residuals and iteration count
@@ -54,26 +42,20 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     resnorm0  = resnorm;
     iter      = 0;
 
-    if NUM.step<=1; NUM.theta = 1; else; NUM.theta = 0.5; end
 
     % non-linear iteration loop
     while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
 
         % solve thermo-chemical equations
-            solve_thermochem;
+        solve_thermochem;
 
-        if RUN.rad; radioactive_decay; end
+        if RUN.rad; radioactive_decay; else; MAT.Hr = PHY.Hr0; end
 
         % update non-linear parameters and auxiliary variables
         up2date;
 
-
-        if ~mod(iter,1) || iter ==0
-            % solve fluid-mechanics equations
-            solve_fluidmech;
-%             % update non-linear parameters and auxiliary variables
-%             up2date;
-        end
+        % solve fluid-mechanical equations
+        solve_fluidmech;
 
         if ~RUN.bnchm
             resnorm = resnorm_TC + resnorm_VP;
@@ -83,7 +65,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
             fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
             figure(100); if iter==1; clf; else; hold on; end
-            plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;  
+            plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
             drawnow;
         end
 
