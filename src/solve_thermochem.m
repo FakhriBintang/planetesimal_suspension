@@ -69,19 +69,25 @@ SOL.T   = SOL.T0.*exp((SOL.S - CHM.FsFe.*CHM.dEntrFe - CHM.FsSi.*CHM.dEntrSi)./M
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
 % equation 7
 
-if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
+% update system indices
+hasFe   = CHM.xFe         >0;
+hasSi   = CHM.xSi         >0;
+
+% if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
     dXFedt = - advect(CHM.FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
              - advect(CHM.FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
 
     % update solution
     CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
 
-%     dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
-%              - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
-%     
-%     % update solution
-%     CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
-    CHM.XSi = MAT.rho - CHM.XFe;
+    dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
+             - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
+    
+    % update solution
+    CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+
+    CHM.XFe(~hasFe) = MAT.rho(~hasFe) - CHM.XSi(~hasFe);
+    CHM.XSi( hasFe) = MAT.rho( hasFe) - CHM.XFe( hasFe);
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
@@ -91,18 +97,19 @@ if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
     CHM.XFe = max(0, CHM.XFe ); 
     CHM.XSi = max(0, CHM.XSi ); 
 
-else
-    CHM.XFe = CHM.xFe.*MAT.rho;
-    CHM.XSi = MAT.rho - CHM.XFe;
-end
+% else
+%     CHM.XFe = CHM.xFe.*MAT.rho;
+%     CHM.XSi = MAT.rho - CHM.XFe;
+% end
 
 % update system fractions
 CHM.xFe = max(0,min(1, CHM.XFe./MAT.rho ));
 CHM.xSi = max(0,min(1, CHM.XSi./MAT.rho ));
 
-% update system indices
-hasFe = CHM.xFe>0;
-hasSi = CHM.xSi>0;
+hasFe   = CHM.xFe         >0;
+hasSi   = CHM.xSi         >0;
+hasFein = CHM.xFe(inz,inx)>0;
+hasSiin = CHM.xSi(inz,inx)>0;
 
 
 %% update composition
