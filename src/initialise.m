@@ -99,7 +99,8 @@ dCSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate component density rate of
 dCFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron component density rate of change
 dFFedt   = zeros(NUM.Nz,NUM.Nx);            % Iron melt fraction rate of change
 dFSidt   = zeros(NUM.Nz,NUM.Nx);            % Silicate melt fraction rate of change
-diff_S   = zeros(NUM.Nz,NUM.Nx);            % Temperature diffusion rate
+diff_S   = zeros(NUM.Nz,NUM.Nx);            % Heat dissipation rate
+diss_T   = zeros(NUM.Nz,NUM.Nx);            % Temperature diffusion rate
 diff_CSi = zeros(NUM.Nz,NUM.Nx);            % Silicate component diffusion rate
 diff_CFe = zeros(NUM.Nz,NUM.Nx);            % Iron component diffusion rate
 Div_V    = zeros(NUM.Nz+2,NUM.Nx+2);        % Stokes velocity divergence
@@ -117,13 +118,13 @@ iter      = 0;      % initialise iteration count
 pert = -NUM.h/2.*cos(NUM.XP*2*pi/NUM.D);
 % temporary, set theral distribution parameters. Switch to run scripts
 % later
-zlay     =  0.03;                 % layer thickness (relative to domain depth D)
+zlay     =  0.0;                 % layer thickness (relative to domain depth D)
 wlay_T   =  0.05;                % thickness of smooth layer boundary (relative to domain depth D)
 % wlay_c   =  2*NUM.h/NUM.D;       % thickness of smooth layer boundary (relative to domain depth D)
 rhoRef = PHY.rholSi;
 switch SOL.Ttype
     case 'constant'     % constant temperature
-        SOL.T      = SOL.T0 + (SOL.T1-SOL.T0) .* (1+erf((NUM.ZP/NUM.D-zlay)/wlay_T))/2; % + dT.*rp;
+        SOL.T      = SOL.T0 + (SOL.T1-SOL.T0) .* erf((NUM.ZP/NUM.D)/wlay_T); % + dT.*rp;
         SOL.T(1,:) = SOL.T0;
     case 'linear'       % linear temperature gradient with depth
         SOL.T      = SOL.T0 + abs(NUM.ZP+pert)./NUM.D.*(SOL.T1-SOL.T0);
@@ -232,7 +233,7 @@ NAl     = zeros(NUM.nzP,NUM.nxP);
 NAl     = NAl + nAl*rAl0 .* mean(MAT.rho(:)); % initial NAl per m^3
 dNdt = zeros(NUM.nzP,NUM.nxP);
 
-MAT.Hr  = PHY.Hr0;
+MAT.Hr  = PHY.Hr0.*ones(size(SOL.S(2:end-1,2:end-1)));
 HIST.Hr = 0;
 if RUN.rad; MAT.Hr = MAT.Hr + PHY.Hr0; end
 

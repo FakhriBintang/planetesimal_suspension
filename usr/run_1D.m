@@ -6,7 +6,7 @@ clear all; close all
 RUN.ID          =  'test';               % run identifier
 RUN.plot        =  1;                    % switch on to plot live output
 RUN.save        =  0;                    % switch on to save output files
-RUN.nop         =  10;                   % output every 'nop' grid steps of transport
+RUN.nop         =  20;                   % output every 'nop' grid steps of transport
 RUN.bnchm       =  0;                    % manufactured solution benchmark on fluid mechanics solver
 RUN.diseq       =  1;                    % switch to disequilibrium approach to thermochemical evolution
 %temporary
@@ -19,7 +19,7 @@ NUM.maxstep     =  2e4;                  % maximum number of time steps
 NUM.tend        =  1e8*NUM.yr;           % model stopping time [s]
 
 % [do not modify]
-NUM.dt          =  1e-4*NUM.yr;          % (initial) time step [s]
+NUM.dt          =  1e-2*NUM.yr;          % (initial) time step [s]
 
 
 %% set model domain
@@ -61,8 +61,8 @@ CHM.PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-SOL.T0      =  1300;                     % reference/top potential temperature [C]
-SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  100;                      % reference/top potential temperature [C]
+SOL.T1      =  1100;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
@@ -116,12 +116,12 @@ PHY.Cp          = 1000;                 % mixture heat capacity
 CHM.dEntrSi = -200;                     % silicate entropy of crystallisation
 CHM.dEntrFe = -200;                     % iron-sulfide entropy of crystallisation
 
-PHY.Hr0         =  0e-2;                % Radiogenic heat productivity [W/m3]
+PHY.Hr0         =  1e-4;                % Radiogenic heat productivity [W/m3]
 
 
 %% set boundary conditions
 % Temperature boundary conditions
-SOL.BCTTop      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
+SOL.BCTTop      = 'isothermal';         % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTBot      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 SOL.BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
@@ -133,19 +133,17 @@ SOL.BCbot       = -1;                   % bottom boundary
 
 %% set solver options
 % advection scheme
-ADVN     =  'weno5';        % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA      =  {'',''};        % boundary condition on advection (top/bot, sides)
-TINY            = 1e-16;    % tiny number to safeguard [0,1] limits
-NUM.theta       = 0.5;   	% time stepping mode
-NUM.CFL         = 0.25;   	% Courant number to limit physical time step
-NUM.reltol    	= 1e-6;     % relative residual tolerance for nonlinear iterations
-NUM.abstol      = 1e-9;     % absolute residual tolerance for nonlinear iterations
-NUM.maxit       = 50;       % maximum iteration count
-dtmax           = 0.5*NUM.yr; % maximum time step
-etareg          = 1e0;      % regularisation factor for viscosity
-etamin          = 1e0;      % minimum viscosity for stabilisation
-etamax          = 1e7;      % maximum viscosity for stabilisation
-alpha           = 0.50;     % iterative lagging parameters
+ADVN            =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+BCA             =  {'',''};             % boundary condition on advection (top/bot, sides)
+TINY            = 1e-16;                % tiny number to safeguard [0,1] limits
+NUM.theta       = 0.5;   	            % time stepping mode
+NUM.CFL         = 0.25;   	            % Courant number to limit physical time step
+NUM.reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
+NUM.abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
+NUM.maxit       = 50;                   % maximum iteration count
+dtmax           = 1e-2*NUM.yr;          % maximum time step
+etareg          = 1e0;                  % regularisation factor for viscosity
+alpha           = 0.50;                 % iterative lagging parameters
 
 
 %% start model

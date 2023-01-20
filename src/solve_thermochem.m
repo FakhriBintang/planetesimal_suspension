@@ -34,7 +34,7 @@ diff_S = - ddz(qSz(:,2:end-1),NUM.h)  ...                                 % heat
 
 diss_T = EntProd./SOL.T(2:end-1,2:end-1);
 
-dSdt   = advn_S + diff_S + MAT.Hr;
+dSdt   = advn_S + diff_S + MAT.Hr + diss_T;
 
 % update solution
 SOL.S(inz,inx) = So(inz,inx) + (NUM.theta.*dSdt + (1-NUM.theta).*dSdto) .* NUM.dt;

@@ -43,11 +43,12 @@ thtv = squeeze(prod(Mv.^Xf,2));
 Cv = ((1-ff)./[PHY.dx;PHY.dm;PHY.df].^2.*kv.*thtv).^-1;
 
 % compose effective viscosity, segregation coefficients
-MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                             % effective magma viscosity
-MAT.Eta  = (1./etamax + 1./(MAT.Eta * etareg)).^(-1);                       % limit viscosity range
+MAT.Eta  = squeeze(sum(ff.*kv.*thtv,1));                                   % effective magma viscosity
+etamax   = 1e+6.*min(MAT.Eta(:));                                          % set max eta for 1e6 max range
+MAT.Eta  = (1./etamax + 1./(MAT.Eta * etareg)).^(-1);                      % limit viscosity range
 MAT.Eta([1 end],:) = MAT.Eta([2 end-1],:);  
 MAT.Eta(:,[1 end]) = MAT.Eta(:,[2 end-1]);
-MAT.EtaC = (MAT.Eta(1:end-1,1:end-1).*MAT.Eta(2:end,1:end-1) ...            % viscosity in cell corners
+MAT.EtaC = (MAT.Eta(1:end-1,1:end-1).*MAT.Eta(2:end,1:end-1) ...           % viscosity in cell corners
          .* MAT.Eta(1:end-1,2:end  ).*MAT.Eta(2:end,2:end  )).^0.25;
 
 
