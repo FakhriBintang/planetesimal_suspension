@@ -69,25 +69,66 @@ SOL.T   = SOL.T0.*exp((SOL.S - CHM.FsFe.*CHM.dEntrFe - CHM.FsSi.*CHM.dEntrSi)./M
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
 % equation 7
 
-% update system indices
-hasFe   = CHM.xFe         >0;
-hasSi   = CHM.xSi         >0;
+% % update system indices
+% hasFe   = CHM.xFe         >0;
+% hasSi   = CHM.xSi         >0;
+% hasFein = CHM.xFe(inz,inx)>0;
+% hasSiin = CHM.xSi(inz,inx)>0;
+% 
+% % if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
+%     dXFedt = - advect(CHM.FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
+%              - advect(CHM.FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
+% 
+%     % update solution
+%     CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
+% 
+%     dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
+%              - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
+%     
+%     % update solution
+%     CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+% 
+%     CHM.XFe(~hasFe) = MAT.rho(~hasFe) - CHM.XSi(~hasFe);
+%     CHM.XSi( hasFe) = MAT.rho( hasFe) - CHM.XFe( hasFe);
+% 
+%     % apply boundaries
+%     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
+%     CHM.XSi([1 end],:) = CHM.XSi([2 end-1],:);  CHM.XSi(:,[1 end]) = CHM.XSi(:,[2 end-1]);
+% 
+%     % enforce 0,rho limits
+%     CHM.XFe = max(0, CHM.XFe ); 
+%     CHM.XSi = max(0, CHM.XSi ); 
+% 
+% % else
+% %     CHM.XFe = CHM.xFe.*MAT.rho;
+% %     CHM.XSi = MAT.rho - CHM.XFe;
+% % end
+% 
+% % update system fractions
+% CHM.xFe = max(0,min(1, CHM.XFe./MAT.rho ));
+% CHM.xSi = max(0,min(1, CHM.XSi./MAT.rho ));
+% 
+% hasFe   = CHM.xFe         >0;
+% hasSi   = CHM.xSi         >0;
+% hasFein = CHM.xFe(inz,inx)>0;
+% hasSiin = CHM.xSi(inz,inx)>0;
 
-% if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
+
+%% alternate method for X conservation
+if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
     dXFedt = - advect(CHM.FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
              - advect(CHM.FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
 
     % update solution
     CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
 
-    dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
-             - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
-    
-    % update solution
-    CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+%     dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
+%              - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
+%     
+%     % update solution
+%     CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
 
-    CHM.XFe(~hasFe) = MAT.rho(~hasFe) - CHM.XSi(~hasFe);
-    CHM.XSi( hasFe) = MAT.rho( hasFe) - CHM.XFe( hasFe);
+    CHM.XSi = MAT.rho - CHM.XFe;
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
@@ -97,10 +138,10 @@ hasSi   = CHM.xSi         >0;
     CHM.XFe = max(0, CHM.XFe ); 
     CHM.XSi = max(0, CHM.XSi ); 
 
-% else
-%     CHM.XFe = CHM.xFe.*MAT.rho;
-%     CHM.XSi = MAT.rho - CHM.XFe;
-% end
+else
+    CHM.XFe = CHM.xFe.*MAT.rho;
+    CHM.XSi = MAT.rho - CHM.XFe;
+end
 
 % update system fractions
 CHM.xFe = max(0,min(1, CHM.XFe./MAT.rho ));
@@ -108,9 +149,8 @@ CHM.xSi = max(0,min(1, CHM.XSi./MAT.rho ));
 
 hasFe   = CHM.xFe         >0;
 hasSi   = CHM.xSi         >0;
-hasFein = CHM.xFe(inz,inx)>0;
-hasSiin = CHM.xSi(inz,inx)>0;
-
+fullCSi = CHM.xSi<1;    fullSiin = CHM.xSi(inz,inx)<1;
+fullCFe = CHM.xFe<1;    fullFein = CHM.xFe(inz,inx)<1;
 
 %% update composition
 
@@ -130,6 +170,9 @@ dCFedt   = advn_CFe;
 % update solution
 CHM.CSi(inz,inx) = CSio(inz,inx) + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto) .* NUM.dt;
 CHM.CFe(inz,inx) = CFeo(inz,inx) + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto) .* NUM.dt;
+% cheat a little bit and force C to equal the previous step when x = 1;
+CHM.CSi(~fullCSi) = CHM.XSi(~fullCSi) .* cSio(~fullCSi);
+CHM.CFe(~fullCFe) = CHM.XSi(~fullCFe) .* cSio(~fullCFe);
 
 % apply boundaries
 CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
@@ -186,6 +229,9 @@ CHM.FsSi([1 end],:) = CHM.FsSi([2 end-1],:);  CHM.FsSi(:,[1 end]) = CHM.FsSi(:,[
 
 CHM.FsFe = max(0, CHM.FsFe );
 CHM.FsSi = max(0, CHM.FsSi );
+
+CHM.FlFe = CHM.XFe - CHM.FsFe;
+CHM.FlSi = CHM.XSi - CHM.FsSi;
 
 % update phase fractions [wt]
 CHM.fsFe(hasFe) = max(0,min(1, CHM.FsFe(hasFe)./max(TINY,CHM.XFe(hasFe)) ));

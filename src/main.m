@@ -32,6 +32,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     dFSidto   = dFSidt;
     rhoo      = MAT.rho;
     Div_rhoVo = Div_rhoV;
+    % temp
+    cFeo = CHM.cFe; cSio = CHM.cSi;
 
     % temp for radioactive decay
     NAlo  = NAl;

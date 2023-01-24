@@ -120,6 +120,29 @@ if RUN.plot
         plot(mean(-(MAT.phisSi(1:end-1,2:end-1)+MAT.phisSi(2:end,2:end-1))/2.*MAT.segsSi(:,2:end-1),2)*NUM.yr,NUM.zW,'LineWidth',2); axis ij tight; box on;
         title(['$w_{\Delta,Si}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
         
+        % plot conserved quantities
+        fh5 = figure(5); clf;
+        subplot(1,4,1)
+        plot(mean(CHM.XFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
+        plot(mean(CHM.XSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(MAT.rho(2:end-1,2:end-1),2),NUM.zP(2:end-1),'-k','LineWidth',2);
+        plot(mean(CHM.XFe(2:end-1,2:end-1),2)+ mean(CHM.XSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'--','LineWidth',2);
+        legend('XFe', 'XSi', 'rho', 'XFe +XSi')
+        ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,4,2)
+        plot(mean(CHM.CFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$C_{Fe}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,3)
+        plot(mean(CHM.CSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$C_{Si}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,4,4)
+        plot(mean(CHM.FlFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
+        plot(mean(CHM.FsFe(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(CHM.FlSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
+        plot(mean(CHM.FsSi(2:end-1,2:end-1),2),NUM.zP(2:end-1),'LineWidth',2);
+        legend('FlFe','FsFe' , 'FlSi', 'FsSi')
+        ylabel('Depth [m]',TX{:},FS{:});
+        
     else
         
         % prepare for plotting

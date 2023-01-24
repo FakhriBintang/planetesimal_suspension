@@ -61,8 +61,8 @@ CHM.PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (>
 CHM.clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-SOL.T0      =  1600;                     % reference/top potential temperature [C]
-SOL.T1      =  1600;                     % bottom potential temperature (if different from top) [C]
+SOL.T0      =  1300;                     % reference/top potential temperature [C]
+SOL.T1      =  1300;                     % bottom potential temperature (if different from top) [C]
 SOL.rT      =  NUM.D/6;                  % radius of hot plume [m]
 SOL.zT      =  NUM.D*0.5;                % z-position of hot plume [m]
 SOL.xT      =  NUM.L/2;                  % x-position of hot plume [m]
