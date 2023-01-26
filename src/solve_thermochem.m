@@ -170,15 +170,15 @@ dCFedt   = advn_CFe;
 % update solution
 CHM.CSi(inz,inx) = CSio(inz,inx) + (NUM.theta.*dCSidt + (1-NUM.theta).*dCSidto) .* NUM.dt;
 CHM.CFe(inz,inx) = CFeo(inz,inx) + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto) .* NUM.dt;
-% cheat a little bit and force C to equal the previous step when x = 1;
-CHM.CSi(~fullCSi) = CHM.XSi(~fullCSi) .* cSio(~fullCSi);
-CHM.CFe(~fullCFe) = CHM.XSi(~fullCFe) .* cSio(~fullCFe);
+% % cheat a little bit and force C to equal the previous step when x = 1;
+% CHM.CSi(~fullCSi) = CHM.XSi(~fullCSi) .* cSio(~fullCSi);
+% CHM.CFe(~fullCFe) = CHM.XFe(~fullCFe) .* cSio(~fullCFe);
 
 % apply boundaries
 CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
 CHM.CFe([1 end],:) = CHM.CFe([2 end-1],:);  CHM.CFe(:,[1 end]) = CHM.CFe(:,[2 end-1]);
 
-% enforce 0,rho limits
+% % enforce 0,rho limits
 CHM.CFe = max(0,CHM.CFe);
 CHM.CSi = max(0,CHM.CSi);
 
