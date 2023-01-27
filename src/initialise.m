@@ -224,6 +224,10 @@ dsumXFedt  = 0;
 dsumCFedt  = 0;
 dsumCSidt  = 0;
 
+%% temp additional auxilary fields
+hassolSi = CHM.flSi<1;
+hassolFe = CHM.flFe<1;;
+
 
 %% initialise radioactive decay (make sure to cleanup)
 nAl     = 2.0532e23;% initial nAl per kg

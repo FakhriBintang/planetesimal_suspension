@@ -122,13 +122,13 @@ if any(CHM.xFe(:)>0 & CHM.xFe(:)<1)
     % update solution
     CHM.XFe(inz,inx) = XFeo(inz,inx) + (NUM.theta.*dXFedt + (1-NUM.theta).*dXFedto) .* NUM.dt;
 
-%     dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
-%              - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
-%     
-%     % update solution
-%     CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
+    dXSidt = - advect(CHM.FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA) ...
+             - advect(CHM.FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),NUM.h,{ADVN,''},[1,2],BCA);
+    
+    % update solution
+    CHM.XSi(inz,inx) = XSio(inz,inx) + (NUM.theta.*dXSidt + (1-NUM.theta).*dXSidto) .* NUM.dt;
 
-    CHM.XSi = MAT.rho - CHM.XFe;
+%     CHM.XSi = MAT.rho - CHM.XFe;
 
     % apply boundaries
     CHM.XFe([1 end],:) = CHM.XFe([2 end-1],:);  CHM.XFe(:,[1 end]) = CHM.XFe(:,[2 end-1]);
@@ -173,6 +173,10 @@ CHM.CFe(inz,inx) = CFeo(inz,inx) + (NUM.theta.*dCFedt + (1-NUM.theta).*dCFedto) 
 % % cheat a little bit and force C to equal the previous step when x = 1;
 % CHM.CSi(~fullCSi) = CHM.XSi(~fullCSi) .* cSio(~fullCSi);
 % CHM.CFe(~fullCFe) = CHM.XFe(~fullCFe) .* cSio(~fullCFe);
+
+% cheat a little bit again and force C_i = X_i*c_i(t-1)
+CHM.CSi(~hassolSi) = CHM.XSi(~hassolSi) .*cSio(~hassolSi);
+CHM.CFe(~hassolFe) = CHM.XFe(~hassolFe) .*cFeo(~hassolFe);
 
 % apply boundaries
 CHM.CSi([1 end],:) = CHM.CSi([2 end-1],:);  CHM.CSi(:,[1 end]) = CHM.CSi(:,[2 end-1]);
@@ -240,6 +244,9 @@ CHM.fsSi(hasSi) = max(0,min(1, CHM.FsSi(hasSi)./max(TINY,CHM.XSi(hasSi)) ));
 CHM.flFe(hasFe) = 1-CHM.fsFe(hasFe); 
 CHM.flSi(hasSi) = 1-CHM.fsSi(hasSi);
 
+%detect where is fully molten
+hassolSi = CHM.flSi<1;
+hassolFe = CHM.flFe<1;
 
 %% update phase compositions
 KcFe = csFeq./clFeq;
