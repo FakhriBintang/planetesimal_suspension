@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  100;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -60,8 +60,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1300;                     % reference/top potential temperature [C]
-T1      =  1300;                     % bottom potential temperature (if different from top) [C]
+T0      =  1360;                     % reference/top potential temperature [C]
+T1      =  1360;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -71,10 +71,10 @@ Ttype   = 'constant';                % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters
-rhosSi      =  3300;                 % reference density solid refractory silicate [kg/m3]
-rholSi      =  2900;                 % reference density liquid refractory silicate [kg/m3]
-rhosFe      =  8000;                 % reference desnity solid refractory iron [kg/m3]
-rholFe      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
+rhosSi0      =  3300;                 % reference density solid refractory silicate [kg/m3]
+rholSi0      =  2900;                 % reference density liquid refractory silicate [kg/m3]
+rhosFe0      =  8000;                 % reference desnity solid refractory iron [kg/m3]
+rholFe0      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]

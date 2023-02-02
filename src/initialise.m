@@ -226,7 +226,9 @@ dsumCSidt  = 0;
 
 %% temp additional auxilary fields
 hassolSi = flSi<1;
-hassolFe = flFe<1;;
+hassolFe = flFe<1;
+hasliqSi = fsSi<1;
+hasliqFe = fsFe<1;
 
 
 %% initialise radioactive decay (make sure to cleanup)

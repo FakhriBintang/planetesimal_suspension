@@ -1,4 +1,4 @@
-% planetesimal sill rainfall: user control script
+0% planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear ; close 
