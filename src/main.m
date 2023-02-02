@@ -2,27 +2,27 @@
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');
-fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RUN.ID,datetime);
+fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);
 fprintf(1,    '************************************************************\n\n');
 
 
 % %% initialise model run
 initialise;
 
-while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep 
+while time <= tend && step <= maxstep 
     % print time step header
-    fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',NUM.step,NUM.dt/NUM.yr,NUM.time/NUM.yr,dtlimit);
+    fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
 
     figure(100);clf
 
     % store previous solution and auxiliary fields
-    So        = SOL.S;
-    XFeo      = CHM.XFe;
-    XSio      = CHM.XSi;
-    CSio      = CHM.CSi;
-    CFeo      = CHM.CFe;
-    FFeo      = CHM.FsFe;
-    FSio      = CHM.FsSi;
+    So        = S;
+    XFeo      = XFe;
+    XSio      = XSi;
+    CSio      = CSi;
+    CFeo      = CFe;
+    FFeo      = FsFe;
+    FSio      = FsSi;
     dSdto     = dSdt;
     dXFedto   = dXFedt;
     dXSidto   = dXSidt;
@@ -30,10 +30,10 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     dCFedto   = dCFedt;
     dFFedto   = dFFedt;
     dFSidto   = dFSidt;
-    rhoo      = MAT.rho;
+    rhoo      = rho;
     Div_rhoVo = Div_rhoV;
     % temp
-    cFeo = CHM.cFe; cSio = CHM.cSi;
+    cFeo = cFe; cSio = cSi;
 
     % temp for radioactive decay
     NAlo  = NAl;
@@ -46,12 +46,12 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
 
 
     % non-linear iteration loop
-    while resnorm/resnorm0 >= NUM.reltol && resnorm >= NUM.abstol && iter <= NUM.maxit || iter < 2
+    while resnorm/resnorm0 >= reltol && resnorm >= abstol && iter <= maxit || iter < 2
 
         % solve thermo-chemical equations
         solve_thermochem;
 
-        if RUN.rad; radioactive_decay; else; MAT.Hr = PHY.Hr0; end
+        if radheat; radioactive_decay; else; Hr = Hr0; end
 
         % update non-linear parameters and auxiliary variables
         up2date;
@@ -59,7 +59,7 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         % solve fluid-mechanical equations
         solve_fluidmech;
 
-        if ~RUN.bnchm
+        if ~bnchm
             resnorm = resnorm_TC + resnorm_VP;
             if iter == 0
                 resnorm0 = resnorm+TINY;
@@ -77,11 +77,11 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
     % update mass and energy errors
     history;
 
-    if ~mod(NUM.step,RUN.nop) %round(2*RUN.nop/NUM.CFL))
+    if ~mod(step,nop) %round(2*nop/CFL))
         output;
 %        suppfigs; % supplementary figures for testing
-        if RUN.rad
-            figure(21); plot(HST.time/NUM.yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
+        if radheat
+            figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
         end
     end
     
@@ -93,8 +93,8 @@ while NUM.time <= NUM.tend && NUM.step <= NUM.maxstep
         return
     end
     % increment time
-    NUM.dt;
-    NUM.step = NUM.step + 1;
-    NUM.time = NUM.time + NUM.dt;
+    dt;
+    step = step + 1;
+    time = time + dt;
 
 end
