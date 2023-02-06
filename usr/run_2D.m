@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -27,7 +27,7 @@ N               =  100;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
-L               =  100;
+L               =  500;
 
 
 %% set thermochemical parameters
@@ -35,7 +35,7 @@ L               =  100;
 % set initial system and component fractions
 xFe0            =  0.20;                 % Fe-FeS system fraction
 cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.49;                 % Si system fertile component fraction [wt% SiO2]
+cSi0            =  0.446;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
@@ -71,18 +71,18 @@ Ttype   = 'constant';                % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters
-rhosSi      =  3300;                 % reference density solid refractory silicate [kg/m3]
-rholSi      =  2900;                 % reference density liquid refractory silicate [kg/m3]
-rhosFe      =  8000;                 % reference desnity solid refractory iron [kg/m3]
-rholFe      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
+rhosSi0     =  3300;                 % reference density solid refractory silicate [kg/m3]
+rholSi0     =  2900;                 % reference density liquid refractory silicate [kg/m3]
+rhosFe0     =  8000;                 % reference desnity solid refractory iron [kg/m3]
+rholFe0     =  7600;                 % reference desnity liquid refractory iron [kg/m3]
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx          =  1e-4;                 % solid grain size [m]
 df          =  1e-4;                 % metal droplet size [m]
 dm          =  1e-4;                 % melt film size [m]
-gz0          =  0.1;                  % z-gravity
-gx0          =  0;               	 % x-gravity
+gz0         =  0.1;                  % z-gravity
+gx0         =  0;               	 % x-gravity
 
 % Reference pressure
 P0 = 0;
@@ -135,14 +135,14 @@ BCbot       = -1;                   % bottom boundary
 ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
-theta       = 0.5;   	            % time stepping mode
-CFL         = 0.25;   	            % Courant number to limit physical time step
+lambda      = 0.5;   	            % iterative lagging for phase fraction
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                   % maximum iteration count
-dtmax       = 5e-3*yr;          % maximum time step
+CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity
-alpha       = 0.50;                 % iterative lagging parameters
+TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 
 %% start model

@@ -9,29 +9,46 @@ fprintf(1,    '************************************************************\n\n'
 % %% initialise model run
 initialise;
 
-while time <= tend && step <= maxstep 
+while time <= tend && step <= maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
 
     figure(100);clf
 
+    % record previous values according to time-stepping schemes
+    if     strcmp(TINT,'bwei') || step==1  % first step  / 1st-order backward-Euler implicit scheme
+        alpha1 = 1; alpha2 = 1; alpha3 = 0;
+        beta1  = 1; beta2  = 0; beta3  = 0;
+    elseif strcmp(TINT,'cnsi') || step==2  % second step / 2nd-order Crank-Nicolson semi-implicit scheme
+        alpha1 = 1;   alpha2 = 1;   alpha3 = 0;
+        beta1  = 1/2; beta2  = 1/2; beta3  = 0;
+    elseif strcmp(TINT,'bd3i')            % other steps / 2nd-order 3-point backward-difference implicit scheme
+        alpha1 = 3/2; alpha2 = 4/2; alpha3 = -1/2;
+        beta1  = 1; beta2  = 0; beta3  = 0;
+    elseif strcmp(TINT,'bd3s')            % other steps / 2nd-order 3-point backward-difference semi-implicit scheme
+        alpha1 = 3/2; alpha2 = 4/2; alpha3 = -1/2;
+        beta1  = 3/4; beta2  = 2/4; beta3  = -1/4;
+    end
+
     % store previous solution and auxiliary fields
-    So        = S;
-    XFeo      = XFe;
-    XSio      = XSi;
-    CSio      = CSi;
-    CFeo      = CFe;
-    FFeo      = FsFe;
-    FSio      = FsSi;
-    dSdto     = dSdt;
-    dXFedto   = dXFedt;
-    dXSidto   = dXSidt;
-    dCSidto   = dCSidt;
-    dCFedto   = dCFedt;
-    dFFedto   = dFFedt;
-    dFSidto   = dFSidt;
-    rhoo      = rho;
-    Div_rhoVo = Div_rhoV;
+    Soo     = So;       So    = S;
+    XFeoo   = XFeo;     XFeo  = XFe;
+    XSioo   = XSio;     XSio  = XSi;
+    CSioo   = CSio;     CSio  = CSi;
+    CFeoo   = CFeo;     CFeo  = CFe;
+    FsFeoo   = FsFeo;   FsFeo  = FsFe;
+    FsSioo   = FsSio;   FsSio  = FsSi;
+    dSdtoo  = dSdto;    dSdto = dSdt;
+    dXFedtoo= dXFedto;  dXFedto = dXFedt;
+    dXSidtoo= dXSidto;  dXSidto = dXSidt;
+    dCFedtoo= dCFedto;  dCFedto = dCFedt;
+    dCSidtoo= dCSidto;  dCSidto = dCSidt;
+    dFFedtoo= dFFedto;  dFFedto = dFFedt;
+    dFSidtoo= dFSidto;  dFSidto = dFSidt;
+    rhooo   = rhoo;     rhoo    = rho;
+    Div_rhoVoo = Div_rhoVo; Div_rhoVo = Div_rhoV;
+    Div_Vo  = Div_V;
+    dto     = dt;
     % temp
     cFeo = cFe; cSio = cSi;
 
@@ -79,17 +96,17 @@ while time <= tend && step <= maxstep
 
     if ~mod(step,nop) %round(2*nop/CFL))
         output;
-%        suppfigs; % supplementary figures for testing
+        %        suppfigs; % supplementary figures for testing
         if radheat
             figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
         end
     end
-    
+
     % break script for NaN
     if isnan(resnorm)
         output
         print('Error, Breaking script')
-%         output
+        %         output
         return
     end
     % increment time

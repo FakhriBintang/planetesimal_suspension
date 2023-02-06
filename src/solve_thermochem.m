@@ -37,7 +37,7 @@ diss_T = EntProd./T(2:end-1,2:end-1);
 dSdt   = advn_S + diff_S + Hr + diss_T;
 
 % update solution
-S(inz,inx) = So(inz,inx) + (theta.*dSdt + (1-theta).*dSdto) .* dt;
+S(inz,inx) = (alpha2*So(inz,inx) + alpha3*Soo(inz,inx) + (beta1*dSdt + beta2*dSdto + beta3*dSdtoo)*dt)/alpha1;
 
 % apply boundaries
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
@@ -120,15 +120,16 @@ if any(xFe(:)>0 & xFe(:)<1)
              - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 
     % update solution
-    XFe(inz,inx) = XFeo(inz,inx) + (theta.*dXFedt + (1-theta).*dXFedto) .* dt;
+    XFe(inz,inx) = (alpha2*XFeo(inz,inx) + alpha3*XFeoo(inz,inx) + (beta1*dXFedt + beta2*dXFedto + beta3*dXFedtoo)*dt)/alpha1;
 
-    dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
-             - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
-    
-    % update solution
-    XSi(inz,inx) = XSio(inz,inx) + (theta.*dXSidt + (1-theta).*dXSidto) .* dt;
 
-%     XSi = rho - XFe;
+%     dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
+%              - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
+%     
+%     % update solution
+%     XSi(inz,inx) = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
+
+    XSi = rho - XFe;
 
     % apply boundaries
     XFe([1 end],:) = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
@@ -166,9 +167,8 @@ advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN
 dCFedt   = advn_CFe;
 
 % update solution
-CSi(inz,inx) = CSio(inz,inx) + (theta.*dCSidt + (1-theta).*dCSidto) .* dt;
-CFe(inz,inx) = CFeo(inz,inx) + (theta.*dCFedt + (1-theta).*dCFedto) .* dt;
-
+CFe(inz,inx) = (alpha2*CFeo(inz,inx) + alpha3*CFeoo(inz,inx) + (beta1*dCFedt + beta2*dCFedto + beta3*dCFedtoo)*dt)/alpha1;
+CSi(inz,inx) = (alpha2*CSio(inz,inx) + alpha3*CSioo(inz,inx) + (beta1*dCSidt + beta2*dCSidto + beta3*dCSidtoo)*dt)/alpha1;
 
 % cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
 % solidus or above the liquidus
@@ -216,16 +216,16 @@ flSiq = 1-fsSiq;
 
 
 %% update phase fractions
-GFe   = alpha.*GFe + (1-alpha).*((XFe.*fsFeq-FsFe)./(4.*dt));
+GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
 advn_FFe  = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFFedt    = advn_FFe + GFe(inz,inx);
 
-GSi   = alpha.*GSi + (1-alpha).*((XSi.*fsSiq-FsSi)./(4.*dt));
+GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSi  = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFSidt    = advn_FSi + GSi(inz,inx);                                       % total rate of change
 
-FsFe(inz,inx) = FFeo(inz,inx) + (theta.*dFFedt + (1-theta).*dFFedto).*dt;
-FsSi(inz,inx) = FSio(inz,inx) + (theta.*dFSidt + (1-theta).*dFSidto).*dt;
+FsFe(inz,inx) = (alpha2*FsFeo(inz,inx) + alpha3*FsFeoo(inz,inx) + (beta1*dFFedt + beta2*dFFedto + beta3*dFFedtoo)*dt)/alpha1;
+FsSi(inz,inx) = (alpha2*FsSio(inz,inx) + alpha3*FsSioo(inz,inx) + (beta1*dFSidt + beta2*dFSidto + beta3*dFSidtoo)*dt)/alpha1;
 
 FsFe([1 end],:) = FsFe([2 end-1],:);  FsFe(:,[1 end]) = FsFe(:,[2 end-1]);  % apply boundary conditions
 FsSi([1 end],:) = FsSi([2 end-1],:);  FsSi(:,[1 end]) = FsSi(:,[2 end-1]);  % apply boundary conditions

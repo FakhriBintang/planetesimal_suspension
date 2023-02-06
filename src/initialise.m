@@ -216,13 +216,29 @@ GSi = 0.*flSi;
 
 
 %% initialise previous solution and auxiliary fields
-rhoo       = rho;
-dSdto      = dSdt;
-dsumMdt    = 0;
-dsumSdt    = 0;
-dsumXFedt  = 0;
-dsumCFedt  = 0;
-dsumCSidt  = 0;
+So    = S;
+XFeo  = XFe;
+XSio  = XSi;
+CSio  = CSi;
+CFeo  = CFe;
+FsFeo  = FsFe;
+FsSio  = FsSi;
+dSdto = dSdt;
+dXFedto = dXFedt;
+dXSidto = dXSidt;
+dCFedto = dCFedt;
+dCSidto = dCSidt;
+dFFedto = dFFedt;
+dFSidto = dFSidt;
+rhoo    = rho;
+Div_rhoVo = Div_rhoV;
+Div_Vo  = Div_V;
+dto     = dt;
+dsumMdt    = 0; dsumMdto = dsumMdt;
+dsumSdt    = 0; dsumSdto = dsumSdt;
+dsumXFedt  = 0; dsumXFedto = dsumXFedt;
+dsumCFedt  = 0; dsumCFedto = dsumCFedt;
+dsumCSidt  = 0; dsumCSidto = dsumCSidt;
 
 %% temp additional auxilary fields
 hassolSi = flSi<1;
@@ -258,6 +274,6 @@ output;
 %% initialise counting variables
 RUN.frame = 0;      % initialise output frame count
 time  = 0;      % initialise time count
-step  = 1;      % initialise time step count
+step  = 0;      % initialise time step count
 iter      = 1;      % initialise iteration count
 dtlimit   = 'none'; % initialise time limiter

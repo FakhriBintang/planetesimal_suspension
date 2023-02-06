@@ -1,11 +1,11 @@
 t = step+1;
 
-dsumMdto   = dsumMdt;
-dsumSdto   = dsumSdt;
-dsumXFedto = dsumXFedt;
-dsumCFedto = dsumCFedt;
-dsumCSidto = dsumCSidt;
-
+dsumMdtoo  = dsumMdto; dsumMdto = dsumMdt;
+dsumSdtoo = dsumSdto; dsumSdto   = dsumSdt;
+dsumXFedtoo = dsumXFedto; dsumXFedto = dsumXFedt;
+dsumCFedtoo = dsumCFedto; dsumCFedto = dsumCFedt;
+dsumCSidtoo = dsumCSidto; dsumCSidto = dsumCSidt;
+stp = max(1,step+1);
 HST.time(t) = time;
 
 % record conserved masses at current timestep
@@ -42,18 +42,18 @@ dsumCSidt   = sum(CSi(2,2:end-1)    .*W(1,2:end-1)  .*h.*1) ...
             + sum(CSi(2:end-1,2)    .*U(2:end-1,1)  .*h.*1) ...
             - sum(CSi(2:end-1,end-1).*U(2:end-1,end).*h.*1);
 
-if step>0
-    HST.dM  (t) = HST.dM  (t-1) + (theta.*dsumMdt   + (1-theta).*dsumMdto  ) .*dt;
-    HST.dS  (t) = HST.dS  (t-1) + (theta.*dsumSdt   + (1-theta).*dsumSdto  ) .*dt;
-    HST.dXFe(t) = HST.dXFe(t-1) + (theta.*dsumXFedt + (1-theta).*dsumXFedto) .*dt;
-    HST.dCFe(t) = HST.dCFe(t-1) + (theta.*dsumCFedt + (1-theta).*dsumCFedto) .*dt;
-    HST.dCSi(t) = HST.dCSi(t-1) + (theta.*dsumCSidt + (1-theta).*dsumCSidto) .*dt;
+if step>1
+HST.dM(stp) = (alpha2*HST.dM(stp-1) + alpha3*HST.dM(max(1,stp-2)) + (beta1*dsumMdt + beta2*dsumMdto + beta3*dsumMdtoo)*dt)/alpha1; 
+HST.dS(stp) = (alpha2*HST.dS(stp-1) + alpha3*HST.dS(max(1,stp-2)) + (beta1*dsumSdt + beta2*dsumSdto + beta3*dsumSdtoo)*dt)/alpha1; 
+HST.dXFe(stp) = (alpha2*HST.dXFe(stp-1) + alpha3*HST.dXFe(max(1,stp-2)) + (beta1*dsumXFedt + beta2*dsumXFedto + beta3*dsumXFedtoo)*dt)/alpha1; 
+HST.dCFe(stp) = (alpha2*HST.dCFe(stp-1) + alpha3*HST.dCFe(max(1,stp-2)) + (beta1*dsumCFedt + beta2*dsumCFedto + beta3*dsumCFedtoo)*dt)/alpha1; 
+HST.dCSi(stp) = (alpha2*HST.dCSi(stp-1) + alpha3*HST.dCSi(max(1,stp-2)) + (beta1*dsumCSidt + beta2*dsumCSidto + beta3*dsumCSidtoo)*dt)/alpha1; 
 else
-    HST.dM  (1) = 0;
-    HST.dS  (1) = 0;
-    HST.dXFe(1) = 0;
-    HST.dCFe(1) = 0;
-    HST.dCSi(1) = 0;
+    HST.dM  (stp) = 0;
+    HST.dS  (stp) = 0;
+    HST.dXFe(stp) = 0;
+    HST.dCFe(stp) = 0;
+    HST.dCSi(stp) = 0;
 end
 
 % Record conservation error (mass - mass change)/initial mass

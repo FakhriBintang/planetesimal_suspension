@@ -98,7 +98,7 @@ if step>0
                + advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''   },[1,2],BCA);
-    F_DivV   = (rho(inz,inx)-rhoo(inz,inx))./dt + theta.*Div_rhoV + (1-theta).*Div_rhoVo;  % get residual of mixture mass conservation
+    F_DivV   = (alpha1*rho(inz,inx) - alpha2*rhoo(inz,inx) - alpha3*rhooo(inz,inx))./dt + (beta1*Div_rhoV + beta2*Div_rhoVo + beta3*Div_rhoVoo);  % get residual of mixture mass conservation
     VolSrc   = Div_V(inz,inx) - F_DivV./rho(inz,inx);  % correct volume source term by scaled residual
 end
 

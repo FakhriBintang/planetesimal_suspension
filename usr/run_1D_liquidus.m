@@ -135,14 +135,14 @@ BCbot       = -1;                   % bottom boundary
 ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
-theta       = 0.5;   	            % time stepping mode
-CFL         = 0.25;   	            % Courant number to limit physical time step
+lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                   % maximum iteration count
-dtmax       = 5e-3*yr;          % maximum time step
+CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity
-alpha       = 0.50;                 % iterative lagging parameters
+TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 
 %% start model
