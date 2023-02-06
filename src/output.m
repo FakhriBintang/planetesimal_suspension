@@ -40,8 +40,8 @@ if plot_op
         plot(HST.time/yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,4)
-        plot(HST.time/yr,log10(HST.eta(:,2)),'LineWidth',2); axis xy tight; box on;
-        title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(HST.time/yr,log10(HST.Eta(:,2)),'LineWidth',2); axis xy tight; box on;
+        title('$\bar{\Eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         xlabel('Time [yr]',TX{:},FS{:});
         
     elseif Nx <= 10 % 1D plots
@@ -93,11 +93,11 @@ if plot_op
         plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
         plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
         plot(mean(-W(:,2:end-1),2)*yr,zW,'k','LineWidth',2); axis ij tight; box on;
-        title(['$W$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$W$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
         plot(mean(P(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title(['$P$ [Pa]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$P$ [Pa]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
         plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
@@ -198,7 +198,7 @@ if plot_op
         colormap(subplot(2,3,6),cm1)
         axis ij equal tight;
         colorbar
-        title('\eta [log_1_0 Pas]')
+        title('\Eta [log_1_0 Pas]')
         
         
         %% plot phase vol fractions
@@ -448,60 +448,65 @@ end
 if save_op
     if Nx <= 10 && Nz <= 10  % save 0D plots
         
-        name = [outpath '/',RUN.ID,'_txc_',num2str(floor(step/nop))]; % figure 1
+        name = [outpath '/',RunID,'_txc_',num2str(floor(step/nop))]; % figure 1
         print(fh1,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_fre_',num2str(floor(step/nop))]; % figure 2
+        name = [outpath '/',RunID,'_fre_',num2str(floor(step/nop))]; % figure 2
         print(fh2,name,'-dpng','-r300','-opengl');
         
     elseif Nx <= 10   % save 1D plots
         
-        name = [outpath '/',RUN.ID,'_txc_',num2str(floor(step/nop))]; % figure 1
+        name = [outpath '/',RunID,'_txc_',num2str(floor(step/nop))];   % figure 1
         print(fh1,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_fmr_',num2str(floor(step/nop))]; % figure 2
+        name = [outpath '/',RunID,'_fmr_',num2str(floor(step/nop))];   % figure 2
         print(fh2,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(step/nop))]; % figure 3
+        name = [outpath '/',RunID,'_vp_',num2str(floor(step/nop))];    % figure 3
         print(fh3,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_seg_',num2str(floor(step/nop))]; % figure 4
+        name = [outpath '/',RunID,'_seg_',num2str(floor(step/nop))];   % figure 4
         print(fh4,name,'-dpng','-r300','-opengl');
+        name = [outpath '/',RunID,'_consv_',num2str(floor(step/nop))]; % figure 5
+        print(fh5,name,'-dpng','-r300','-opengl');
         
     else  % save 2D plots
         
-        name = [outpath '/',RUN.ID,'_vp_',num2str(floor(step/nop))]; % figure 1
+        name = [outpath '/',RunID,'_vp_',num2str(floor(step/nop))]; % figure 1
         print(fh1,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_phsvol_',num2str(floor(step/nop))]; % figure 2
+        name = [outpath '/',RunID,'_phsvol_',num2str(floor(step/nop))]; % figure 2
         print(fh2,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_phswt_',num2str(floor(step/nop))]; % figure 3
+        name = [outpath '/',RunID,'_phswt_',num2str(floor(step/nop))]; % figure 3
         print(fh3,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_vseg',num2str(floor(step/nop))]; % figure 4
+        name = [outpath '/',RunID,'_vseg',num2str(floor(step/nop))]; % figure 4
         print(fh4,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_xc',num2str(floor(step/nop))]; % figure 5
+        name = [outpath '/',RunID,'_xc',num2str(floor(step/nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_rho',num2str(floor(step/nop))]; % figure 6
+        name = [outpath '/',RunID,'_rho',num2str(floor(step/nop))]; % figure 6
         print(fh6,name,'-dpng','-r300','-opengl');
-        name = [outpath '/',RUN.ID,'_chm',num2str(floor(step/nop))]; % figure 7
+        name = [outpath '/',RunID,'_chm',num2str(floor(step/nop))]; % figure 7
         print(fh7,name,'-dpng','-r300','-opengl');
-%         name = [outpath '/',RUN.ID,'_xcd',num2str(floor(step/nop))]; % figure 8
+%         name = [outpath '/',RunID,'_xcd',num2str(floor(step/nop))]; % figure 8
 %         print(fh8,name,'-dpng','-r300','-opengl');
 
     end
     
-    name = [outpath '/',RUN.ID,'_phsdg',num2str(floor(step/nop))]; % figure 9 phase diagram
+    name = [outpath '/',RunID,'_phsdg',num2str(floor(step/nop))]; % figure 9 phase diagram
     print(fh9,name,'-dpng','-r300','-opengl');
-    name = [outpath '/',RUN.ID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
+    name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
     print(fh10,name,'-dpng','-r300','-opengl');
     
-    name = [outpath '/',RUN.ID,'_',num2str(step/nop)];
+    name = [outpath '/',RunID,'_',num2str(step/nop)];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
         'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
-        'phisFe','philFe','phisSi','philSi','rho','eta','segsFe','seglFe','segsSi','seglSi',...
+        'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU');
-    name = [outpath '/',RUN.ID,'_cont'];
-    save(name,'NUM','PHY','SOL','MAT','CHM');
-    name = [opdir,'/',runID,'/',runID,'_hist'];
+    name = [outpath '/',RunID,'_cont'];
+    save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
+        'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
+        'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
+        'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU');
+    name = [outpath,'/',RunID,'_hist'];
     save(name,'HIST');
     
     if step == 0
-        logfile = [outpath '/',RUN.ID,'.log'];
+        logfile = [outpath '/',RunID,'.log'];
         if exist(logfile,'file'); delete(logfile); end
         diary(logfile)
     end
