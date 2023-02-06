@@ -71,10 +71,10 @@ Ttype   = 'constant';                % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters
-rhosSi      =  3300;                 % reference density solid refractory silicate [kg/m3]
-rholSi      =  2900;                 % reference density liquid refractory silicate [kg/m3]
-rhosFe      =  8000;                 % reference desnity solid refractory iron [kg/m3]
-rholFe      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
+rhosSi0      =  3300;                 % reference density solid refractory silicate [kg/m3]
+rholSi0      =  2900;                 % reference density liquid refractory silicate [kg/m3]
+rhosFe0      =  8000;                 % reference desnity solid refractory iron [kg/m3]
+rholFe0      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
