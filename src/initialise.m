@@ -256,7 +256,7 @@ NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
 dNdt = zeros(nzP,nxP);
 
 Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
-HIST.Hr = 0;
+
 if radheat; Hr = Hr + Hr0; end
 
 %% initialise previous solution and auxiliary fields

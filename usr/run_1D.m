@@ -5,7 +5,7 @@ clear ; close
 
 RunID           =  'test_newvar';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  1;                    % switch on to save output files
+save_op         =  0;                    % switch on to save output files
 nop             =  5;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary

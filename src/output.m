@@ -32,10 +32,10 @@ if plot_op
         fh2 = figure(2); clf;
         subplot(4,1,1)
         plot(HST.time/yr,HST.flFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
-        title(['$f_{Fe}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$f_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,2)
         plot(HST.time/yr,HST.flSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
-        title(['$f_{Si}$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$f_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,3)
         plot(HST.time/yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
@@ -69,7 +69,7 @@ if plot_op
         subplot(1,4,1)
         plot(mean(flFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
         plot(mean(flSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
-        title(['$f_{j}^\ell$ [wt\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$f_{j}^\ell$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('Fe', 'Si')
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
@@ -77,7 +77,7 @@ if plot_op
         plot(mean(philFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
         plot(mean(phisSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
         plot(mean(philSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
-        title(['$\phi_{j}^i$ [vol\%]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$\phi_{j}^i$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
         subplot(1,4,3)
         plot(mean(GFe(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
@@ -108,17 +108,17 @@ if plot_op
         fh4 = figure(4); clf;
         subplot(1,4,1)
         plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
-        title(['$w_{\Delta,Fe}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$w_{\Delta,Fe}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
         plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
-        title(['$w_{\Delta,Fe}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$w_{\Delta,Fe}^s$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
         plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
-        title(['$w_{\Delta,Si}^\ell$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$w_{\Delta,Si}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
         plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
-        title(['$w_{\Delta,Si}^s$ [m/yr]'],TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$w_{\Delta,Si}^s$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         
         % plot conserved quantities
         fh5 = figure(5); clf;
@@ -503,7 +503,7 @@ if save_op
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU');
     name = [outpath,'/',RunID,'_hist'];
-    save(name,'HIST');
+    save(name,'HST');
     
     if step == 0
         logfile = [outpath '/',RunID,'.log'];
