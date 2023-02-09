@@ -395,14 +395,14 @@ if plot_op
     %% plot phase diagrams
     fh9 = figure(9); clf;
     TT = linspace(TSi1,TSi2,1e3);
-    cc = [linspace(cphsSi2,(perCsSi+perClSi)/2,round((perTSi-TSi1)./(TSi2-TSi1)*1e3)),linspace((perCsSi+perClSi)/2,cphsSi1,round((perTSi-TSi2)./(TSi1-TSi2)*1e3))];
+    cc = [linspace(cphsSi2,(percsSi+perclSi)/2,round((perTSi-TSi1)./(TSi2-TSi1)*1e3)),linspace((percsSi+perclSi)/2,cphsSi1,round((perTSi-TSi2)./(TSi1-TSi2)*1e3))];
     [~,CCxSi,CClSi] = equilibrium(TT,cc,0.*TT,TSi1,TSi2,cphsSi1,cphsSi2,...
-                                  perTSi,perCsSi,perClSi,clap,PhDgSi);
+                                  perTSi,percsSi,perclSi,clap,PhDgSi);
     
     TT2 = linspace(TFe1,TFe2,1000);
     cc2 = linspace(cphsFe2,cphsFe1,length(TT2));
     [~,CCxFe,CClFe] = equilibrium(TT2,cc2,0.*TT2,TFe1,TFe2,cphsFe1,cphsFe2,...
-                                  perTFe,perCsFe,perClFe,clap,PhDgFe);
+                                  perTFe,percsFe,perclFe,clap,PhDgFe);
     subplot(1,2,1)
     plot(CCxSi,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClSi,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;

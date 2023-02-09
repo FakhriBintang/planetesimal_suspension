@@ -152,9 +152,9 @@ T = Tp .* exp(aT./rhoRef./Cp.*Pt);
 
 % initialise loop
 [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
-                                           perTFe,perCsFe,perClFe,clap,PhDgFe);
+                                           perTFe,percsFe,perclFe,clap,PhDgFe);
 [fsSi,csSi,clSi] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
-                                           perTSi,perCsSi,perClSi,clap,PhDgSi);
+                                           perTSi,percsSi,perclSi,clap,PhDgSi);
 res = 1e3;
 tol = 1e-4;
 it = 0;
@@ -165,9 +165,9 @@ while res > tol
 
     % output crystal fraction and fertile solid and liquid concentrations
     [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
-                                               perTFe,perCsFe,perClFe,clap,PhDgFe);
+                                               perTFe,percsFe,perclFe,clap,PhDgFe);
     [fsSi,csSi,clSi] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
-                                               perTSi,perCsSi,perClSi,clap,PhDgSi);
+                                               perTSi,percsSi,perclSi,clap,PhDgSi);
     fsSi = min(1,max(0,fsSi)); 
     fFes = min(1,max(0,fsFe));
     flFe = 1-fsFe;  

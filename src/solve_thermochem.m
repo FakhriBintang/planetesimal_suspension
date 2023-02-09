@@ -123,13 +123,13 @@ if any(xFe(:)>0 & xFe(:)<1)
     XFe(inz,inx) = (alpha2*XFeo(inz,inx) + alpha3*XFeoo(inz,inx) + (beta1*dXFedt + beta2*dXFedto + beta3*dXFedtoo)*dt)/alpha1;
 
 
-%     dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
-%              - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
-%     
-%     % update solution
-%     XSi(inz,inx) = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
+    dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
+             - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
+    
+    % update solution
+    XSi(inz,inx) = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
 
-    XSi = rho - XFe;
+%     XSi = rho - XFe;
 
     % apply boundaries
     XFe([1 end],:) = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
@@ -192,7 +192,7 @@ cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
 
 %% update local phase equilibrium
 [fsFeq,csFeq,clFeq] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
-                                  perTFe,perCsFe,perClFe,clap,PhDgFe);
+                                  perTFe,percsFe,perclFe,clap,PhDgFe);
 % apply boundaries
 fsFeq([1 end],:) = fsFeq([2 end-1],:);
 fsFeq(:,[1 end]) = fsFeq(:,[2 end-1]);
@@ -202,7 +202,7 @@ clFeq([1 end],:) = clFeq([2 end-1],:);
 clFeq(:,[1 end]) = clFeq(:,[2 end-1]);
 
 [fsSiq,csSiq,clSiq] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
-                                  perTSi,perCsSi,perClSi,clap,PhDgSi);
+                                  perTSi,percsSi,perclSi,clap,PhDgSi);
 % apply boundaries
 fsSiq([1 end],:) = fsSiq([2 end-1],:);
 fsSiq(:,[1 end]) = fsSiq(:,[2 end-1]);
