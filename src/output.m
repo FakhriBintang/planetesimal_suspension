@@ -60,9 +60,9 @@ if plot_op
         plot(mean(cFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'k-','LineWidth',2);
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(clSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(csSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'-b','LineWidth',2);
-        plot(mean(cSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'k-','LineWidth',2);
+        plot((mean(clSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot((mean(csSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'-b','LineWidth',2);
+        plot((mean(cSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'k-','LineWidth',2);
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         
         fh2 = figure(2); clf;
@@ -404,9 +404,9 @@ if plot_op
     [~,CCxFe,CClFe] = equilibrium(TT2,cc2,0.*TT2,TFe1,TFe2,cphsFe1,cphsFe2,...
                                   perTFe,percsFe,perclFe,clap,PhDgFe);
     subplot(1,2,1)
-    plot(CCxSi,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
-    plot(CClSi,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
-    plot(cSi(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
+    plot(CCxSi+cSimin,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
+    plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
+    plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
     %title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)

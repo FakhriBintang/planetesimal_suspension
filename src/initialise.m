@@ -141,7 +141,7 @@ Tp = T;  % initial condition sets potential temperature [C]
 xFe = xFe0 + dxFe.*rp; % Fe system
 xSi = 1 - xFe;         % Si system
 cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
-cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp; % Si component
+cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
 
 
 % initialise total pressure
