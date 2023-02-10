@@ -47,14 +47,15 @@ smth            =  ((N+2)/20)^2;     % regularisation of initial random perturba
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
 TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
-cphsSi1 = 0.4080;   cphsSi2 = 0.7882; % silicate system limits
+cSimin  = 0.4080;                    % reference cSi (In testing)
+cphsSi1 = 0;        cphsSi2 = 0.7882-cSimin; % silicate system limits
 cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
-perClSi = 0.5276;                    % silicate peritectic liquidus composition [wt SiO2]
-perCsSi = 0.4806;                    % silicate peritectic solidus  composition [wt SiO2]
+perclSi = 0.5276-cSimin;                    % silicate peritectic liquidus composition [wt SiO2]
+percsSi = 0.4806-cSimin;                    % silicate peritectic solidus  composition [wt SiO2]
 perTSi  = 1193;                      % silicate peritectic temperature
 PhDgSi  = [8.0,4.0,1.2,1.2];         % silicate phase diagram curvature factor (> 1)
-perClFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
-perCsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
+perclFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
+percsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
 perTFe  = TFe1;                  % iron peritectic temperature
 PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
