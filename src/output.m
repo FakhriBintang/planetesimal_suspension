@@ -198,7 +198,7 @@ if plot_op
         colormap(subplot(2,3,6),cm1)
         axis ij equal tight;
         colorbar
-        title('\Eta [log_1_0 Pas]')
+        title('\eta [log_1_0 Pas]')
         
         
         %% plot phase vol fractions
