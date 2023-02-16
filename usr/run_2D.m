@@ -1,4 +1,4 @@
-0% planetesimal sill rainfall: user control script
+% planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear ; close 
@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  10;                   % output every 'nop' grid steps of transport
+nop             =  1;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -23,7 +23,7 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 %% set model domain
 D               =  500;                  % domain depth
-N               =  200;                  % number of real x/z block nodes
+N               =  100;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
@@ -61,8 +61,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1200;                     % reference/top potential temperature [C]
-T1      =  1500;                     % bottom potential temperature (if different from top) [C]
+T0      =  1650;                     % reference/top potential temperature [C]
+T1      =  1650;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -142,7 +142,7 @@ abstol      = 1e-7;                 % absolute residual tolerance for nonlinear 
 maxit       = 50;                   % maximum iteration count
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step
-etareg      = 1e0;                  % regularisation factor for viscosity
+etareg      = 1e2;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 

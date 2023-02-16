@@ -1,9 +1,9 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close 
+clear ; close all
 
-RunID           =  'test';               % run identifier
+RunID           =  'test_newvar';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
 nop             =  100;                   % output every 'nop' grid steps of transport
@@ -15,7 +15,7 @@ radheat         =  0;                    % radiogenic heating
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
 maxstep         =  2e4;                  % maximum number of time steps
-tend            =  1e8*yr;           % model stopping time [s]
+tend            =  0.5e3*yr;           % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;          % (initial) time step [s]
@@ -23,7 +23,7 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 %% set model domain
 D               =  500;                  % domain depth
-N               =  100;                  % number of real x/z block nodes
+N               =  250;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
@@ -35,7 +35,7 @@ L               =  h;
 % set initial system and component fractions
 xFe0            =  0.20;                 % Fe-FeS system fraction
 cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.49;                 % Si system fertile component fraction [wt% SiO2]
+cSi0            =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
@@ -61,8 +61,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1360;                     % reference/top potential temperature [C]
-T1      =  1360;                     % bottom potential temperature (if different from top) [C]
+T0      =  1350;                     % reference/top potential temperature [C]
+T1      =  1350;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -72,18 +72,18 @@ Ttype   = 'constant';                % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters
-rhosSi0      =  3300;                 % reference density solid refractory silicate [kg/m3]
-rholSi0      =  2900;                 % reference density liquid refractory silicate [kg/m3]
-rhosFe0      =  8000;                 % reference desnity solid refractory iron [kg/m3]
-rholFe0      =  7600;                 % reference desnity liquid refractory iron [kg/m3]
+rhosSi0     =  3300;                 % reference density solid refractory silicate [kg/m3]
+rholSi0     =  2900;                 % reference density liquid refractory silicate [kg/m3]
+rhosFe0     =  8000;                 % reference desnity solid refractory iron [kg/m3]
+rholFe0     =  7600;                 % reference desnity liquid refractory iron [kg/m3]
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx          =  1e-4;                 % solid grain size [m]
 df          =  1e-4;                 % metal droplet size [m]
 dm          =  1e-4;                 % melt film size [m]
-gz0          =  0.1;                  % z-gravity
-gx0          =  0;               	 % x-gravity
+gz0         =  0.1;                  % z-gravity
+gx0         =  0;               	 % x-gravity
 
 % Reference pressure
 P0 = 0;
@@ -139,7 +139,7 @@ TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                   % maximum iteration count
+maxit       = 70;                   % maximum iteration count
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity

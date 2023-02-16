@@ -15,7 +15,7 @@ radheat         =  0;                    % radiogenic heating
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
 maxstep         =  2e4;                  % maximum number of time steps
-tend            =  1e8*yr;           % model stopping time [s]
+tend            =  0.5e3*yr;           % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;          % (initial) time step [s]
@@ -61,7 +61,7 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1200;                     % reference/top potential temperature [C]
+T0      =  1450;                     % reference/top potential temperature [C]
 T1      =  1450;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -139,7 +139,7 @@ TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                   % maximum iteration count
+maxit       = 70;                   % maximum iteration count
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity
