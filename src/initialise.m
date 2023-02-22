@@ -237,6 +237,7 @@ dto     = dt;
 dsumMdt    = 0; dsumMdto = dsumMdt;
 dsumSdt    = 0; dsumSdto = dsumSdt;
 dsumXFedt  = 0; dsumXFedto = dsumXFedt;
+dsumXSidt  = 0; dsumXSidto = dsumXSidt;
 dsumCFedt  = 0; dsumCFedto = dsumCFedt;
 dsumCSidt  = 0; dsumCSidto = dsumCSidt;
 

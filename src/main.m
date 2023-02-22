@@ -63,7 +63,7 @@ while time <= tend && step <= maxstep
 
 
     % non-linear iteration loop
-    while resnorm/resnorm0 >= reltol && resnorm >= abstol && iter <= maxit || iter < 2
+    while resnorm/resnorm0 >= reltol && resnorm >= abstol && iter <= maxit
 
         % solve thermo-chemical equations
         solve_thermochem;
