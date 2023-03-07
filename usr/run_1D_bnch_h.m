@@ -1,17 +1,17 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear all; close all
-RunID           =  'bnchm_dt_bd3i_4phs';               % run identifier
+clear ; close all
+RunID           =  'bnchm_h_4phs_bd3i';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
 switch systemname
     case 'Horatio'
-        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/benchmark_dt/',RunID];
+        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/benchmark_h/',RunID];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
     otherwise
-        outpath = ['../out/benchmark_dt/', RunID];
+        outpath = ['../out/benchmark_h/',RunID];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
 end
 
@@ -23,31 +23,33 @@ addpath('../src/cbrewer/')
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
-%% set model domain
-N               =  100;                  % number of real nodes
-D               =  500;                  % domain depth
-% [do not modify]
-h               =  D/N;          % spacing of x/z  coordinates
-L               =  h;
 dxFe = 0.1;
+dt              =  500/100/4;          % (initial) time step [s]
+
+plot_op         =  1;                    % switch on to plot live output
+save_op         =  0;                    % switch on to save output files
+nop             =  100;                   % output every 'nop' grid steps of transport
+bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
+%temporary
+radheat         =  0;                    % radiogenic heating
+
+%% set model domain
+D               =  500;                  % domain depth
 
 %% test nonlinear tolerance
-DDT = [h/2, h/4, h/8];
+NN = [50, 100, 200];
 
-for dt = DDT
-    plot_op         =  1;                    % switch on to plot live output
-    save_op         =  0;                    % switch on to save output files
-    nop             =  100; %D/dt;                   % output every 'nop' grid steps of transport
-    bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
-    %temporary
-    radheat         =  0;                    % radiogenic heating
+for N = NN
+    % [do not modify]
+    h               =  D/N;          % spacing of x/z  coordinates
+    L               =  h;
     %% set model timing
+        % [do not modify]
+    tend            =  D/dt*h;           % model stopping time [s]
     yr              =  3600*24*365.25;       % seconds per year
     dtmax           =  1;              % maximum time step
     maxstep         =  D/dt;                  % maximum number of time steps
 
-    % [do not modify]
-    tend            =  D/dt*h;           % model stopping time [s]
 
     %% set thermochemical parameters
 
@@ -57,7 +59,7 @@ for dt = DDT
     cSi0            =  0.42;                 % Si system fertile component fraction [wt% SiO2]
 
     % set parameters
-    dxFe            = 0.1;                 % amplitude of initial random perturbation to iron system
+    dxFe            = -100e-3;                 % amplitude of initial random perturbation to iron system
     dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
     dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
     smth            =  ((N+2)/20)^2;     % regularisation of initial random perturbation
@@ -160,13 +162,18 @@ for dt = DDT
     abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
     maxit       = 30;                   % maximum iteration count
     tauR        = 1e16;
-    CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+    CFL         = 0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
     etareg      = 1e0;                  % regularisation factor for viscosity
     TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
+
     %% start model
     initialise_bnchm;
-    Tin = T; rhoin = rho; Sin = S; XFein = XFe; XSiin = XSi; CFein = CFe; CSiin = CSi; xFein = xFe; xSiin = xSi;
+    Tin = T; rhoin = rho; Sin = S; XFein = XFe; XSiin = XSi; CFein = CFe; CSiin = CSi; 
+
+%     initialise normalised gaussian profiles
+% T_norm = (Tin-T0)./(T1-T0); rho_norm = (rhoin-min(rhoin(:)))./(max(rhoin(:))-min(rhoin(:))); S_norm = (Sin-min(Sin(:)))./(max(Sin(:))-min(Sin(:))); 
+% XFe_norm = (XFein-min(XFein(:)))./(max(XFein(:))-min(XFein(:))); XSi_norm = (XSiin-min(XSiin(:)))./(max(XSiin(:))-min(XSiin(:)));
 
     while time <= tend && step <= maxstep
         % print time step header
@@ -291,8 +298,10 @@ for dt = DDT
         dt;
         step = step + 1;
         time = time + dt;
+        
         figure(101)
         plot(mean(Tin(2:end-1,2:end-1),2),zP(2:end-1),'--k',mean(T(2:end-1,2:end-1),2),zP(2:end-1),'-r'); axis ij tight; box on;
+
     end
 
 
@@ -328,22 +337,23 @@ for dt = DDT
     xlabel('Time [s]',TX{:},FS{:});
 
     fh15 = figure(15);
-    p1 = loglog(dt,EM,'kd','MarkerSize',8,'LineWidth',2); hold on; box on;
-    p2 = loglog(dt,ES,'rs','MarkerSize',8,'LineWidth',2);
-    p3 = loglog(dt,EXFe,'go','MarkerSize',8,'LineWidth',2);
-    p4 = loglog(dt,EXSi,'bx','MarkerSize',8,'LineWidth',2);
-    p5 = loglog(dt,ECFe,'m.','MarkerSize',8,'LineWidth',2);
-    p6 = loglog(dt,ECSi,'c*','MarkerSize',8,'LineWidth',2);
+    p1 = loglog(h,EM,'kd','MarkerSize',8,'LineWidth',2); hold on; box on;
+    p2 = loglog(h,ES,'rs','MarkerSize',8,'LineWidth',2);
+    p3 = loglog(h,EXFe,'go','MarkerSize',8,'LineWidth',2);
+    p4 = loglog(h,EXSi,'bx','MarkerSize',8,'LineWidth',2);
+    p5 = loglog(h,ECFe,'m.','MarkerSize',8,'LineWidth',2);
+    p6 = loglog(h,ECSi,'c*','MarkerSize',8,'LineWidth',2);
     set(gca,'TicklabelInterpreter','latex','FontSize',12)
-    xlabel('time stepping [dt]','Interpreter','latex','FontSize',16)
+    xlabel('grid spacing [m]','Interpreter','latex','FontSize',16)
     ylabel('rel. numerical error rate [1/s]','Interpreter','latex','FontSize',16)
-    title('Global conservation in time','Interpreter','latex','FontSize',20)
+    title('Global conservation in space','Interpreter','latex','FontSize',20)
 
-    if dt == DDT(1)
-        p7 = loglog(DDT,ES.*(DDT./DDT(1)).^2,'k-','LineWidth',2);  % plot trend for comparison
+    if N == NN(1)
+        p7 = loglog(D./NN,ES.*(D./NN./NN(1)).^1,'k-','LineWidth',2);  % plot trend for comparison
+        p8 = loglog(D./NN,ES.*(D./NN./NN(1)).^2,'k-','LineWidth',2);
     end
-    if dt == DDT(end)
-        legend([p1,p2,p3,p4,p5,p6,p7],{'error $M$','error $S$','error $X_{Fe}$','error $X_{Si}$','error $C_{Fe}$','error $C_{Si}$','2nd order'},'Interpreter','latex','box','on','location','southeast')
+    if N == NN(end)
+        legend([p1,p2,p3,p4,p5,p6,p7,p8],{'error $M$','error $S$','error $X_{Fe}$','error $X_{Si}$','error $C_{Fe}$','error $C_{Si}$','1st order'},'Interpreter','latex','box','on','location','southeast')
     end
     drawnow;
 end

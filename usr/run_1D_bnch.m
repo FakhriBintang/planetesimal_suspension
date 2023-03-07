@@ -14,6 +14,7 @@ switch systemname
         outpath = ['../out/benchmark_tol'];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
 end
+RunID           =  'bnchm_tol_2';               % run identifier
 
 % add path to source directory
 addpath('../src')
@@ -27,10 +28,9 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 RTOL = [1e-3,1e-6,1e-9];
 
 for reltol = RTOL
-    RunID           =  'test_newvar';               % run identifier
     plot_op         =  1;                    % switch on to plot live output
     save_op         =  0;                    % switch on to save output files
-    nop             =  50;                   % output every 'nop' grid steps of transport
+    nop             =  10;                   % output every 'nop' grid steps of transport
     bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
     %temporary
     radheat         =  0;                    % radiogenic heating
@@ -42,7 +42,7 @@ for reltol = RTOL
     tend            =  1e3*yr;           % model stopping time [s]
 
     % [do not modify]
-    dt              =  1;          % (initial) time step [s]
+    dt              =  1/4;          % (initial) time step [s]
 
 
     %% set model domain
@@ -222,3 +222,5 @@ for reltol = RTOL
     end
     drawnow;
 end
+name = [outpath,'/',RunID,'_bnchm'];
+print(fh15,name,'-dpng','-r300','-vector');

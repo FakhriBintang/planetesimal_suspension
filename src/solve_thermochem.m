@@ -67,54 +67,6 @@ T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./rho./Cp ...
 
 
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
-% equation 7
-
-% % update system indices
-% hasFe   = xFe         >0;
-% hasSi   = xSi         >0;
-% hasFein = xFe(inz,inx)>0;
-% hasSiin = xSi(inz,inx)>0;
-% 
-% % if any(xFe(:)>0 & xFe(:)<1)
-%     dXFedt = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
-%              - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
-% 
-%     % update solution
-%     XFe(inz,inx) = XFeo(inz,inx) + (theta.*dXFedt + (1-theta).*dXFedto) .* dt;
-% 
-%     dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
-%              - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
-%     
-%     % update solution
-%     XSi(inz,inx) = XSio(inz,inx) + (theta.*dXSidt + (1-theta).*dXSidto) .* dt;
-% 
-%     XFe(~hasFe) = rho(~hasFe) - XSi(~hasFe);
-%     XSi( hasFe) = rho( hasFe) - XFe( hasFe);
-% 
-%     % apply boundaries
-%     XFe([1 end],:) = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
-%     XSi([1 end],:) = XSi([2 end-1],:);  XSi(:,[1 end]) = XSi(:,[2 end-1]);
-% 
-%     % enforce 0,rho limits
-%     XFe = max(0, XFe ); 
-%     XSi = max(0, XSi ); 
-% 
-% % else
-% %     XFe = xFe.*rho;
-% %     XSi = rho - XFe;
-% % end
-% 
-% % update system fractions
-% xFe = max(0,min(1, XFe./rho ));
-% xSi = max(0,min(1, XSi./rho ));
-% 
-% hasFe   = xFe         >0;
-% hasSi   = xSi         >0;
-% hasFein = xFe(inz,inx)>0;
-% hasSiin = xSi(inz,inx)>0;
-
-
-%% alternate method for X conservation
 if any(xFe(:)>0 & xFe(:)<1)
     dXFedt = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
              - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
@@ -126,6 +78,7 @@ if any(xFe(:)>0 & xFe(:)<1)
     dXSidt = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
              - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
     
+
     % update solution
     XSi(inz,inx) = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
 
@@ -145,8 +98,10 @@ else
 end
 
 % update system fractions
-xFe = max(0,min(1, XFe./rho ));
-xSi = max(0,min(1, XSi./rho ));
+% xFe = max(0,min(1, XFe./rho ));
+% xSi = max(0,min(1, XSi./rho ));
+xFe = max(0,min(1, XFe./(XFe+XSi) ));
+xSi = max(0,min(1, XSi./(XFe+XSi) ));
 
 hasFe   = xFe>0 & xSi<1;
 hasSi   = xSi>0 & xFe<1;
@@ -214,11 +169,11 @@ flSiq = 1-fsSiq;
 
 
 %% update phase fractions
-GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
+GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./max(4.*dt,tauR));
 advn_FFe  = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFFedt    = advn_FFe + GFe(inz,inx);
 
-GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
+GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./max(4.*dt,tauR));
 advn_FSi  = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFSidt    = advn_FSi + GSi(inz,inx);                                       % total rate of change
 

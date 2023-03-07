@@ -9,8 +9,8 @@ rhosFe = rhosFe0.*(1 - aT.*(T-perTFe) - gCFe.*(csFe-cphsFe1));
 rholFe = rholFe0.*(1 - aT.*(T-perTFe) - gCFe.*(clFe-cphsFe1));
 
 % update mixture density
-rho    = 1./(xFe.*fsFe./rhosFe + xFe.*flFe./rholFe ...
-               + xSi.*fsSi./rhosSi + xSi.*flSi./rholSi);
+rho    = 1./(xFe.*(fsFe./rhosFe + flFe./rholFe) ...
+           + xSi.*(fsSi./rhosSi + flSi./rholSi));
 rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
 

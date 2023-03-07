@@ -55,8 +55,10 @@ if plot_op
         title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); hold on;  axis ij tight; box on;
+        plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
+        title('$x_{Fe} / x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('$xFe$', '$x_{Si}$')
         subplot(1,4,3)
         plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
         plot(mean(csFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-b','LineWidth',2);
@@ -125,26 +127,29 @@ if plot_op
 
         % plot conserved quantities
         fh5 = figure(5); clf;
-        subplot(1,4,1)
+        subplot(1,5,1)
         plot(mean(XFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
         plot(mean(XSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
         plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1),'-k','LineWidth',2);
         plot(mean(XFe(2:end-1,2:end-1),2)+ mean(XSi(2:end-1,2:end-1),2),zP(2:end-1),'--','LineWidth',2);
         legend('XFe', 'XSi', 'rho', 'XFe +XSi')
         ylabel('Depth [m]',TX{:},FS{:});
-        subplot(1,4,2)
+        subplot(1,5,2)
         plot(mean(CFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$C_{Fe}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        subplot(1,4,3)
+        subplot(1,5,3)
         plot(mean(CSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
         title('$C_{Si}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        subplot(1,4,4)
+        subplot(1,5,4)
         plot(mean(FlFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
         plot(mean(FsFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
         plot(mean(FlSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
         plot(mean(FsSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
         legend('FlFe','FsFe' , 'FlSi', 'FsSi')
         ylabel('Depth [m]',TX{:},FS{:});
+        subplot(1,5,5)
+        plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        title('$S$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
     else
 
@@ -452,48 +457,48 @@ if save_op
     if Nx <= 10 && Nz <= 10  % save 0D plots
 
         name = [outpath '/',RunID,'_txc_',num2str(floor(step/nop))]; % figure 1
-        print(fh1,name,'-dpng','-r300','-opengl');
+        print(fh1,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_fre_',num2str(floor(step/nop))]; % figure 2
-        print(fh2,name,'-dpng','-r300','-opengl');
+        print(fh2,name,'-dpng','-r300','-image');
 
     elseif Nx <= 10   % save 1D plots
 
         name = [outpath '/',RunID,'_txc_',num2str(floor(step/nop))];   % figure 1
-        print(fh1,name,'-dpng','-r300','-opengl');
+        print(fh1,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_fmr_',num2str(floor(step/nop))];   % figure 2
-        print(fh2,name,'-dpng','-r300','-opengl');
+        print(fh2,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_vp_',num2str(floor(step/nop))];    % figure 3
-        print(fh3,name,'-dpng','-r300','-opengl');
+        print(fh3,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_seg_',num2str(floor(step/nop))];   % figure 4
-        print(fh4,name,'-dpng','-r300','-opengl');
+        print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_consv_',num2str(floor(step/nop))]; % figure 5
-        print(fh5,name,'-dpng','-r300','-opengl');
+        print(fh5,name,'-dpng','-r300','-image');
 
     else  % save 2D plots
 
         name = [outpath '/',RunID,'_vp_',num2str(floor(step/nop))]; % figure 1
-        print(fh1,name,'-dpng','-r300','-opengl');
+        print(fh1,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_phsvol_',num2str(floor(step/nop))]; % figure 2
-        print(fh2,name,'-dpng','-r300','-opengl');
+        print(fh2,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_phswt_',num2str(floor(step/nop))]; % figure 3
-        print(fh3,name,'-dpng','-r300','-opengl');
+        print(fh3,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_vseg',num2str(floor(step/nop))]; % figure 4
-        print(fh4,name,'-dpng','-r300','-opengl');
+        print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_xc',num2str(floor(step/nop))]; % figure 5
-        print(fh5,name,'-dpng','-r300','-opengl');
+        print(fh5,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_rho',num2str(floor(step/nop))]; % figure 6
-        print(fh6,name,'-dpng','-r300','-opengl');
+        print(fh6,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_chm',num2str(floor(step/nop))]; % figure 7
-        print(fh7,name,'-dpng','-r300','-opengl');
+        print(fh7,name,'-dpng','-r300','-image');
         %         name = [outpath '/',RunID,'_xcd',num2str(floor(step/nop))]; % figure 8
-        %         print(fh8,name,'-dpng','-r300','-opengl');
+        %         print(fh8,name,'-dpng','-r300','-image');
 
     end
 
     name = [outpath '/',RunID,'_phsdg',num2str(floor(step/nop))]; % figure 9 phase diagram
-    print(fh9,name,'-dpng','-r300','-opengl');
+    print(fh9,name,'-dpng','-r300','-image');
     name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
-    print(fh10,name,'-dpng','-r300','-opengl');
+    print(fh10,name,'-dpng','-r300','-image');
 
     name = [outpath '/',RunID,'_',num2str(step/nop)];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...

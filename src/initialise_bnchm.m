@@ -139,7 +139,7 @@ end
 Tp = T;  % initial condition sets potential temperature [C]
 
 % set initial component weight fraction [kg/kg]
-xFe = xFe0 + dxFe.*rp; % Fe system
+xFe = xFe0 + dxFe.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
 xSi = 1 - xFe;         % Si system
 cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
 cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
@@ -148,8 +148,7 @@ cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
 % initialise total pressure
 Pt = rhoRef.*gzP.*ZP + P0;
 
-% initialise adiabatic temperature
-T = Tp .* exp(aT./rhoRef./Cp.*Pt);
+
 
 % initialise loop
 [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
@@ -175,6 +174,11 @@ while res > tol
     flSi = 1-fsSi;
     
     up2date;
+
+    segsSi(:) = 0;
+    segsFe(:) = 0;
+    seglSi(:) = 0;
+    seglFe(:) = 0;
     
     rhoRef = mean(mean(rho(2:end-1,2:end-1)));
     Pt = rhoRef.*gzP.*ZP + P0;
@@ -184,6 +188,24 @@ while res > tol
            + norm(Pt(:)  -Pi(:)   ,2)./norm(Pt(:)  +TINY,2);
     it     = it+1;
 end
+up2date;
+W(:) = 1;               % z-velocity on z-face nodes
+U(:) = 0;               % x-velocity on x-face nodes
+P(:) = 0;
+segsSi(:) = 0;
+segsFe(:) = 0;
+seglSi(:) = 0;
+seglFe(:) = 0;
+ks(:)     = 0; % update phase velocities
+WlSi = W + seglSi;
+UlSi = U;
+WsSi = W + segsSi;
+UsSi = U;
+WlFe = W + seglFe;
+UlFe = U;
+WsFe = W + segsFe;
+UsFe = U;
+
 
 fsFe(xFe==0) = 0;
 flFe(xFe==0) = 0;
@@ -267,7 +289,24 @@ Div_rhoVo = Div_rhoV;
 
 %% update nonlinear material properties
 up2date;
-solve_fluidmech;
+W(:) = 1;               % z-velocity on z-face nodes
+U(:) = 0;               % x-velocity on x-face nodes
+P(:) = 0;
+segsSi(:) = 0;
+segsFe(:) = 0;
+seglSi(:) = 0;
+seglFe(:) = 0;
+ks(:)     = 0; % update phase velocities
+WlSi = W + seglSi;
+UlSi = U;
+WsSi = W + segsSi;
+UsSi = U;
+WlFe = W + seglFe;
+UlFe = U;
+WsFe = W + segsFe;
+UsFe = U;
+
+resnorm_VP = 0
 
 %% initialise recording of model history
 history;
