@@ -131,7 +131,7 @@ BCbot       = -1;                   % bottom boundary
 %% set solver options
 % advection scheme
 ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA         = {'periodic','closed'};% boundary condition on advection (top/bot, sides)
+BCA         = {'closed','periodic'};% boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 1/2;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
@@ -149,7 +149,7 @@ NN = [50, 100, 200];
 for N = NN
     % [do not modify]
     h               =  D/N;          % spacing of x/z  coordinates
-    L               =  h;
+    L               =  D;
     
     % set gaussian positioning
     rT      =  D/6;                  % radius of hot plume [m]
@@ -178,8 +178,6 @@ for N = NN
     while time <= tend && step <= maxstep
         % print time step header
         fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
-
-        figure(100);clf
 
     if     strcmp(TINT,'bwei') || step==1 % first step / 1st-order backward-Euler implicit scheme
         alpha1 = 1; alpha2 = 1; alpha3 = 0;
@@ -235,8 +233,8 @@ for N = NN
 
             % update non-linear parameters and auxiliary variables
             up2date;
-            W(:) = 1;               % z-velocity on z-face nodes
-            U(:) = 0;               % x-velocity on x-face nodes
+            W(:) = 0;               % z-velocity on z-face nodes
+            U(:) = 1;               % x-velocity on x-face nodes
             P(:) = 0;  
             segsSi(:) = 0;
             segsFe(:) = 0;
@@ -260,9 +258,6 @@ for N = NN
                 end
                 fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
-                figure(100); if iter==1; clf; else; hold on; end
-                plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
-                drawnow;
             end
 
             iter = iter+1;
@@ -300,7 +295,7 @@ for N = NN
         time = time + dt;
         
         figure(101)
-        plot(mean(Tin(2:end-1,2:end-1),2),zP(2:end-1),'--k',mean(T(2:end-1,2:end-1),2),zP(2:end-1),'-r'); axis ij tight; box on;
+        plot(xP(2:end-1),Tin(N/2,2:end-1),'--k',xP(2:end-1),T(N/2,2:end-1),'-r'); axis ij tight; box on;
 
     end
 

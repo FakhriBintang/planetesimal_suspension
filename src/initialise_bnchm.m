@@ -48,19 +48,6 @@ MapP        =  reshape(1:NP,nzP,nxP);
 inz = 2:length(zP)-1;
 inx = 2:length(xP)-1;
 
-% get smoothed initialisation field
-rng(15);
-rp = randn(nzP,nxP);
-for i = 1:round(smth)
-    rp(2:end-1,2:end-1) = rp(2:end-1,2:end-1) + diff(rp(:,2:end-1),2,1)./8 ...
-                                              + diff(rp(2:end-1,:),2,2)./8;
-    rp([1 end],:)       = rp([2 end-1],:);
-    rp(:,[1 end])       = rp(:,[2 end-1]);
-end
-rp              = rp./max(abs(rp(:)));
-rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
-
-
 %% setup material property arrays
 % gravity
 gxP = zeros(nzP,nxP) + gx0;      gzP = zeros(nzP,nxP) + gz0;
@@ -141,8 +128,8 @@ Tp = T;  % initial condition sets potential temperature [C]
 % set initial component weight fraction [kg/kg]
 xFe = xFe0 + dxFe.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
 xSi = 1 - xFe;         % Si system
-cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
-cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
+cFe = zeros(size(xFe)) + cFe0 + dcFe; % Fe component
+cSi = zeros(size(xSi)) + cSi0 + dcSi - cSimin; % Si component
 
 
 % initialise total pressure

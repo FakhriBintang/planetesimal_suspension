@@ -1,17 +1,17 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close all
-RunID           =  'bnchm_h_4phs_bd3i_dt';               % run identifier
+clear all; close all
+RunID           =  'bnchm_dt_bd3i_4phs';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
 switch systemname
     case 'Horatio'
-        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/benchmark_h/',RunID];
+        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/benchmark_dt/',RunID];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
     otherwise
-        outpath = ['../out/benchmark_h/',RunID];
+        outpath = ['../out/benchmark_dt/', RunID];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
 end
 
@@ -25,25 +25,30 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  100;                   % output every 'nop' grid steps of transport
+nop             =  100; %D/dt;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
 
 %% set model domain
-D               =  100;                  % domain depth
+N               =  100;                  % number of real nodes
+D               =  500;                  % domain depth
+% [do not modify]
+h               =  D/N;          % spacing of x/z  coordinates
+L               =  D;
 
 %% set thermochemical parameters
 % set initial system and component fractions
 xFe0            =  0.5;                 % Fe-FeS system fraction
-cFe0            =  0.15;                % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.42;                % Si system fertile component fraction [wt% SiO2]
+cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+cSi0            =  0.42;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            =  0.1;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
-%% set phase diagram parameters
+
+% set phase diagram parameters
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
 TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
@@ -60,9 +65,12 @@ perTFe  = TFe1;                  % iron peritectic temperature
 PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
-%% set temperature initial condition
+% set temperature initial condition
 T0      =  1300;                     % reference/top potential temperature [C]
 T1      =  1350;                     % bottom potential temperature (if different from top) [C]
+rT      =  D/6;                  % radius of hot plume [m]
+zT      =  D*0.5;                % z-position of hot plume [m]
+xT      =  L/2;                  % x-position of hot plume [m]
 
 Ttype   = 'gaussian';                % set initial temperature field type
 
@@ -92,16 +100,16 @@ EtaSol0     =  1e15;                 % reference silicate/iron crystal viscosity
 Em          =  150e3;                % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
-    0.25, 0.25, 0.25; ...
-    0.25, 0.25, 0.25; ];  % permission slopes
+                 0.25, 0.25, 0.25; ...
+                 0.25, 0.25, 0.25; ];  % permission slopes
 
 BBP         =  [ 0.44, 0.18, 0.38; ...
-    0.61, 0.01, 0.38; ...
-    0.70, 0.24, 0.06; ];  % permission step locations
+                 0.61, 0.01, 0.38; ...
+                 0.70, 0.24, 0.06; ];  % permission step locations
 
 CCP         =  [ 0.30, 0.30, 0.30; ...
-    0.60, 0.60, 0.12; ...
-    0.60, 0.12, 0.60; ];  % permission step widths
+                 0.60, 0.60, 0.12; ...
+                 0.60, 0.12, 0.60; ];  % permission step widths
 
 % thermochemical parameters
 kTSi        =  3;                   % Thermal conductivity silicate [W/m/K]
@@ -131,49 +139,33 @@ BCbot       = -1;                   % bottom boundary
 %% set solver options
 % advection scheme
 ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA         = {'periodic','closed'};% boundary condition on advection (top/bot, sides)
+BCA         = {'closed','periodic'};% boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
-lambda      = 1/2;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
+lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 30;                   % maximum iteration count
 tauR        = 1e16;
-CFL         = 1;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+CFL         = 1;                 % (physical) time stepping courant number (multiplies stable step) [0,1]
 etareg      = 1e0;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
+%% test time stepping
+DDT = [h/2, h/4, h/8];
 
-%% test nonlinear tolerance
-NN = [50, 100, 200];
-
-for N = NN
-    % [do not modify]
-    h               =  D/N;          % spacing of x/z  coordinates
-    L               =  h;
-    
-    % set gaussian positioning
-    rT      =  D/6;                  % radius of hot plume [m]
-    zT      =  D/2;                % z-position of hot plume [m]
-    xT      =  L/2;                  % x-position of hot plume [m]
+for dt = DDT
     %% set model timing
-        % [do not modify]
-    dt              =  D/NN(2)/4;           % (initial) time step [s]
+    yr              =  3600*24*365.25;       % seconds per year
+    dtmax           =  dt;              % maximum time step
+    maxstep         =  D/dt;                  % maximum number of time steps
 
-    tend            =  D/dt*h;              % model stopping time [s]
-    yr              =  3600*24*365.25;      % seconds per year
-    dtmax           =  dt;                   % maximum time step
-    maxstep         =  D/dt;                % maximum number of time steps
+    % [do not modify]
+    tend            =  D/dt*h;           % model stopping time [s]
 
-
-   
-
+    
     %% start model
     initialise_bnchm;
-    Tin = T; rhoin = rho; Sin = S; XFein = XFe; XSiin = XSi; CFein = CFe; CSiin = CSi; 
-
-%     initialise normalised gaussian profiles
-% T_norm = (Tin-T0)./(T1-T0); rho_norm = (rhoin-min(rhoin(:)))./(max(rhoin(:))-min(rhoin(:))); S_norm = (Sin-min(Sin(:)))./(max(Sin(:))-min(Sin(:))); 
-% XFe_norm = (XFein-min(XFein(:)))./(max(XFein(:))-min(XFein(:))); XSi_norm = (XSiin-min(XSiin(:)))./(max(XSiin(:))-min(XSiin(:)));
+    Tin = T; rhoin = rho; Sin = S; XFein = XFe; XSiin = XSi; CFein = CFe; CSiin = CSi; xFein = xFe; xSiin = xSi;
 
     while time <= tend && step <= maxstep
         % print time step header
@@ -235,8 +227,8 @@ for N = NN
 
             % update non-linear parameters and auxiliary variables
             up2date;
-            W(:) = 1;               % z-velocity on z-face nodes
-            U(:) = 0;               % x-velocity on x-face nodes
+            W(:) = 0;               % z-velocity on z-face nodes
+            U(:) = 1;               % x-velocity on x-face nodes
             P(:) = 0;  
             segsSi(:) = 0;
             segsFe(:) = 0;
@@ -298,21 +290,19 @@ for N = NN
         dt;
         step = step + 1;
         time = time + dt;
-        
         figure(101)
-        plot(mean(Tin(2:end-1,2:end-1),2),zP(2:end-1),'--k',mean(T(2:end-1,2:end-1),2),zP(2:end-1),'-r'); axis ij tight; box on;
-
+        plot(xP(2:end-1),Tin(N/2,2:end-1),'--k',xP(2:end-1),T(N/2,2:end-1),'-r'); axis ij tight; box on;
     end
 
 
 
     %% plot convergence
-    EM   = norm(rho-rhoin,'fro')./norm(rhoin,'fro');
-    ES   = norm(S  -Sin  ,'fro')./norm(Sin  ,'fro');
-    EXFe = norm(XFe-XFein,'fro')./norm(XFein,'fro');
-    EXSi = norm(XSi-XSiin,'fro')./norm(XSiin,'fro');
-    ECFe = norm(CFe-CFein,'fro')./norm(CFein,'fro');
-    ECSi = norm(CSi-CSiin,'fro')./norm(CSiin,'fro');
+    EM = norm(rho(inz,inx)-rhoin(inz,inx),'fro')./norm(rhoin(inz,inx),'fro');
+    ES = norm(S(inz,inx)-Sin(inz,inx),'fro')./norm(Sin(inz,inx),'fro');
+    EXFe = norm(XFe(inz,inx)-XFein(inz,inx),'fro')./norm(XFein(inz,inx),'fro');
+    EXSi = norm(XSi(inz,inx)-XSiin(inz,inx),'fro')./norm(XSiin(inz,inx),'fro');
+    ECFe = norm(CFe(inz,inx)-CFein(inz,inx),'fro')./norm(CFein(inz,inx),'fro');
+    ECSi = norm(CSi(inz,inx)-CSiin(inz,inx),'fro')./norm(CSiin(inz,inx),'fro');
 
     fh14 = figure(14);
     subplot(6,1,1);
@@ -337,23 +327,22 @@ for N = NN
     xlabel('Time [s]',TX{:},FS{:});
 
     fh15 = figure(15);
-    p1 = loglog(h,EM,'kd','MarkerSize',8,'LineWidth',2); hold on; box on;
-    p2 = loglog(h,ES,'rs','MarkerSize',8,'LineWidth',2);
-    p3 = loglog(h,EXFe,'go','MarkerSize',8,'LineWidth',2);
-    p4 = loglog(h,EXSi,'bx','MarkerSize',8,'LineWidth',2);
-    p5 = loglog(h,ECFe,'m.','MarkerSize',8,'LineWidth',2);
-    p6 = loglog(h,ECSi,'c*','MarkerSize',8,'LineWidth',2);
+    p1 = loglog(dt,EM,'kd','MarkerSize',8,'LineWidth',2); hold on; box on;
+    p2 = loglog(dt,ES,'rs','MarkerSize',8,'LineWidth',2);
+    p3 = loglog(dt,EXFe,'go','MarkerSize',8,'LineWidth',2);
+    p4 = loglog(dt,EXSi,'bx','MarkerSize',8,'LineWidth',2);
+    p5 = loglog(dt,ECFe,'m.','MarkerSize',8,'LineWidth',2);
+    p6 = loglog(dt,ECSi,'c*','MarkerSize',8,'LineWidth',2);
     set(gca,'TicklabelInterpreter','latex','FontSize',12)
-    xlabel('grid spacing [m]','Interpreter','latex','FontSize',16)
+    xlabel('time stepping [dt]','Interpreter','latex','FontSize',16)
     ylabel('rel. numerical error rate [1/s]','Interpreter','latex','FontSize',16)
-    title('Global conservation in space','Interpreter','latex','FontSize',20)
+    title('Global conservation in time','Interpreter','latex','FontSize',20)
 
-    if N == NN(1)
-        p7 = loglog(D./NN,ES.*((D./NN)./(D./NN(1))).^1,'k-','LineWidth',2); hold on  % plot trend for comparison
-        p8 = loglog(D./NN,ES.*((D./NN)./(D./NN(1))).^2,'k-','LineWidth',2);
+    if dt == DDT(1)
+        p7 = loglog(DDT,ES.*(DDT./DDT(1)).^2,'k-','LineWidth',2);  % plot trend for comparison
     end
-    if N == NN(end)
-        legend([p1,p2,p3,p4,p5,p6,p7,p8],{'error $M$','error $S$','error $X_{Fe}$','error $X_{Si}$','error $C_{Fe}$','error $C_{Si}$','1st order'},'Interpreter','latex','box','on','location','southeast')
+    if dt == DDT(end)
+        legend([p1,p2,p3,p4,p5,p6,p7],{'error $M$','error $S$','error $X_{Fe}$','error $X_{Si}$','error $C_{Fe}$','error $C_{Si}$','2nd order'},'Interpreter','latex','box','on','location','southeast')
     end
     drawnow;
 end
