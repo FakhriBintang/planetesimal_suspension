@@ -2,7 +2,7 @@
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear ; close all
-RunID           =  'bnchm_h_4phs_bd3i_dt';               % run identifier
+RunID           =  '2D_bnchm_h_4phs_bd3i';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
@@ -157,7 +157,7 @@ for N = NN
     xT      =  L/2;                  % x-position of hot plume [m]
     %% set model timing
         % [do not modify]
-    dt              =  D/NN(2)/4;           % (initial) time step [s]
+    dt              =  D/NN(2)/8;           % (initial) time step [s]
 
     tend            =  D/dt*h;              % model stopping time [s]
     yr              =  3600*24*365.25;      % seconds per year

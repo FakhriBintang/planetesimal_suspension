@@ -2,7 +2,7 @@
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear all; close all
-RunID           =  'bnchm_dt_bd3i_4phs';               % run identifier
+RunID           =  '2D_bnchm_dt_bd3i_4phs';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
@@ -151,7 +151,7 @@ etareg      = 1e0;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 %% test time stepping
-DDT = [h/2, h/4, h/8];
+DDT = [h/2, h/4, h/8,h/18];
 
 for dt = DDT
     %% set model timing
