@@ -32,7 +32,7 @@ radheat         =  0;                    % radiogenic heating
 
 %% set model domain
 N               =  100;                  % number of real nodes
-D               =  500;                  % domain depth
+D               =  100;                  % domain depth
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
 L               =  D;
@@ -68,12 +68,8 @@ clap    = 1e-7;                      % Clapeyron slope for P-dependence of melti
 % set temperature initial condition
 T0      =  1300;                     % reference/top potential temperature [C]
 T1      =  1350;                     % bottom potential temperature (if different from top) [C]
-rT      =  D/6;                  % radius of hot plume [m]
-zT      =  D*0.5;                % z-position of hot plume [m]
-xT      =  L/2;                  % x-position of hot plume [m]
 
 Ttype   = 'gaussian';                % set initial temperature field type
-
 
 %% set material parameters
 % buoyancy parameters
@@ -124,6 +120,7 @@ dEntrFe     = -200;                     % iron-sulfide entropy of crystallisatio
 Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 
+
 %% set boundary conditions
 % Temperature boundary conditions
 BCTTop      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
@@ -135,23 +132,22 @@ BCsides     = -1;                   % side boundaries
 BCtop       = -1;                   % top boundary
 BCbot       = -1;                   % bottom boundary
 
-
 %% set solver options
 % advection scheme
 ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         = {'closed','periodic'};% boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
-lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
+lambda      = 1/2;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 30;                   % maximum iteration count
 tauR        = 1e16;
-CFL         = 1;                 % (physical) time stepping courant number (multiplies stable step) [0,1]
+CFL         = 1;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 etareg      = 1e0;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 %% test time stepping
-DDT = [h/2, h/4, h/8,h/18];
+DDT = [h/2, h/4, h/8, h/16];
 
 for dt = DDT
     %% set model timing
@@ -161,6 +157,11 @@ for dt = DDT
 
     % [do not modify]
     tend            =  D/dt*h;           % model stopping time [s]
+    % set temperature initial condition
+
+rT      =  D/6;                  % radius of hot plume [m]
+zT      =  D*0.5;                % z-position of hot plume [m]
+xT      =  L/2;                  % x-position of hot plume [m]
 
     
     %% start model

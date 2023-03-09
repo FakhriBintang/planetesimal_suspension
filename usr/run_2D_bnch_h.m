@@ -43,7 +43,8 @@ cSi0            =  0.42;                % Si system fertile component fraction [
 dxFe            =  0.1;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
-%% set phase diagram parameters
+
+% set phase diagram parameters
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
 TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
@@ -60,12 +61,11 @@ perTFe  = TFe1;                  % iron peritectic temperature
 PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
-%% set temperature initial condition
+% set temperature initial condition
 T0      =  1300;                     % reference/top potential temperature [C]
 T1      =  1350;                     % bottom potential temperature (if different from top) [C]
 
 Ttype   = 'gaussian';                % set initial temperature field type
-
 
 %% set material parameters
 % buoyancy parameters
