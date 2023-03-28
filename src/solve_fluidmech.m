@@ -1,4 +1,4 @@
-Wi = W; Ui = U; Pi = P;
+% Wi = W; Ui = U; Pi = P;
 % get mapping arrays
 NW = NW; NU = NU; NP = NP;
 % profile on
@@ -58,9 +58,10 @@ II = [II; ii(:)]; JJ = [JJ; jj3(:)];   AA = [AA; 1/2*EtaC1(:)/h^2];      % W one
 II = [II; ii(:)]; JJ = [JJ; jj4(:)];   AA = [AA; 1/2*EtaC2(:)/h^2];      % W one to the right
 
 % what shall we do with a drunken sailor...
-aa = -ddz(rho(2:end-1,2:end-1),h).*gz(2:end-1,2:end-1).*dt/2;
-II = [II; ii(:)]; JJ = [JJ;  ii(:)];   AA = [AA; aa(:)];
-
+if ~bnchm
+    aa = -ddz(rho(2:end-1,2:end-1),h).*gz(2:end-1,2:end-1).*dt/2;
+    II = [II; ii(:)]; JJ = [JJ;  ii(:)];   AA = [AA; aa(:)];
+end
 % coefficients multiplying x-velocities U
 %         top left         ||        bottom left          ||       top right       ||       bottom right
 jj1 = MapU(2:end-2,1:end-1); jj2 = MapU(3:end-1,1:end-1); jj3 = MapU(2:end-2,2:end); jj4 = MapU(3:end-1,2:end);
@@ -77,7 +78,7 @@ if ~bnchm
     if nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,nxW-2); end
 end
 
-rr = - rhoBF .* gz(2:end-1,2:end-1);
+rr = - (rhoBF - mean(rhoBF,2)) .* gz(2:end-1,2:end-1);
 if bnchm; rr = rr + src_W_mms(2:end-1,2:end-1); end
 
 
@@ -215,7 +216,7 @@ jj2 = [MapP(2,:).'; MapP(end-1,:).'];
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj1(:)];   AA = [AA; aa(:)+1];
 II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)-1];
-IR = [IR; ii(:)]; RR = [RR; aa(:)];
+% IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 ii  = [MapP(:,1); MapP(:,end  )]; % left & right
 jj1 = ii;
@@ -224,7 +225,7 @@ jj2 = [MapP(:,2); MapP(:,end-1)];
 aa = zeros(size(ii));
 II = [II; ii(:)]; JJ = [JJ; jj1(:)];   AA = [AA; aa(:)+1];
 II = [II; ii(:)]; JJ = [JJ; jj2(:)];   AA = [AA; aa(:)-1];
-IR = [IR; ii(:)]; RR = [RR; aa(:)];
+% IR = [IR; ii(:)]; RR = [RR; aa(:)];
 
 
 % internal points
@@ -276,39 +277,43 @@ U  = full(reshape(SOL(MapU(:)),nzU, nxU));         % matrix x-velocity
 P  = full(reshape(SOL(MapP(:)...
                     + NW+NU),nzP, nxP));         % matrix dynamic pressure
 
-UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
-WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
+% UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
+% WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
 
 % get residual of fluid mechanics equations from iterative update
 % resnorm_VP = norm((W - Wi).*any(W(:)>1e-12),2)./(norm(W,2)+TINY) ...
 %            + norm((U - Ui).*any(U(:)>1e-12),2)./(norm(U,2)+TINY) ...
 %            + norm(P - Pi,2)./(norm(P,2)+TINY);
 resnorm_VP = 0;
+if ~bnchm
 
-% update phase velocities
-WlSi = W + seglSi;
-UlSi = U;
-WsSi = W + segsSi;
-UsSi = U;
-WlFe = W + seglFe;
-UlFe = U;
-WsFe = W + segsFe;
-UsFe = U;
+    % set phase diffusion speeds
 
 
-%% update physical time step
-dtadvn =  h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
-dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp);                         % stable time step for T diffusion
+    % update phase velocities
+    WlSi = W + seglSi;
+    UlSi = U;
+    WsSi = W + segsSi;
+    UsSi = U;
+    WlFe = W + seglFe;
+    UlFe = U;
+    WsFe = W + segsFe;
+    UsFe = U;
 
-dt = min(min(dtdiff,CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
 
-if dt==dtmax
-    dtlimit = 'max step limited';
-elseif dtdiff<dtadvn
-    dtlimit = 'diffusion limited';
-else
-    dtlimit = 'advection limited';
+    %% update physical time step
+    dtadvn =  h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
+    dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp);                         % stable time step for T diffusion
+
+    dt = min(min(dtdiff,CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
+
+    if dt==dtmax
+        dtlimit = 'max step limited';
+    elseif dtdiff<dtadvn
+        dtlimit = 'diffusion limited';
+    else
+        dtlimit = 'advection limited';
+    end
 end
-
 % profile report
 % profile off
