@@ -98,8 +98,7 @@ else
 end
 
 % update system fractions
-% xFe = max(0,min(1, XFe./rho ));
-% xSi = max(0,min(1, XSi./rho ));
+
 xFe = max(0,min(1, XFe./(XFe+XSi) ));
 xSi = max(0,min(1, XSi./(XFe+XSi) ));
 

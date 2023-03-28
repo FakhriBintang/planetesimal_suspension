@@ -2,7 +2,7 @@
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear ; close all
-RunID           =  '2D_bnchm_h_4phs_bd3i';               % run identifier
+RunID           =  '2D_bnchm_h_4phs_bd3s';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
@@ -140,7 +140,7 @@ maxit       = 30;                   % maximum iteration count
 tauR        = 1e16;
 CFL         = 1;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 etareg      = 1e0;                  % regularisation factor for viscosity
-TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+TINT        =  'bd3s';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 
 %% test nonlinear tolerance

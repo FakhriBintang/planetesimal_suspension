@@ -152,7 +152,7 @@ if plot_op
         title('$S$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
     else
-
+        %% prepare 2D plots
         % prepare for plotting
         TX = {'Interpreter','Latex'}; FS = {'FontSize',12};
         TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',10};
@@ -343,60 +343,34 @@ if plot_op
         title('\rho_{Fe}^s')
 
 
-        %% plot chemical phase compositions
-        fh7 = figure(7); clf
-        figure(7)
-        subplot(2,2,1)
-        imagesc(xP(2:end-1),zP(2:end-1),clSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('c_{Si}^l')
+        %% plot conserved densities
 
-        subplot(2,2,2)
-        imagesc(xP(2:end-1),zP(2:end-1),csSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('c_{Si}^s')
-
-        subplot(2,2,3)
-        imagesc(xP(2:end-1),zP(2:end-1),clFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('c_{Fe}^l')
-
-        subplot(2,2,4)
-        imagesc(xP(2:end-1),zP(2:end-1),csFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('c_{Fe}^s')
-
-
-        %         %% plot Partial densities and
-        %         fh8 = figure(8); clf;
-        %         figure(8)
-        %         subplot(2,2,1)
-        %         imagesc(xP(2:end-1),zP(2:end-1),CFe(2:end-1,2:end-1))
-        %         colorbar
-        %         axis ij equal tight
-        %         title('C_{Fe} ')
-        %
-        %         subplot(2,2,2)
-        %         imagesc(xP(2:end-1),zP(2:end-1),CSi(2:end-1,2:end-1))
-        %         colorbar
-        %         axis ij equal tight
-        %         title('C_{Si} ')
-        %
-        %         subplot(2,2,3)
-        %         imagesc(xP(2:end-1),zP(2:end-1),XFe(2:end-1,2:end-1))
-        %         colorbar
-        %         axis ij equal tight
-        %         title('X_{Fe}')
-        %
-        %         subplot(2,2,4)
-        %         imagesc(xP(2:end-1),zP(2:end-1),XSi(2:end-1,2:end-1))
-        %         colorbar
-        %         axis ij equal tight
-        %         title('X_{Si}')
+                %% plot Partial densities and
+                fh7 = figure(7); clf;
+                figure(7)
+                subplot(2,2,1)
+                imagesc(xP(2:end-1),zP(2:end-1),CFe(2:end-1,2:end-1))
+                colorbar
+                axis ij equal tight
+                title('C_{Fe} ')
+        
+                subplot(2,2,2)
+                imagesc(xP(2:end-1),zP(2:end-1),CSi(2:end-1,2:end-1))
+                colorbar
+                axis ij equal tight
+                title('C_{Si} ')
+        
+                subplot(2,2,3)
+                imagesc(xP(2:end-1),zP(2:end-1),XFe(2:end-1,2:end-1))
+                colorbar
+                axis ij equal tight
+                title('X_{Fe}')
+        
+                subplot(2,2,4)
+                imagesc(xP(2:end-1),zP(2:end-1),XSi(2:end-1,2:end-1))
+                colorbar
+                axis ij equal tight
+                title('X_{Si}')
 
     end
 
