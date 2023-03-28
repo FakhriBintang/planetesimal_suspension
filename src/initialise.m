@@ -119,7 +119,7 @@ pert = -h/2.*cos(XP*2*pi/D);
 % temporary, set theral distribution parameters. Switch to run scripts
 % later
 zlay     =  0.0;                 % layer thickness (relative to domain depth D)
-wlay_T   =  0.05;                % thickness of smooth layer boundary (relative to domain depth D)
+wlay_T   =  0.1;                % thickness of smooth layer boundary (relative to domain depth D)
 % wlay_c   =  2*h/D;       % thickness of smooth layer boundary (relative to domain depth D)
 rhoRef = rholSi0;
 switch Ttype
