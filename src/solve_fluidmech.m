@@ -288,17 +288,42 @@ resnorm_VP = 0;
 if ~bnchm
 
     % set phase diffusion speeds
+    qsSiz    = - (ksSi(1:end-1,:)+ksSi(2:end,:))./2 .* ddz(phisSi,h);
+    qsSix    = - (ksSi(:,1:end-1)+ksSi(:,2:end))./2 .* ddx(phisSi,h);
+    diff_sSi = - ddz(qsSiz(:,2:end-1),h)  ...                                 % heat diffusion
+               - ddx(qsSix(2:end-1,:),h);
+    qlFez    = - (klFe(1:end-1,:)+klFe(2:end,:))./2 .* ddz(philFe,h);
+    qlFex    = - (klFe(:,1:end-1)+klFe(:,2:end))./2 .* ddx(philFe,h);
+    diff_lFe = - ddz(qlFez(:,2:end-1),h)  ...                                 % heat diffusion
+               - ddx(qlFex(2:end-1,:),h);
+    qsFez    = - (ksFe(1:end-1,:)+ksFe(2:end,:))./2 .* ddz(phisFe,h);
+    qsFex    = - (ksFe(:,1:end-1)+ksFe(:,2:end))./2 .* ddx(phisFe,h);
+    diff_sFe = - ddz(qsFez(:,2:end-1),h)  ...                                 % heat diffusion
+               - ddx(qsFex(2:end-1,:),h);
 
+    qlSiz = qsSiz - qsFez - qlFez; qlSix = qsSix - qsFex - qlFex;
+    
+    wqlSi = qlSiz./max(TINY^0.5,(philSi(1:end-1,:)+philSi(2:end,:))./2);
+    uqlSi = qlSix./max(TINY^0.5,(philSi(:,1:end-1)+philSi(:,2:end))./2);
 
-    % update phase velocities
-    WlSi = W + seglSi;
-    UlSi = U;
-    WsSi = W + segsSi;
-    UsSi = U;
-    WlFe = W + seglFe;
-    UlFe = U;
-    WsFe = W + segsFe;
-    UsFe = U;
+    wqsSi = qsSiz./max(TINY^0.5,(phisSi(1:end-1,:)+phisSi(2:end,:))./2);
+    uqsSi = qsSix./max(TINY^0.5,(phisSi(:,1:end-1)+phisSi(:,2:end))./2);
+
+    wqlFe = qlFez./max(TINY^0.5,(philFe(1:end-1,:)+philFe(2:end,:))./2);
+    uqlFe = qlFex./max(TINY^0.5,(philFe(:,1:end-1)+philFe(:,2:end))./2);
+
+    wqsFe = qsFez./max(TINY^0.5,(phisFe(1:end-1,:)+phisFe(2:end,:))./2);
+    uqsFe = qsFex./max(TINY^0.5,(phisFe(:,1:end-1)+phisFe(:,2:end))./2);
+    
+    % update phase velocities (reference + diffusion + segregation)
+    WlSi = W + wqlSi + seglSi;
+    UlSi = U + uqlSi;
+    WsSi = W + wqsSi + segsSi;
+    UsSi = U + uqsSi;
+    WlFe = W + wqlFe + seglFe;
+    UlFe = U + uqlFe;
+    WsFe = W + wqsFe + segsFe;
+    UsFe = U + uqsFe;
 
 
     %% update physical time step

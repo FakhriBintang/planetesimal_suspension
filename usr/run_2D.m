@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  20;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -61,8 +61,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1200;                     % reference/top potential temperature [C]
-T1      =  1400;                     % bottom potential temperature (if different from top) [C]
+T0      =  1600;                     % reference/top potential temperature [C]
+T1      =  1600;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -137,13 +137,13 @@ ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','
 BCA         =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fraction
-reltol    	= 1e-4;                 % relative residual tolerance for nonlinear iterations
-abstol      = 1e-7;                 % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-3;                 % relative residual tolerance for nonlinear iterations
+abstol      = 1e-6;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                   % maximum iteration count
 tauR = 0;
-CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+CFL         =  0.250;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step
-etareg      = 1e6;                  % regularisation factor for viscosity
+etareg      = 1e1;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 

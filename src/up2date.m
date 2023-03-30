@@ -83,6 +83,18 @@ seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 
 %% update diffusion parameters
 ks    =  (xFe.*kTFe + xSi.*kTSi)./T;               % magma thermal conductivity
+Vel(inz,inx) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+                  + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
+Vel([1 end],:) = Vel([2 end-1],:);
+Vel(:,[1 end]) = Vel(:,[2 end-1]);
+kW  = Vel/10*h/10; % diffusivity due to turbulent eddies 
+kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f*df*10);                                   % segregation fluctuation diffusivity
+kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x*dx*10); 
+kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x*dx*10); 
+klFe  = philSi.*philFe.*(kwlFe + kW);
+ksFe  = philSi.*phisFe.*(kwsFe + kW);
+ksSi  = philSi.*phisSi.*(kwsSi + kW);
+
 
 
 %% velocity divergence and volume source

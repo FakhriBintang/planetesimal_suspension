@@ -72,6 +72,7 @@ W           = zeros(nzW,nxW);               % z-velocity on z-face nodes
 U           = zeros(nzU,nxU);               % x-velocity on x-face nodes
 P           = zeros(nzP,nxP);               % pressure on centre nodes
 SOL           = [W(:);U(:);P(:)];         % full solution vector
+Vel = zeros(nxP,nzP);                       % velocity magnitude
 
 % projected velocities on centre nodes
 UP          = zeros(nzP,nxP);
@@ -242,7 +243,7 @@ dsumXSidt  = 0; dsumXSidto = dsumXSidt;
 dsumCFedt  = 0; dsumCFedto = dsumCFedt;
 dsumCSidt  = 0; dsumCSidto = dsumCSidt;
 
-%% temp additional auxilary fields
+%%  additional auxilary fields
 hassolSi = flSi<1;
 hassolFe = flFe<1;
 hasliqSi = fsSi<1;
@@ -268,6 +269,14 @@ Div_rhoVo = Div_rhoV;
 %% update nonlinear material properties
 up2date;
 solve_fluidmech;
+
+% %% check reynold's number
+% Vel = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+%          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2));
+% Re = D*rho(2:end-1,2:end-1).*Vel./Eta(2:end-1,2:end-1);
+% 
+% figure(45); imagesc(xP(inx),zP(inz),Re); colorbar; axis ij tight
+
 
 %% initialise recording of model history
 history;
