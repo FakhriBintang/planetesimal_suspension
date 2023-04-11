@@ -73,3 +73,17 @@ HST.EXSi(t)     = (HST.sumXSi(t) - HST.dXSi(t))./HST.sumXSi(1) - 1;
 HST.ECSi(t)     = (HST.sumCSi(t) - HST.dCSi(t))./HST.sumCSi(1) - 1;
 HST.ECFe(t)     = (HST.sumCFe(t) - HST.dCFe(t))./HST.sumCFe(1) - 1;
 
+if Nx <= 10 && Nz <= 10  % create 0D plots
+HST.T(stp) = mean(mean(T));
+HST.xFe(stp) = mean(mean(xFe));
+HST.xSi(stp) = mean(mean(xSi));
+HST.cFe(stp) = mean(mean(cFe));
+HST.cSi(stp) = mean(mean(cSi));
+HST.flFe(stp)= mean(mean(flFe));
+HST.fsFe(stp)= mean(mean(fsFe));
+HST.flSi(stp)= mean(mean(flSi));
+HST.fsSi(stp)= mean(mean(fsSi));
+HST.rho(stp)= mean(mean(rho));
+HST.Eta(stp)= mean(mean(Eta));
+end
+

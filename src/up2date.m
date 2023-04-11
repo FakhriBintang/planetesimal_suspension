@@ -83,7 +83,7 @@ seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 
 %% update diffusion parameters
 ks    =  (xFe.*kTFe + xSi.*kTSi)./T;               % magma thermal conductivity
-Vel(inz,inx) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
                   + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
 Vel([1 end],:) = Vel([2 end-1],:);
 Vel(:,[1 end]) = Vel(:,[2 end-1]);

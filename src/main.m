@@ -13,7 +13,7 @@ while time <= tend && step <= maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
 
-    figure(100);clf
+%     figure(100);clf
 
     if     strcmp(TINT,'bwei') || step==1 % first step / 1st-order backward-Euler implicit scheme
         alpha1 = 1; alpha2 = 1; alpha3 = 0;
@@ -56,7 +56,7 @@ while time <= tend && step <= maxstep
     dNdto = dNdt;
 
     % reset residuals and iteration count
-    resnorm   = 1e3;
+    resnorm   = 1;
     resnorm0  = resnorm;
     iter      = 0;
 
@@ -67,7 +67,7 @@ while time <= tend && step <= maxstep
         % solve thermo-chemical equations
         solve_thermochem;
 
-        if radheat; radioactive_decay; else; Hr = Hr0; end
+%         if radheat; radioactive_decay; else; Hr = Hr0; end
 
         % update non-linear parameters and auxiliary variables
         up2date;
@@ -82,9 +82,9 @@ while time <= tend && step <= maxstep
             end
             fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
-            figure(100); if iter==1; clf; else; hold on; end
-            plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
-            drawnow;
+%             figure(100); if iter==1; clf; else; hold on; end
+%             plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
+%             drawnow;
         end
 
         iter = iter+1;
@@ -104,9 +104,9 @@ while time <= tend && step <= maxstep
     if ~mod(step,nop) %round(2*nop/CFL))
         output;
         %        suppfigs; % supplementary figures for testing
-        if radheat
-            figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
-        end
+%         if radheat
+%             figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
+%         end
     end
 
     % break script for NaN

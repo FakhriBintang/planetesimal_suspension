@@ -19,32 +19,32 @@ if plot_op
 
         fh1 = figure(1); clf;
         subplot(4,1,1)
-        plot(HST.time/yr,HST.T(:,2),'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.T,'LineWidth',2); axis xy tight; box on;
         title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,2)
-        plot(HST.time/yr,HST.xFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.xFe.*100,'LineWidth',2); axis xy tight; box on;
         title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,3)
-        plot(HST.time/yr,HST.cFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.cFe.*100,'LineWidth',2); axis xy tight; box on;
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,4)
-        plot(HST.time/yr,HST.cSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.cSi.*100,'LineWidth',2); axis xy tight; box on;
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         xlabel('Time [yr]',TX{:},FS{:});
 
         fh2 = figure(2); clf;
         subplot(4,1,1)
-        plot(HST.time/yr,HST.flFe(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.flFe.*100,'LineWidth',2); axis xy tight; box on;
         title('$f_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,2)
-        plot(HST.time/yr,HST.flSi(:,2).*100,'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.flSi.*100,'LineWidth',2); axis xy tight; box on;
         title('$f_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,3)
-        plot(HST.time/yr,HST.rho(:,2),'LineWidth',2); axis xy tight; box on;
+        plot(HST.time/yr,HST.rho,'LineWidth',2); axis xy tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,4)
-        plot(HST.time/yr,log10(HST.Eta(:,2)),'LineWidth',2); axis xy tight; box on;
-        title('$\bar{\Eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(HST.time/yr,log10(HST.Eta),'LineWidth',2); axis xy tight; box on;
+        title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         xlabel('Time [yr]',TX{:},FS{:});
 
     elseif Nx <= 10 % 1D plots
@@ -389,6 +389,7 @@ if plot_op
     plot(CCxSi+cSimin,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
     plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
+    ylim([800 1800])
     %title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
@@ -397,6 +398,7 @@ if plot_op
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
+    ylim([800 1800])
     %title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)

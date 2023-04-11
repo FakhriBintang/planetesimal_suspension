@@ -49,7 +49,7 @@ inz = 2:length(zP)-1;
 inx = 2:length(xP)-1;
 
 % get smoothed initialisation field
-rng(15);
+rng(67);
 rp = randn(nzP,nxP);
 for i = 1:round(smth)
     rp(2:end-1,2:end-1) = rp(2:end-1,2:end-1) + diff(rp(:,2:end-1),2,1)./8 ...
@@ -72,7 +72,7 @@ W           = zeros(nzW,nxW);               % z-velocity on z-face nodes
 U           = zeros(nzU,nxU);               % x-velocity on x-face nodes
 P           = zeros(nzP,nxP);               % pressure on centre nodes
 SOL           = [W(:);U(:);P(:)];         % full solution vector
-Vel = zeros(nxP,nzP);                       % velocity magnitude
+Vel = zeros(nzP,nxP);                       % velocity magnitude
 
 % projected velocities on centre nodes
 UP          = zeros(nzP,nxP);
@@ -260,7 +260,6 @@ dNdt = zeros(nzP,nxP);
 
 Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
 
-if radheat; Hr = Hr + Hr0; end
 
 %% initialise previous solution and auxiliary fields
 rhoo      = rho;
@@ -270,8 +269,8 @@ Div_rhoVo = Div_rhoV;
 up2date;
 solve_fluidmech;
 
-% %% check reynold's number
-% Vel = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+%% check reynold's number
+% Velbar = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
 %          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2));
 % Re = D*rho(2:end-1,2:end-1).*Vel./Eta(2:end-1,2:end-1);
 % 
