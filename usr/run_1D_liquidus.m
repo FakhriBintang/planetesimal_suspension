@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  100;                   % output every 'nop' grid steps of transport
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -140,6 +140,7 @@ lambda      = 0.5;   	            % iterative lagging for phase fractionCFL     
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                   % maximum iteration count
+tauR = 0;
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity

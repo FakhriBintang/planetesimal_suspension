@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  'test_newvar';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  100;                   % output every 'nop' grid steps of transport
+nop             =  5;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -38,7 +38,7 @@ cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([w
 cSi0            =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
+dxFe            = -0.01e-3;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((N+2)/20)^2;     % regularisation of initial random perturbation
@@ -61,8 +61,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1450;                     % reference/top potential temperature [C]
-T1      =  1450;                     % bottom potential temperature (if different from top) [C]
+T0      =  1700;                     % reference/top potential temperature [C]
+T1      =  1700;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -139,7 +139,7 @@ TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
-maxit       = 70;                   % maximum iteration count
+maxit       = 5;                   % maximum iteration count
 tauR        = 0;
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 5e-3*yr;              % maximum time step

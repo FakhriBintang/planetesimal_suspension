@@ -315,63 +315,6 @@ if plot_op
         title('c_{Si} [wt]')
 
 
-        %% plot phase densities
-        fh6 = figure(6); clf
-        figure(6)
-        subplot(2,2,1)
-        imagesc(xP(2:end-1),zP(2:end-1),rholSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('\rho_{Si}^l')
-
-        subplot(2,2,2)
-        imagesc(xP(2:end-1),zP(2:end-1),rhosSi(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('\rho_{Si}^s')
-
-        subplot(2,2,3)
-        imagesc(xP(2:end-1),zP(2:end-1),rholFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('\rho_{Fe}^l')
-
-        subplot(2,2,4)
-        imagesc(xP(2:end-1),zP(2:end-1),rhosFe(2:end-1,2:end-1))
-        colorbar
-        axis ij equal tight
-        title('\rho_{Fe}^s')
-
-
-        %% plot conserved densities
-
-                %% plot Partial densities and
-                fh7 = figure(7); clf;
-                figure(7)
-                subplot(2,2,1)
-                imagesc(xP(2:end-1),zP(2:end-1),CFe(2:end-1,2:end-1))
-                colorbar
-                axis ij equal tight
-                title('C_{Fe} ')
-        
-                subplot(2,2,2)
-                imagesc(xP(2:end-1),zP(2:end-1),CSi(2:end-1,2:end-1))
-                colorbar
-                axis ij equal tight
-                title('C_{Si} ')
-        
-                subplot(2,2,3)
-                imagesc(xP(2:end-1),zP(2:end-1),XFe(2:end-1,2:end-1))
-                colorbar
-                axis ij equal tight
-                title('X_{Fe}')
-        
-                subplot(2,2,4)
-                imagesc(xP(2:end-1),zP(2:end-1),XSi(2:end-1,2:end-1))
-                colorbar
-                axis ij equal tight
-                title('X_{Si}')
-
     end
 
     %% plot phase diagrams
@@ -389,7 +332,7 @@ if plot_op
     plot(CCxSi+cSimin,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
     plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([800 1800])
+    ylim([800 TSi2])
     %title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
@@ -398,7 +341,7 @@ if plot_op
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([800 1800])
+    ylim([800 TSi2])
     %title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
@@ -462,12 +405,6 @@ if save_op
         print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_xc',num2str(floor(step/nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-image');
-        name = [outpath '/',RunID,'_rho',num2str(floor(step/nop))]; % figure 6
-        print(fh6,name,'-dpng','-r300','-image');
-        name = [outpath '/',RunID,'_chm',num2str(floor(step/nop))]; % figure 7
-        print(fh7,name,'-dpng','-r300','-image');
-        %         name = [outpath '/',RunID,'_xcd',num2str(floor(step/nop))]; % figure 8
-        %         print(fh8,name,'-dpng','-r300','-image');
 
     end
 
