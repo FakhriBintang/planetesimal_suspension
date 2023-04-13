@@ -18,13 +18,13 @@ while time <= tend && step <= maxstep
     if     strcmp(TINT,'bwei') || step==1 % first step / 1st-order backward-Euler implicit scheme
         alpha1 = 1; alpha2 = 1; alpha3 = 0;
         beta1  = 1; beta2  = 0; beta3  = 0;
-    elseif strcmp(TINT,'bd2i') || step==2 % second step / 2nd-order 3-point backward-difference implicit scheme
+    elseif strcmp(TINT,'bd3i') || step==2 % second step / 2nd-order 3-point backward-difference implicit scheme
         alpha1 = 3/2; alpha2 = 4/2; alpha3 = -1/2;
         beta1  = 1;   beta2  =  0;  beta3  = 0;
     elseif strcmp(TINT,'cnsi')            % other steps / 2nd-order Crank-Nicolson semi-implicit scheme
         alpha1 = 1;   alpha2 = 1;   alpha3 = 0;
         beta1  = 1/2; beta2  = 1/2; beta3  = 0;
-    elseif strcmp(TINT,'bd2s')            % other steps / 2nd-order 3-point backward-difference semi-implicit scheme
+    elseif strcmp(TINT,'bd3s')            % other steps / 2nd-order 3-point backward-difference semi-implicit scheme
         alpha1 = 3/2; alpha2 = 4/2; alpha3 = -1/2;
         beta1  = 3/4; beta2  = 2/4; beta3  = -1/4;
     end
