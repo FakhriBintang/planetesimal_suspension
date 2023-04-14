@@ -57,7 +57,7 @@ if plot_op
         subplot(1,4,2)
         plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); hold on;  axis ij tight; box on;
         plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
-        title('$x_{Fe} / x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$x_{Fe}$ / $x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('$xFe$', '$x_{Si}$')
         subplot(1,4,3)
         plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
