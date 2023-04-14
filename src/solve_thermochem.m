@@ -138,8 +138,8 @@ CFe = max(0,CFe);
 CSi = max(0,CSi);
 
 % update chemical composition
-cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
-cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
+cSi(hasSi) = min(clSi(hasSi),CSi(hasSi)./XSi(hasSi));
+cFe(hasFe) = min(clFe(hasFe),CFe(hasFe)./XFe(hasFe));
 
 
 %% update local phase equilibrium
