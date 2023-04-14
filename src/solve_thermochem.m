@@ -102,8 +102,8 @@ end
 xFe = max(0,min(1, XFe./(XFe+XSi) ));
 xSi = max(0,min(1, XSi./(XFe+XSi) ));
 
-hasFe   = xFe>0 & xSi<1;
-hasSi   = xSi>0 & xFe<1;
+hasFe   = xFe>TINY & xSi<1-TINY;
+hasSi   = xSi>TINY & xFe<1-TINY;
 
 %% update composition
 
@@ -196,11 +196,11 @@ flFe(hasFe) = 1-fsFe(hasFe);
 flSi(hasSi) = 1-fsSi(hasSi);
 
 %detect where is fully molten
-hassolSi = flSi<1;
-hassolFe = flFe<1;
+hassolSi = flSi<1-TINY & fsSi>TINY;
+hassolFe = flFe<1-TINY & fsFe>TINY;
 
-hasliqSi = fsSi<1;
-hasliqFe = fsFe<1;
+hasliqSi = fsSi<1-TINY & flSi>TINY;
+hasliqFe = fsFe<1-TINY & flFe>TINY;
 
 %% update phase compositions
 KcFe = csFeq./clFeq;
