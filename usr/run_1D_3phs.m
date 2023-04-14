@@ -144,7 +144,7 @@ CFL         =  0.50;                % (physical) time stepping courant number (m
 dtmax       = 5e-3*yr;              % maximum time step
 etareg      = 1e0;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-
+tauR        = 0;
 
 %% start model
 % create output directory
