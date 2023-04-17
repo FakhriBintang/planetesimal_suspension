@@ -126,9 +126,13 @@ CSi(inz,inx) = (alpha2*CSio(inz,inx) + alpha3*CSioo(inz,inx) + (beta1*dCSidt + b
 
 % cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
 % solidus or above the liquidus
-CSi(~hassolSi|~hasSi|~hasliqSi) = XSi(~hassolSi|~hasSi|~hasliqSi) .*cSi(~hassolSi|~hasSi|~hasliqSi);
-CFe(~hassolFe|~hasFe|~hasliqFe) = XFe(~hassolFe|~hasFe|~hasliqFe) .*cFe(~hassolFe|~hasFe|~hasliqFe);
+CSi(~hassolSi|~hasliqSi) = XSi(~hassolSi|~hasliqSi) .*cSi(~hassolSi|~hasliqSi);
+CFe(~hassolFe|~hasliqFe) = XFe(~hassolFe|~hasliqFe) .*cFe(~hassolFe|~hasliqFe);
 
+CSi(~hassolSi) = XSi(~hassolSi) .*cSio(~hassolSi);
+CFe(~hassolFe) = XFe(~hassolFe) .*cFeo(~hassolFe);
+CSi(~hasliqSi) = XSi(~hasliqSi) .*cSio(~hasliqSi);
+CFe(~hasliqFe) = XFe(~hasliqFe) .*cFeo(~hasliqFe);
 % apply boundaries
 CSi([1 end],:) = CSi([2 end-1],:);  CSi(:,[1 end]) = CSi(:,[2 end-1]);
 CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);
@@ -138,8 +142,8 @@ CFe = max(0,CFe);
 CSi = max(0,CSi);
 
 % update chemical composition
-cSi(hasSi) = min(clSi(hasSi),CSi(hasSi)./XSi(hasSi));
-cFe(hasFe) = min(clFe(hasFe),CFe(hasFe)./XFe(hasFe));
+cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
+cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
 
 
 %% update local phase equilibrium
