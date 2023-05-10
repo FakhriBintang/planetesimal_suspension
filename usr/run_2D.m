@@ -6,7 +6,7 @@ clear ; close
 RunID           =  'test';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -61,14 +61,14 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1700;                     % reference/top potential temperature [C]
-T1      =  1700;                     % bottom potential temperature (if different from top) [C]
+T0      =  1600;                     % reference/top potential temperature [C]
+Ttop0   =  900;   
+T1      =  1600;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
 
 Ttype   = 'constant';                % set initial temperature field type
-
 
 %% set material parameters
 % buoyancy parameters
@@ -121,7 +121,7 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
+BCTTop      = 'flux';         % 'isothermal' or 'insulating' bottom boundaries
 BCTBot      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
@@ -129,7 +129,10 @@ BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom bounda
 BCsides     = -1;                   % side boundaries
 BCtop       = -1;                   % top boundary
 BCbot       = -1;                   % bottom boundary
-
+switch BCTTop
+    case'flux'
+    qT0 = -10;
+end
 
 %% set solver options
 % advection scheme
@@ -137,13 +140,13 @@ ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','
 BCA         =  {'',''};             % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fraction
-reltol    	= 1e-4;                 % relative residual tolerance for nonlinear iterations
-abstol      = 1e-7;                 % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                   % maximum iteration count
+reltol    	= 1e-9;                 % relative residual tolerance for nonlinear iterations
+abstol      = 1e-12;                 % absolute residual tolerance for nonlinear iterations
+maxit       = 20;                   % maximum iteration count
 tauR = 0;
 CFL         =  0.250;                % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-3*yr;              % maximum time step
-etareg      = 1e1;                  % regularisation factor for viscosity
+dtmax       = 0.1e-3*yr;              % maximum time step
+etareg      = 1e5;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 

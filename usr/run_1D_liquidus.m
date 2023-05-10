@@ -62,6 +62,7 @@ clap    = 1e-7;                      % Clapeyron slope for P-dependence of melti
 
 % set temperature initial condition
 T0      =  1700;                     % reference/top potential temperature [C]
+Ttop0   =  T0;
 T1      =  1700;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -120,15 +121,20 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 
 %% set boundary conditions
+%% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';         % 'isothermal' or 'insulating' bottom boundaries
-BCTBot      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
+BCTTop      = 'isothermal';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTBot      = 'insulating';         % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
 BCsides     = -1;                   % side boundaries
 BCtop       = -1;                   % top boundary
 BCbot       = -1;                   % bottom boundary
+switch BCTTop
+    case'flux'
+    qT0 = -10;
+end
 
 
 %% set solver options

@@ -78,7 +78,9 @@ if ~bnchm
     if nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,nxW-2); end
 end
 
-rr = - (rhoBF - mean(rhoBF,2)) .* gz(2:end-1,2:end-1);
+% rr = - (rhoBF - mean(rhoBF,2)) .* gz(2:end-1,2:end-1);
+rr = - (rhoBF ) .* gz(2:end-1,2:end-1);
+
 if bnchm; rr = rr + src_W_mms(2:end-1,2:end-1); end
 
 

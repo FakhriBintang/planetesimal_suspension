@@ -43,10 +43,15 @@ S(inz,inx) = (alpha2*So(inz,inx) + alpha3*Soo(inz,inx) + (beta1*dSdt + beta2*dSd
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
 switch BCTTop
     case 'isothermal'
-        S(1,:) = rho(1,:).*(Cp.*log(T0./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
+        S(1,:) = rho(1,:).*(Cp.*log(Ttop0./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
     case 'insulating'
         S(1,:) = S(2,:);
     case 'flux'
+        T2    = T0.*exp((S(2,:) - FsFe(2,:).*dEntrFe - FsSi(2,:).*dEntrSi)./rho(2,:)./Cp ...
+        + aT.*(Pt(2,:) - P0)./rhoRef./Cp);
+        dTb    = qT0*h./((kT(1,:)+kT(2,:))./2);
+        Tb     = max(Ttop0,T2+dTb);
+        S(1,:) = rho(1,:).*(Cp.*log(Tb./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
 end
 switch BCTBot
     case 'isothermal'
