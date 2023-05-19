@@ -22,12 +22,12 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 
 %% set model domain
-D               =  500;                  % domain depth
+D               =  100;                  % domain depth
 N               =  100;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
-L               =  500;
+L               =  D;
 
 
 %% set thermochemical parameters
@@ -48,11 +48,11 @@ smth            =  ((N+2)/20)^2;     % regularisation of initial random perturba
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
 TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
 cSimin  = 0.4080;                    % reference cSi (In testing)
-cphsSi1 = 0;        cphsSi2 = 0.7882-cSimin; % silicate system limits
+cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin; % silicate system limits
 cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
-perclSi = 0.5276-cSimin;                    % silicate peritectic liquidus composition [wt SiO2]
-percsSi = 0.4806-cSimin;                    % silicate peritectic solidus  composition [wt SiO2]
-perTSi  = 1193;                      % silicate peritectic temperature
+perclSi = cphsSi2;                    % silicate peritectic liquidus composition [wt SiO2]
+percsSi = cphsSi2;                    % silicate peritectic solidus  composition [wt SiO2]
+perTSi  = TSi1;                      % silicate peritectic temperature
 PhDgSi  = [8.0,4.0,1.2,1.2];         % silicate phase diagram curvature factor (> 1)
 perclFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 percsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
@@ -62,7 +62,7 @@ clap    = 1e-7;                      % Clapeyron slope for P-dependence of melti
 
 % set temperature initial condition
 T0      =  1600;                     % reference/top potential temperature [C]
-Ttop0   =  900;   
+Ttop0   =  250;   
 T1      =  1600;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -121,8 +121,8 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'flux';         % 'isothermal' or 'insulating' bottom boundaries
-BCTBot      = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
+BCTTop      = 'isothermal';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTBot      = 'insulating';         % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1

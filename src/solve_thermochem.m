@@ -134,10 +134,6 @@ CSi(inz,inx) = (alpha2*CSio(inz,inx) + alpha3*CSioo(inz,inx) + (beta1*dCSidt + b
 CSi(~hassolSi|~hasliqSi) = XSi(~hassolSi|~hasliqSi) .*cSi(~hassolSi|~hasliqSi);
 CFe(~hassolFe|~hasliqFe) = XFe(~hassolFe|~hasliqFe) .*cFe(~hassolFe|~hasliqFe);
 
-CSi(~hassolSi) = XSi(~hassolSi) .*cSio(~hassolSi);
-CFe(~hassolFe) = XFe(~hassolFe) .*cFeo(~hassolFe);
-CSi(~hasliqSi) = XSi(~hasliqSi) .*cSio(~hasliqSi);
-CFe(~hasliqFe) = XFe(~hasliqFe) .*cFeo(~hasliqFe);
 % apply boundaries
 CSi([1 end],:) = CSi([2 end-1],:);  CSi(:,[1 end]) = CSi(:,[2 end-1]);
 CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);

@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  'test_newvar';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  5;                   % output every 'nop' grid steps of transport
+nop             =  100;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -46,13 +46,13 @@ smth            =  ((N+2)/20)^2;     % regularisation of initial random perturba
 % set phase diagram parameters
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
-TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
+TSi1    = 1193;     TSi2    = 1839;   % silicate system melting limits
 cSimin  = 0.4080;                    % reference cSi (In testing)
-cphsSi1 = 0;        cphsSi2 = 0.7882-cSimin; % silicate system limits
+cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin; % silicate system limits
 cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
-perclSi = 0.5276-cSimin;                    % silicate peritectic liquidus composition [wt SiO2]
-percsSi = 0.4806-cSimin;                    % silicate peritectic solidus  composition [wt SiO2]
-perTSi  = 1193;                      % silicate peritectic temperature
+perclSi = cphsSi2;                    % silicate peritectic liquidus composition [wt SiO2]
+percsSi = cphsSi2;                    % silicate peritectic solidus  composition [wt SiO2]
+perTSi  = TSi1;                      % silicate peritectic temperature
 PhDgSi  = [8.0,4.0,1.2,1.2];         % silicate phase diagram curvature factor (> 1)
 perclFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 percsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
@@ -61,7 +61,7 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1700;                     % reference/top potential temperature [C]
+T0      =  1600;                     % reference/top potential temperature [C]
 Ttop0   =  900;   
 T1      =  1700;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]

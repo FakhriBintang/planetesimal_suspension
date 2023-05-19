@@ -59,6 +59,7 @@ W           = zeros(nzW,nxW);               % z-velocity on z-face nodes
 U           = zeros(nzU,nxU);               % x-velocity on x-face nodes
 P           = zeros(nzP,nxP);               % pressure on centre nodes
 SOL           = [W(:);U(:);P(:)];         % full solution vector
+Vel = zeros(nzP,nxP);                       % velocity magnitude
 
 % projected velocities on centre nodes
 UP          = zeros(nzP,nxP);
