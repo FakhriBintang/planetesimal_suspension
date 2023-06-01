@@ -3,10 +3,10 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  'test_newvar';               % run identifier
+RunID           =  ['1D_3phs'];               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  0;                    % switch on to save output files
-nop             =  100;                   % output every 'nop' grid steps of transport
+save_op         =  1;                    % switch on to save output files
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -14,7 +14,7 @@ radheat         =  0;                    % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
-maxstep         =  2e4;                  % maximum number of time steps
+maxstep         =  1e2;                  % maximum number of time steps
 tend            =  0.5e3*yr;           % model stopping time [s]
 
 % [do not modify]
@@ -22,8 +22,8 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 
 %% set model domain
-D               =  500;                  % domain depth
-N               =  250;                  % number of real x/z block nodes
+D               =  100;                  % domain depth
+N               =  100;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
@@ -33,12 +33,12 @@ L               =  h;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-xFe0            =  0.20;                 % Fe-FeS system fraction
+xFe0            =  0.2;                 % Fe-FeS system fraction
 cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0e-3;                 % amplitude of initial random perturbation to iron system
+dxFe            = -0.01e-3;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((N+2)/20)^2;     % regularisation of initial random perturbation
@@ -46,13 +46,13 @@ smth            =  ((N+2)/20)^2;     % regularisation of initial random perturba
 % set phase diagram parameters
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
-TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
+TSi1    = 1193;     TSi2    = 1839;   % silicate system melting limits
 cSimin  = 0.4080;                    % reference cSi (In testing)
-cphsSi1 = 0;        cphsSi2 = 0.7882-cSimin; % silicate system limits
+cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin; % silicate system limits
 cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
-perclSi = 0.5276-cSimin;                    % silicate peritectic liquidus composition [wt SiO2]
-percsSi = 0.4806-cSimin;                    % silicate peritectic solidus  composition [wt SiO2]
-perTSi  = 1193;                      % silicate peritectic temperature
+perclSi = cphsSi2;                    % silicate peritectic liquidus composition [wt SiO2]
+percsSi = cphsSi2;                    % silicate peritectic solidus  composition [wt SiO2]
+perTSi  = TSi1;                      % silicate peritectic temperature
 PhDgSi  = [8.0,4.0,1.2,1.2];         % silicate phase diagram curvature factor (> 1)
 perclFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
 percsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
@@ -62,7 +62,7 @@ clap    = 1e-7;                      % Clapeyron slope for P-dependence of melti
 
 % set temperature initial condition
 T0      =  1450;                     % reference/top potential temperature [C]
-Ttop0   =  T0;
+Ttop0   =  T0;   
 T1      =  1450;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -122,7 +122,7 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';         % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
@@ -143,12 +143,13 @@ TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
 reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
-maxit       = 70;                   % maximum iteration count
-CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 5e-3*yr;              % maximum time step
-etareg      = 1e0;                  % regularisation factor for viscosity
-TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+maxit       = 20;                   % maximum iteration count
 tauR        = 0;
+CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e-3*yr;              % maximum time step
+etareg      = 1e5;                  % regularisation factor for viscosity
+TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+
 
 %% start model
 % create output directory
@@ -171,5 +172,11 @@ addpath('../src/cbrewer/')
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
+% print run header
+fprintf(1,'\n\n************************************************************\n');
+fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);
+fprintf(1,    '************************************************************\n\n');
+
+initialise;
 run('main');
 

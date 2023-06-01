@@ -9,8 +9,8 @@ if plot_op
 
     % prepare for plotting
     % prepare for plotting
-    TX = {'Interpreter','Latex'}; FS = {'FontSize',12};
-    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',10};
+    TX = {'Interpreter','Latex'}; FS = {'FontSize',20};
+    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',18};
     UN = {'Units','Centimeters'};
     CL = {'Color',[0.0 0.0 0.0],[0.80 0.15 0.10],[0.10 0.15 0.65],[0.45 0.60 0.95]};
     LW = {'LineWidth',2};
@@ -178,7 +178,7 @@ if plot_op
         imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on;
         quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
         colormap(subplot(2,3,2),cm2)
-        c = max(abs([min(W(:)),max(U(:))])).*yr;
+        c = max(abs([min(W(:)),max(W(:))])).*yr;
         caxis([-c c])
         axis ij equal tight;
         colorbar
@@ -187,6 +187,8 @@ if plot_op
         subplot(2,3,3)
         imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on;
         colormap(subplot(2,3,3),cm2)
+        c = max(abs([min(P(:)),max(P(:))]));
+        caxis([-c c])
         axis ij equal tight;
         colorbar
         title('dynamic pressure [Pa]')
@@ -336,7 +338,7 @@ if plot_op
     plot(CCxSi+cSimin,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
     plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([800 TSi2])
+    ylim([TSi1 TSi2])
     %title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
@@ -345,7 +347,7 @@ if plot_op
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([800 TSi2])
+    ylim([TFe1 TSi2])
     %title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
@@ -423,14 +425,14 @@ if save_op
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP');
+        'rhoo','T','yr','nxP','nzP','time','step');
     name = [outpath '/',RunID,'_cont'];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
         'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP');
+        'rhoo','T','yr','nxP','nzP','time','step');
     name = [outpath,'/',RunID,'_hist'];
     save(name,'HST');
 

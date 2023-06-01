@@ -3,9 +3,9 @@
 % equal grid spacing
 clear ; close 
 
-RunID           =  'test';               % run identifier
+RunID           =  '2D_settling_2';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  0;                    % switch on to save output files
+save_op         =  1;                    % switch on to save output files
 nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
@@ -14,7 +14,7 @@ radheat         =  0;                    % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
-maxstep         =  2e4;                  % maximum number of time steps
+maxstep         =  100;                  % maximum number of time steps
 tend            =  1e8*yr;           % model stopping time [s]
 
 % [do not modify]
@@ -28,7 +28,6 @@ N               =  100;                  % number of real x/z block nodes
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
 L               =  D;
-
 
 %% set thermochemical parameters
 
@@ -46,7 +45,7 @@ smth            =  ((N+2)/20)^2;     % regularisation of initial random perturba
 % set phase diagram parameters
 %   Fertile        ||       Refractory
 TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
-TSi1    = 891;      TSi2    = 1839;   % silicate system melting limits
+TSi1    = 1193;     TSi2    = 1839;   % silicate system melting limits
 cSimin  = 0.4080;                    % reference cSi (In testing)
 cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin; % silicate system limits
 cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
@@ -62,7 +61,7 @@ clap    = 1e-7;                      % Clapeyron slope for P-dependence of melti
 
 % set temperature initial condition
 T0      =  1600;                     % reference/top potential temperature [C]
-Ttop0   =  250;   
+Ttop0   =  1600;   
 T1      =  1600;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -121,7 +120,7 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';         % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
@@ -145,7 +144,7 @@ abstol      = 1e-12;                 % absolute residual tolerance for nonlinear
 maxit       = 20;                   % maximum iteration count
 tauR = 0;
 CFL         =  0.250;                % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.1e-3*yr;              % maximum time step
+dtmax       = 1e-3*yr;              % maximum time step
 etareg      = 1e5;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
@@ -171,5 +170,11 @@ addpath('../src/cbrewer/')
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
+% print run header
+fprintf(1,'\n\n************************************************************\n');
+fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);
+fprintf(1,    '************************************************************\n\n');
+
+initialise;
 run('main');
 

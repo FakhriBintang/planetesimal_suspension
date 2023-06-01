@@ -2,7 +2,7 @@
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear all; close all
-RunID           =  'bnchm_dt_bd3i_4phs';               % run identifier
+RunID           =  'bnchm_dt_bd3i_4phs_11May';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];

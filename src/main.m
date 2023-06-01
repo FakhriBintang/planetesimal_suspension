@@ -1,14 +1,5 @@
 % planetesimal: main model routine
 
-% print run header
-fprintf(1,'\n\n************************************************************\n');
-fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);
-fprintf(1,    '************************************************************\n\n');
-
-
-% %% initialise model run
-initialise;
-
 while time <= tend && step <= maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
