@@ -9,8 +9,8 @@ if plot_op
 
     % prepare for plotting
     % prepare for plotting
-    TX = {'Interpreter','Latex'}; FS = {'FontSize',20};
-    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',18};
+    TX = {'Interpreter','Latex'}; FS = {'FontSize',16};
+    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',14};
     UN = {'Units','Centimeters'};
     CL = {'Color',[0.0 0.0 0.0],[0.80 0.15 0.10],[0.10 0.15 0.65],[0.45 0.60 0.95]};
     LW = {'LineWidth',2};
@@ -93,10 +93,10 @@ if plot_op
 
         fh3 = figure(3); clf;
         subplot(1,4,1)
-        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2); hold on
-        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2);
-        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
+        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2); hold on
+        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2);
         plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
+        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
         plot(mean(-W(:,2:end-1),2)*yr,zW,'k','LineWidth',2); axis ij tight; box on;
         title('$W$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [m]',TX{:},FS{:});
