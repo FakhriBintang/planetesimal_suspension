@@ -42,10 +42,6 @@ while time <= tend && step <= maxstep
     % temp
     cFeo = cFe; cSio = cSi;
 
-    % temp for radioactive decay
-    NAlo  = NAl;
-    dNdto = dNdt;
-
     % reset residuals and iteration count
     resnorm   = 1;
     resnorm0  = resnorm;

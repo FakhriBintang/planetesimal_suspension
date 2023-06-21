@@ -145,14 +145,23 @@ xSi = 1 - xFe;         % Si system
 cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
 cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
 
-
 % initialise total pressure
 Pt = rhoRef.*gzP.*ZP + P0;
 
 % initialise adiabatic temperature
 T = Tp .* exp(aT./rhoRef./Cp.*Pt);
 
-% initialise loop
+%% initialise radioactive decay (make sure to cleanup)
+% nAl     = 2.0532e23;% initial nAl per kg
+% rAl0    = 5.25e-5;  % initial ratio of 26Al/27Al
+% eAl     = 5e-13;    % decay energy
+% NAl     = zeros(nzP,nxP); 
+% NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
+% dNdt = zeros(nzP,nxP);
+
+Hr  = Hr0.*ones(size(T(2:end-1,2:end-1)));
+
+%% initialise loop
 [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
                                            perTFe,percsFe,perclFe,clap,PhDgFe);
 [fsSi,csSi,clSi] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
@@ -248,17 +257,6 @@ hassolSi = flSi<1;
 hassolFe = flFe<1;
 hasliqSi = fsSi<1;
 hasliqFe = fsFe<1;
-
-
-%% initialise radioactive decay (make sure to cleanup)
-nAl     = 2.0532e23;% initial nAl per kg
-rAl0    = 5.25e-5;  % initial ratio of 26Al/27Al
-eAl     = 5e-13;    % decay energy
-NAl     = zeros(nzP,nxP); 
-NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
-dNdt = zeros(nzP,nxP);
-
-Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
 
 
 %% initialise previous solution and auxiliary fields
