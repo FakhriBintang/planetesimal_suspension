@@ -169,7 +169,7 @@ if plot_op
         quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
         colormap(subplot(2,3,1),cm2)
         c = max(abs([min(U(:)),max(U(:))])).*yr;
-        caxis([-c c])
+        if any(c)>0; caxis([-c c]); end
         axis ij equal tight;
         colorbar
         title('v^*_x [m/yr]')
@@ -179,7 +179,7 @@ if plot_op
         quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
         colormap(subplot(2,3,2),cm2)
         c = max(abs([min(W(:)),max(W(:))])).*yr;
-        caxis([-c c])
+        if any(c)>0; caxis([-c c]); end
         axis ij equal tight;
         colorbar
         title('v_z^*-velocity [m/yr]')
@@ -188,7 +188,7 @@ if plot_op
         imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on;
         colormap(subplot(2,3,3),cm2)
         c = max(abs([min(P(:)),max(P(:))]));
-        caxis([-c c])
+        if any(c)>0; caxis([-c c]); end
         axis ij equal tight;
         colorbar
         title('dynamic pressure [Pa]')
@@ -339,7 +339,7 @@ if plot_op
     plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
     plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
     ylim([TSi1 TSi2])
-    %title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
+    title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
 
