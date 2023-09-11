@@ -244,10 +244,12 @@ if plot_op
         set(0,'CurrentFigure',fh1)
         set(fh1,'CurrentAxes',ax(11));
         imagesc(xU(:),zU(2:end-1),U(2:end-1,:)*yr); hold on; axis ij equal tight; box on; cb = colorbar;
+        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(12));
         imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on; axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
+        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_z$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(13));
         imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on; axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('dynamic pressure [Pa]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
@@ -262,61 +264,7 @@ if plot_op
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('Log10($\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
-        % %% plot velocity and temperature solutions
-        % fh1  = figure(1); clf
-        % figure(1)
-        % subplot(2,3,1)
-        % imagesc(xU(:),zU(2:end-1),U(2:end-1,:)*yr); hold on;
-        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
-        % colormap(subplot(2,3,1),cm2)
-        % c = max(abs([min(U(:)),max(U(:))])).*yr;
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('v^*_x [m/yr]')
-        % 
-        % subplot(2,3,2)
-        % imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on;
-        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
-        % colormap(subplot(2,3,2),cm2)
-        % c = max(abs([min(W(:)),max(W(:))])).*yr;
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('v_z^*-velocity [m/yr]')
-        % 
-        % subplot(2,3,3)
-        % imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on;
-        % colormap(subplot(2,3,3),cm2)
-        % c = max(abs([min(P(:)),max(P(:))]));
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('dynamic pressure [Pa]')
-        % 
-        % subplot(2,3,4)
-        % imagesc(xP(2:end-1),zP(2:end-1),T(2:end-1,2:end-1));
-        % colormap(subplot(2,3,4),flipud(cm1))
-        % axis ij equal tight;
-        % colorbar
-        % title('Temperature [C]')
-        % 
-        % subplot(2,3,5);
-        % imagesc(xP(2:end-1),zP(2:end-1),rho(2:end-1,2:end-1));
-        % colormap(subplot(2,3,5),cm1)
-        % axis ij equal tight;
-        % colorbar
-        % title('bulk density [kgm^-^3]')
-        % 
-        % subplot(2,3,6);
-        % imagesc(xP(2:end-1),zP(2:end-1),log10(Eta(2:end-1,2:end-1)));
-        % colormap(subplot(2,3,6),cm1)
-        % axis ij equal tight;
-        % colorbar
-        % title('\eta [log_1_0 Pas]')
-
-
-        %% plot phase vol fractions
+        % plot phase vol fractions
         if ~exist('fh2','var'); fh2 = figure(2);
         else; set(0, 'CurrentFigure', fh2); clf;
         end
@@ -336,7 +284,7 @@ if plot_op
         imagesc(xP(2:end-1),zP(2:end-1),philSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Si}^l$ [vol\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
         set(fh2,'CurrentAxes',ax(22));
-        imagesc(xP(2:end-1),zP(2:end-1),phisSi(2:end-1,2:end-1*100)); axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1),phisSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Si}^s$ [vol\%]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh2,'CurrentAxes',ax(23));
         imagesc(xP(2:end-1),zP(2:end-1),philFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
@@ -440,8 +388,8 @@ if plot_op
      imagesc(xP(2:end-1),zP(2:end-1),cFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:});
     set(fh5,'CurrentAxes',ax(54));
-    imagesc(xP(2:end-1),zP(2:end-1),cSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
+    imagesc(xP(2:end-1),zP(2:end-1),cSi(2:end-1,2:end-1)+cSimin*100); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
     sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 >>>>>>> parent of fdd0c7a (few typos in output, updated run scripts to latest version)
 
