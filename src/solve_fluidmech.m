@@ -1,6 +1,6 @@
 % Wi = W; Ui = U; Pi = P;
 % get mapping arrays
-% NW = NW; NU = NU; NP = NP;
+NW = NW; NU = NU; NP = NP;
 % profile on
 
 %% assemble coefficients for matrix velocity diagonal and right-hand side
@@ -279,8 +279,8 @@ U  = full(reshape(SOL(MapU(:)),nzU, nxU));         % matrix x-velocity
 P  = full(reshape(SOL(MapP(:)...
                     + NW+NU),nzP, nxP));         % matrix dynamic pressure
 
-% UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
-% WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
+UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
+WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
 
 % get residual of fluid mechanics equations from iterative update
 % resnorm_VP = norm((W - Wi).*any(W(:)>1e-12),2)./(norm(W,2)+TINY) ...

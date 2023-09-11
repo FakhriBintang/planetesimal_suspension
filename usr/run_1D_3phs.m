@@ -3,10 +3,10 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  '1D_3phs_highres';               % run identifier
+RunID           =  ['1D_3phs'];               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  1;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -14,7 +14,7 @@ radheat         =  0;                    % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
-maxstep         =  1e5;                  % maximum number of time steps
+maxstep         =  1e2;                  % maximum number of time steps
 tend            =  0.5e3*yr;           % model stopping time [s]
 
 % [do not modify]
@@ -22,12 +22,13 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 
 %% set model domain
-D               =  500;                  % domain depth
-N               =  500;                  % number of real x/z block nodes
+D               =  100;                  % domain depth
+N               =  100;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
 L               =  h;
+
 
 %% set thermochemical parameters
 
@@ -37,7 +38,7 @@ cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([w
 cSi0            =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0.0e-3;                 % amplitude of initial random perturbation to iron system
+dxFe            = -0.01e-3;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
 smth            =  ((N+2)/20)^2;     % regularisation of initial random perturbation
@@ -60,9 +61,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1600;                     % reference/top potential temperature [C]
-Ttop0   =  100;   
-T1      =  1600;                     % bottom potential temperature (if different from top) [C]
+T0      =  1450;                     % reference/top potential temperature [C]
+Ttop0   =  T0;   
+T1      =  1450;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
 xT      =  L/2;                  % x-position of hot plume [m]
@@ -121,7 +122,7 @@ Hr0         =  0e-4;                % Radiogenic heat productivity [W/m3]
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'flux';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';               % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';         % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';         % 'isothermal' or 'insulating' bottom boundaries
 
@@ -131,7 +132,7 @@ BCtop       = -1;                   % top boundary
 BCbot       = -1;                   % bottom boundary
 switch BCTTop
     case'flux'
-    qT0 = -1000;
+    qT0 = -10;
 end
 
 %% set solver options
