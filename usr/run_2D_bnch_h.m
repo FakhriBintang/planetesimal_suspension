@@ -25,11 +25,11 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1000;                   % output every 'nop' grid steps of transport
+nop             =  100;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
-Hr = 0;
+
 %% set model domain
 D               =  100;                  % domain depth
 
@@ -140,7 +140,7 @@ maxit       = 30;                   % maximum iteration count
 tauR        = 1e16;
 CFL         = 1;                % (physical) time stepping courant number (multiplies stable step) [0,1]
 etareg      = 1e0;                  % regularisation factor for viscosity
-TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+TINT        =  'bd3s';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 
 %% test nonlinear tolerance
@@ -277,6 +277,9 @@ for N = NN
         if ~mod(step,nop) %round(2*nop/CFL))
             output;
             %        suppfigs; % supplementary figures for testing
+            if radheat
+                figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
+            end
         end
 
         % break script for NaN
