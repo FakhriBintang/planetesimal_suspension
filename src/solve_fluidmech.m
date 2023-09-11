@@ -1,6 +1,6 @@
 % Wi = W; Ui = U; Pi = P;
 % get mapping arrays
-NW = NW; NU = NU; NP = NP;
+% NW = NW; NU = NU; NP = NP;
 % profile on
 
 %% assemble coefficients for matrix velocity diagonal and right-hand side

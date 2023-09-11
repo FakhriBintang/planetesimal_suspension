@@ -48,6 +48,19 @@ MapP        =  reshape(1:NP,nzP,nxP);
 inz = 2:length(zP)-1;
 inx = 2:length(xP)-1;
 
+% get smoothed initialisation field
+rng(67);
+rp = randn(nzP,nxP);
+for i = 1:round(smth)
+    rp(2:end-1,2:end-1) = rp(2:end-1,2:end-1) + diff(rp(:,2:end-1),2,1)./8 ...
+                                              + diff(rp(2:end-1,:),2,2)./8;
+    rp([1 end],:)       = rp([2 end-1],:);
+    rp(:,[1 end])       = rp(:,[2 end-1]);
+end
+rp              = rp./max(abs(rp(:)));
+rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
+
+
 %% setup material property arrays
 % gravity
 gxP = zeros(nzP,nxP) + gx0;      gzP = zeros(nzP,nxP) + gz0;
@@ -107,7 +120,7 @@ pert = -h/2.*cos(XP*2*pi/D);
 % temporary, set theral distribution parameters. Switch to run scripts
 % later
 zlay     =  0.0;                 % layer thickness (relative to domain depth D)
-wlay_T   =  0.05;                % thickness of smooth layer boundary (relative to domain depth D)
+wlay_T   =  0.2;                % thickness of smooth layer boundary (relative to domain depth D)
 % wlay_c   =  2*h/D;       % thickness of smooth layer boundary (relative to domain depth D)
 rhoRef = rholSi0;
 switch Ttype
@@ -118,7 +131,6 @@ switch Ttype
         T      = T0 + abs(ZP+pert)./D.*(T1-T0);
     case 'gaussian'     % constant temperature with gaussian plume
         T      = zeros(nzP,nxP) + T0;
-
         T      = T + (T1-T0).*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
     case 'hot bottom'
         T      = zeros(nzP,nxP) + T0;
@@ -127,16 +139,27 @@ end
 Tp = T;  % initial condition sets potential temperature [C]
 
 % set initial component weight fraction [kg/kg]
-xFe = xFe0 + dxFe.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
+% constant
+xFe = xFe0 + dxFe.*rp; % Fe system
+
+% gaussian
+% xFe      = xFe0 + (0.1).*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
+
+% toplayer
+% xFe = xFe0 +1 - 1 .* erf((ZP/D)/0.2);
+% xFe(1,:) = xFe0+0.1;
+
+% impactor core
 xSi = 1 - xFe;         % Si system
-cFe = zeros(size(xFe)) + cFe0 + dcFe; % Fe component
-cSi = zeros(size(xSi)) + cSi0 + dcSi - cSimin; % Si component
+cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
+cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
 
 
 % initialise total pressure
 Pt = rhoRef.*gzP.*ZP + P0;
 
-
+% initialise adiabatic temperature
+T = Tp .* exp(aT./rhoRef./Cp.*Pt);
 
 % initialise loop
 [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
@@ -162,11 +185,6 @@ while res > tol
     flSi = 1-fsSi;
     
     up2date;
-
-    segsSi(:) = 0;
-    segsFe(:) = 0;
-    seglSi(:) = 0;
-    seglFe(:) = 0;
     
     rhoRef = mean(mean(rho(2:end-1,2:end-1)));
     Pt = rhoRef.*gzP.*ZP + P0;
@@ -176,24 +194,6 @@ while res > tol
            + norm(Pt(:)  -Pi(:)   ,2)./norm(Pt(:)  +TINY,2);
     it     = it+1;
 end
-up2date;
-W(:) = 1;               % z-velocity on z-face nodes
-U(:) = 0;               % x-velocity on x-face nodes
-P(:) = 0;
-segsSi(:) = 0;
-segsFe(:) = 0;
-seglSi(:) = 0;
-seglFe(:) = 0;
-ks(:)     = 0; % update phase velocities
-WlSi = W + seglSi;
-UlSi = U;
-WsSi = W + segsSi;
-UsSi = U;
-WlFe = W + seglFe;
-UlFe = U;
-WsFe = W + segsFe;
-UsFe = U;
-
 
 fsFe(xFe==0) = 0;
 flFe(xFe==0) = 0;
@@ -252,7 +252,7 @@ dsumXSidt  = 0; dsumXSidto = dsumXSidt;
 dsumCFedt  = 0; dsumCFedto = dsumCFedt;
 dsumCSidt  = 0; dsumCSidto = dsumCSidt;
 
-%% temp additional auxilary fields
+%%  additional auxilary fields
 hassolSi = flSi<1;
 hassolFe = flFe<1;
 hasliqSi = fsSi<1;
@@ -267,7 +267,7 @@ NAl     = zeros(nzP,nxP);
 NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
 dNdt = zeros(nzP,nxP);
 
-% Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
+Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
 
 
 %% initialise previous solution and auxiliary fields
@@ -276,24 +276,15 @@ Div_rhoVo = Div_rhoV;
 
 %% update nonlinear material properties
 up2date;
-W(:) = 1;               % z-velocity on z-face nodes
-U(:) = 0;               % x-velocity on x-face nodes
-P(:) = 0;
-segsSi(:) = 0;
-segsFe(:) = 0;
-seglSi(:) = 0;
-seglFe(:) = 0;
-ks(:)     = 0; % update phase velocities
-WlSi = W + seglSi;
-UlSi = U;
-WsSi = W + segsSi;
-UsSi = U;
-WlFe = W + seglFe;
-UlFe = U;
-WsFe = W + segsFe;
-UsFe = U;
+solve_fluidmech;
 
-resnorm_VP = 0
+%% check reynold's number
+% Velbar = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+%          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2));
+% Re = D*rho(2:end-1,2:end-1).*Vel./Eta(2:end-1,2:end-1);
+% 
+% figure(45); imagesc(xP(inx),zP(inz),Re); colorbar; axis ij tight
+
 
 %% initialise recording of model history
 history;

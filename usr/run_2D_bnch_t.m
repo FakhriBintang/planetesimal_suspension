@@ -2,7 +2,7 @@
 % no sticky air/space; no self gravity
 % equal grid spacing
 clear all; close all
-RunID           =  '2D_bnchm_dt_bd3i_4phs';               % run identifier
+RunID           =  '2D_bnchm_dt_bd3i_4phs_11May';               % run identifier
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
@@ -47,6 +47,7 @@ cSi0            =  0.42;                 % Si system fertile component fraction 
 dxFe            =  0.1;                 % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
+Hr = 0;
 
 % set phase diagram parameters
 %   Fertile        ||       Refractory
@@ -147,7 +148,7 @@ etareg      = 1e0;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 %% test time stepping
-DDT = [h/2, h/4, h/8, h/16];
+DDT = [h/2, h/4, h/8];
 
 for dt = DDT
     %% set model timing
