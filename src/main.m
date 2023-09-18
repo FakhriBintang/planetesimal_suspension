@@ -79,13 +79,14 @@ while time <= tend && step <= maxstep
 
     % update mass and energy errors
     history;
+    Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1);
 
 
     fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [degC]\n' ,min(T(:)),mean(T(:)-273.15),max(T(:)));
     fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
     fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
     fprintf(1,'         min c_{Si}   =  %1.4f;    mean c_{Si}   = %1.4f;    max c_{Si}   = %1.4f;   [wt]\n'   ,min(cSi(:)  ),mean(cSi(:)  ),max(cSi(:)  ));
-    
+    fprintf(1,'         min Re   =  %1.4f;    mean Re   = %1.4f;    max Re   = %1.4f;   [wt]\n'   ,min(Re(:)  ),mean(Re(:)  ),max(Re(:)  ));
     fprintf(1,'         min sumX=  %4.1f;    mean sumX= %4.1f;    max sumX= %4.1f;   [kg/m3]\n'  ,min(XFe(:)+XSi(:)),mean(XFe(:)+XSi(:))   ,max(XFe(:)+XSi(:)));
     fprintf(1,'         min rho =  %4.1f;    mean rho = %4.1f;    max rho = %4.1f;   [kg/m3]\n'  ,min(rho(:)),mean(rho(:))   ,max(rho(:)));
     if ~mod(step,nop) %round(2*nop/CFL))

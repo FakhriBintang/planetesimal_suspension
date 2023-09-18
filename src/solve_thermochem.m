@@ -173,11 +173,11 @@ flSiq = 1-fsSiq;
 
 
 %% update phase fractions
-GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./max(4.*dt,tauR));
+GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
 advn_FFe  = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFFedt    = advn_FFe + GFe(inz,inx);
 
-GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./max(4.*dt,tauR));
+GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSi  = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFSidt    = advn_FSi + GSi(inz,inx);                                       % total rate of change
 

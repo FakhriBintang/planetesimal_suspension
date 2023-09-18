@@ -15,10 +15,10 @@ rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
 
 %% convert weight to volume fractions
-phisFe = max(0,min(1,xFe.* fsFe .* rho ./ rhosFe));
-philFe = max(0,min(1,xFe.* flFe .* rho ./ rholFe));
-phisSi = max(0,min(1,xSi.* fsSi .* rho ./ rhosSi));
-philSi = max(0,min(1,xSi.* flSi .* rho ./ rholSi)); 
+phisFe = max(0,min(1,FsFe./ rhosFe));
+philFe = max(0,min(1,FlFe./ rholFe));
+phisSi = max(0,min(1,FsSi./ rhosSi));
+philSi = max(0,min(1,FlSi./ rholSi)); 
 
 
 %% update viscosity
@@ -112,7 +112,7 @@ if step>0
                + advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''   },[1,2],BCA);
     F_DivV   = (alpha1*rho(inz,inx) - alpha2*rhoo(inz,inx) - alpha3*rhooo(inz,inx))./dt + (beta1*Div_rhoV + beta2*Div_rhoVo + beta3*Div_rhoVoo);  % get residual of mixture mass conservation
-    VolSrc   = Div_V(inz,inx) - F_DivV./rho(inz,inx);  % correct volume source term by scaled residual
+    VolSrc   = Div_V(inz,inx) - F_DivV./rho(inz,inx)/2;  % correct volume source term by scaled residual
 end
 
 % set variable boundary conditions

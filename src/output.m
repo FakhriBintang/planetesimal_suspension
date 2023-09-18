@@ -9,8 +9,8 @@ if plot_op
 
     % prepare for plotting
     % prepare for plotting
-    TX = {'Interpreter','Latex'}; FS = {'FontSize',16};
-    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',14};
+    TX = {'Interpreter','Latex'}; FS = {'FontSize',12};
+    TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',10};
     UN = {'Units','Centimeters'};
     CL = {'Color',[0.0 0.0 0.0],[0.80 0.15 0.10],[0.10 0.15 0.65],[0.45 0.60 0.95]};
     LW = {'LineWidth',2};
@@ -58,7 +58,7 @@ if plot_op
         plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); hold on;  axis ij tight; box on;
         plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
         title('$x_{Fe}$ / $x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        legend('$xFe$', '$x_{Si}$')
+        legend('$x_{\mathrm{Fe}}$', '$x_{\mathrm{Si}}$',TX{:})
         subplot(1,4,3)
         plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
         plot(mean(csFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-b','LineWidth',2);
@@ -188,7 +188,7 @@ if plot_op
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(12));
         imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on; axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_z$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(13));
         imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on; axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('dynamic pressure [Pa]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
@@ -371,8 +371,8 @@ if ~exist('fh3','var'); fh3 = figure(3);
      imagesc(xP(2:end-1),zP(2:end-1),cFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:});
     set(fh5,'CurrentAxes',ax(54));
-    imagesc(xP(2:end-1),zP(2:end-1),cSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
+    imagesc(xP(2:end-1),zP(2:end-1),(cSi(2:end-1,2:end-1)+cSimin)*100); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
     sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
     end
@@ -402,7 +402,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     plot(CClFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
     plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
     ylim([TFe1 TSi2])
-    %title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
+    title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
     drawnow;
