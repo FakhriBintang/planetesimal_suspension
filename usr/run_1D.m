@@ -146,8 +146,8 @@ abstol      = 1e-9;                 % absolute residual tolerance for nonlinear 
 maxit       = 10;                   % maximum iteration count
 tauR        = 0;
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 100*yr;              % maximum time step
-etareg      = 1e5;                  % regularisation factor for viscosity
+dtmax       = 1*yr;              % maximum time step
+etareg      = 1e1;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 

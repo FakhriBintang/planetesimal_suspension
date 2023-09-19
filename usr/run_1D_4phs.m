@@ -3,10 +3,10 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['1D_4phs'];               % run identifier
+RunID           =  ['1D_4phs_18Sep_biggerstep'];               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  1;                    % switch on to save output files
-nop             =  10;                   % output every 'nop' grid steps of transport
+nop             =  100;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -14,16 +14,16 @@ radheat         =  0;                    % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
-maxstep         =  1e2;                  % maximum number of time steps
-tend            =  0.5e3*yr;           % model stopping time [s]
+maxstep         =  1e5;                  % maximum number of time steps
+tend            =  1e6*yr;           % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;          % (initial) time step [s]
 
 
 %% set model domain
-D               =  100;                  % domain depth
-N               =  100;                  % number of real x/z block nodes
+D               =  100000;                  % domain depth
+N               =  150;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
@@ -146,7 +146,7 @@ abstol      = 1e-9;                 % absolute residual tolerance for nonlinear 
 maxit       = 20;                   % maximum iteration count
 tauR        = 0;
 CFL         =  0.50;                % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-3*yr;              % maximum time step
+dtmax       = 5e1*yr;              % maximum time step
 etareg      = 1e5;                  % regularisation factor for viscosity
 TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 

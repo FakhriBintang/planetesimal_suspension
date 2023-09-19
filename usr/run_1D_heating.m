@@ -5,8 +5,8 @@ clear ; close all
 
 RunID           =  ['19Jun_1D_bigcryst_heating'];               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  1;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+save_op         =  0;                    % switch on to save output files
+nop             =  10;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 %temporary
 radheat         =  0;                    % radiogenic heating
@@ -22,8 +22,8 @@ dt              =  1e-2*yr;          % (initial) time step [s]
 
 
 %% set model domain
-D               =  10000;                  % domain depth
-N               =  100;                  % number of real x/z block nodes
+D               =  100000;                  % domain depth
+N               =  150;                  % number of real x/z block nodes
 
 % [do not modify]
 h               =  D/N;          % spacing of x/z  coordinates
@@ -61,8 +61,8 @@ PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  100;                     % reference/top potential temperature [C]
-Ttop0   =  100;   
+T0      =  0;                     % reference/top potential temperature [C]
+Ttop0   =  0;   
 T1      =  100;                     % bottom potential temperature (if different from top) [C]
 rT      =  D/6;                  % radius of hot plume [m]
 zT      =  D*0.5;                % z-position of hot plume [m]
@@ -117,7 +117,7 @@ Cp          = 1000;                 % mixture heat capacity
 dEntrSi     = -200;                     % silicate entropy of crystallisation
 dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
 
-Hr0         =  1e-4;                % Radiogenic heat productivity [W/m3]
+Hr0         =  1e-3;                % Radiogenic heat productivity [W/m3]
 
 
 %% set boundary conditions
