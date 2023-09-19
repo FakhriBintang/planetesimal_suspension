@@ -4,8 +4,9 @@ if step>0
     step;
 end
 
-% store previous iteration
+% store previous iteration (diagnostic)
 Ti    = T;
+Si    = S;
 xFei  = xFe;
 xSii  = xSi;
 cFei  = cFe;
@@ -173,16 +174,17 @@ flSiq = 1-fsSiq;
 
 
 %% update phase fractions
-GFe   = lambda.*GFe + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
-advn_FFe  = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
-dFFedt    = advn_FFe + GFe(inz,inx);
+% solid
+GFes   = lambda.*GFes + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
+advn_FFes  = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
+dFsFedt    = advn_FFes + GFes(inz,inx);
 
-GSi   = lambda.*GSi + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
-advn_FSi  = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
-dFSidt    = advn_FSi + GSi(inz,inx);                                       % total rate of change
+GSis   = lambda.*GSis + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
+advn_FSis  = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
+dFsSidt    = advn_FSis + GSis(inz,inx);                                       % total rate of change
 
-FsFe(inz,inx) = (alpha2*FsFeo(inz,inx) + alpha3*FsFeoo(inz,inx) + (beta1*dFFedt + beta2*dFFedto + beta3*dFFedtoo)*dt)/alpha1;
-FsSi(inz,inx) = (alpha2*FsSio(inz,inx) + alpha3*FsSioo(inz,inx) + (beta1*dFSidt + beta2*dFSidto + beta3*dFSidtoo)*dt)/alpha1;
+FsFe(inz,inx) = (alpha2*FsFeo(inz,inx) + alpha3*FsFeoo(inz,inx) + (beta1*dFsFedt + beta2*dFsFedto + beta3*dFsFedtoo)*dt)/alpha1;
+FsSi(inz,inx) = (alpha2*FsSio(inz,inx) + alpha3*FsSioo(inz,inx) + (beta1*dFsSidt + beta2*dFsSidto + beta3*dFsSidtoo)*dt)/alpha1;
 
 FsFe([1 end],:) = FsFe([2 end-1],:);  FsFe(:,[1 end]) = FsFe(:,[2 end-1]);  % apply boundary conditions
 FsSi([1 end],:) = FsSi([2 end-1],:);  FsSi(:,[1 end]) = FsSi(:,[2 end-1]);  % apply boundary conditions
@@ -190,15 +192,36 @@ FsSi([1 end],:) = FsSi([2 end-1],:);  FsSi(:,[1 end]) = FsSi(:,[2 end-1]);  % ap
 FsFe = max(0, FsFe );
 FsSi = max(0, FsSi );
 
-FlFe = XFe - FsFe;
-FlSi = XSi - FsSi;
+% liquid
+GFel   = lambda.*GFel + (1-lambda).*((XFe.*flFeq-FlFe)./(4.*dt));
+advn_FFel  = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
+dFlFedt    = advn_FFel + GFel(inz,inx);
+
+GSil   = lambda.*GSil + (1-lambda).*((XSi.*flSiq-FlSi)./(4.*dt));
+advn_FSil  = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
+dFlSidt    = advn_FSil + GSil(inz,inx);                                       % total rate of change
+
+FlFe(inz,inx) = (alpha2*FlFeo(inz,inx) + alpha3*FlFeoo(inz,inx) + (beta1*dFlFedt + beta2*dFlFedto + beta3*dFlFedtoo)*dt)/alpha1;
+FlSi(inz,inx) = (alpha2*FlSio(inz,inx) + alpha3*FlSioo(inz,inx) + (beta1*dFlSidt + beta2*dFlSidto + beta3*dFlSidtoo)*dt)/alpha1;
+
+FlFe([1 end],:) = FlFe([2 end-1],:);  FlFe(:,[1 end]) = FlFe(:,[2 end-1]);  % apply boundary conditions
+FlSi([1 end],:) = FlSi([2 end-1],:);  FlSi(:,[1 end]) = FlSi(:,[2 end-1]);  % apply boundary conditions
+
+FlFe = max(0, FlFe );
+FlSi = max(0, FlSi );
+
+% FlFe = XFe - FsFe;
+% FlSi = XSi - FsSi;
 
 % update phase fractions [wt]
 fsFe(hasFe) = max(0,min(1, FsFe(hasFe)./max(TINY,XFe(hasFe)) ));
 fsSi(hasSi) = max(0,min(1, FsSi(hasSi)./max(TINY,XSi(hasSi)) ));
 
-flFe(hasFe) = 1-fsFe(hasFe); 
-flSi(hasSi) = 1-fsSi(hasSi);
+flFe(hasFe) = max(0,min(1, FlFe(hasFe)./max(TINY,XFe(hasFe)) ));
+flSi(hasSi) = max(0,min(1, FlSi(hasSi)./max(TINY,XSi(hasSi)) ));
+
+% flFe(hasFe) = 1-fsFe(hasFe); 
+% flSi(hasSi) = 1-fsSi(hasSi);
 
 %detect where is fully molten
 hassolSi = flSi<1-TINY & fsSi>TINY;
@@ -209,12 +232,12 @@ hasliqFe = fsFe<1-TINY & flFe>TINY;
 
 %% update phase compositions
 KcFe = csFeq./clFeq;
-clFe(hasFe) = cFe(hasFe)./(flFe(hasFe) + fsFe(hasFe).*KcFe(hasFe));
-csFe(hasFe) = cFe(hasFe)./(flFe(hasFe)./KcFe(hasFe) + fsFe(hasFe));
+clFe(hasFe) = cFe(hasFe)./max(TINY,(flFe(hasFe) + fsFe(hasFe).*KcFe(hasFe)));
+csFe(hasFe) = cFe(hasFe)./max(TINY,(flFe(hasFe)./KcFe(hasFe) + fsFe(hasFe)));
 
 KcSi = csSiq./clSiq;
-clSi(hasSi) = cSi(hasSi)./(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi));
-csSi(hasSi) = cSi(hasSi)./(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi));
+clSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
+csSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
 
 
 %% get residual of thermochemical equations from iterative update

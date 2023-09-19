@@ -15,10 +15,10 @@ rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
 
 %% convert weight to volume fractions
-phisFe = max(0,min(1,FsFe./ rhosFe));
-philFe = max(0,min(1,FlFe./ rholFe));
-phisSi = max(0,min(1,FsSi./ rhosSi));
-philSi = max(0,min(1,FlSi./ rholSi)); 
+phisFe = max(0,min(1,xFe.* fsFe .* rho ./ rhosFe));
+philFe = max(0,min(1,xFe.* flFe .* rho ./ rholFe));
+phisSi = max(0,min(1,xSi.* fsSi .* rho ./ rhosSi));
+philSi = max(0,min(1,xSi.* flSi .* rho ./ rholSi)); 
 
 
 %% update viscosity

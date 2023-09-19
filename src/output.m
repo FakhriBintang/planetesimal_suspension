@@ -51,45 +51,45 @@ if plot_op
 
         fh1 = figure(1); clf;
         subplot(1,4,1)
-        plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); hold on;  axis ij tight; box on;
-        plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
+        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); hold on;  axis ij tight; box on;
+        plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         title('$x_{Fe}$ / $x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('$x_{\mathrm{Fe}}$', '$x_{\mathrm{Si}}$',TX{:})
         subplot(1,4,3)
-        plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(csFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'-b','LineWidth',2);
-        plot(mean(cFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'k-','LineWidth',2);
+        plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(csFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'-b','LineWidth',2);
+        plot(mean(cFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'k-','LineWidth',2);
         title('$\bar{c}_{Fe}$ [wt\% S]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot((mean(clSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'-r','LineWidth',2); axis ij tight; box on; hold on
-        plot((mean(csSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'-b','LineWidth',2);
-        plot((mean(cSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1),'k-','LineWidth',2);
+        plot((mean(clSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1)./1000,'-r','LineWidth',2); axis ij tight; box on; hold on
+        plot((mean(csSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1)./1000,'-b','LineWidth',2);
+        plot((mean(cSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1)./1000,'k-','LineWidth',2);
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh2 = figure(2); clf;
         subplot(1,4,1)
-        plot(mean(flFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(flSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
+        plot(mean(flFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(flSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         title('$f_{j}^\ell$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('Fe', 'Si')
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(phisFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(philFe(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
-        plot(mean(phisSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
-        plot(mean(philSi(2:end-1,2:end-1),2).*100,zP(2:end-1),'LineWidth',2);
+        plot(mean(phisFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(philFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(phisSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(philSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         title('$\phi_{j}^i$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
         subplot(1,4,3)
-        plot(mean(GFe(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title('$\Gamma_{Fe}$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(GFes(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        title('$\Gamma_{Fe}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(GSi(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
-        title('$\Gamma_{Si}$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(GSis(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        title('$\Gamma_{Si}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh3 = figure(3); clf;
         subplot(1,4,1)
@@ -99,22 +99,22 @@ if plot_op
         plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
         plot(mean(-W(:,2:end-1),2)*yr,zW,'k','LineWidth',2); axis ij tight; box on;
         title('$W$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(P(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(P(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$P$ [Pa]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh4 = figure(4); clf;
         subplot(1,4,1)
         plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Fe}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
         plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Fe}^s$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
@@ -128,27 +128,27 @@ if plot_op
         % plot conserved quantities
         fh5 = figure(5); clf;
         subplot(1,5,1)
-        plot(mean(XFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
-        plot(mean(XSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
-        plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1),'-k','LineWidth',2);
-        plot(mean(XFe(2:end-1,2:end-1),2)+ mean(XSi(2:end-1,2:end-1),2),zP(2:end-1),'--','LineWidth',2);
+        plot(mean(XFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
+        plot(mean(XSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1)./1000,'-k','LineWidth',2);
+        plot(mean(XFe(2:end-1,2:end-1),2)+ mean(XSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'--','LineWidth',2);
         legend('XFe', 'XSi', 'rho', 'XFe +XSi')
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,5,2)
-        plot(mean(CFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$C_{Fe}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,5,3)
-        plot(mean(CSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(CSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$C_{Si}$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,5,4)
-        plot(mean(FlFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on; hold on;
-        plot(mean(FsFe(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
-        plot(mean(FlSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
-        plot(mean(FsSi(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2);
+        plot(mean(FlFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
+        plot(mean(FsFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(FlSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(FsSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
         legend('FlFe','FsFe' , 'FlSi', 'FsSi')
-        ylabel('Depth [m]',TX{:},FS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,5,5)
-        plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1),'LineWidth',2); axis ij tight; box on;
+        plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$S$ ',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
     else
@@ -185,21 +185,21 @@ if plot_op
         set(0,'CurrentFigure',fh1)
         set(fh1,'CurrentAxes',ax(11));
         imagesc(xU(:),zU(2:end-1),U(2:end-1,:)*yr); hold on; axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_x$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(12));
         imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on; axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$v^*_z$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(13));
-        imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on; axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,P(2:end-1,2:end-1)); hold on; axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('dynamic pressure [Pa]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(14));
-        imagesc(xP(2:end-1),zP(2:end-1),T(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$C]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:});
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,T(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$C]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(15));
-        imagesc(xP(2:end-1),zP(2:end-1),rho(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,rho(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\bar{\rho} [\mathrm{kg m^{-3}}]$',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(16));
-        imagesc(xP(2:end-1),zP(2:end-1),log10(Eta(2:end-1,2:end-1))); axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1))); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('Log10($\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
@@ -227,7 +227,7 @@ if plot_op
         % title('v_z^*-velocity [m/yr]')
         % 
         % subplot(2,3,3)
-        % imagesc(xP(2:end-1),zP(2:end-1),P(2:end-1,2:end-1)); hold on;
+        % imagesc(xP(2:end-1),zP(2:end-1)./1000,P(2:end-1,2:end-1)); hold on;
         % colormap(subplot(2,3,3),cm2)
         % c = max(abs([min(P(:)),max(P(:))]));
         % if any(c)>0; caxis([-c c]); end
@@ -236,21 +236,21 @@ if plot_op
         % title('dynamic pressure [Pa]')
         % 
         % subplot(2,3,4)
-        % imagesc(xP(2:end-1),zP(2:end-1),T(2:end-1,2:end-1));
+        % imagesc(xP(2:end-1),zP(2:end-1)./1000,T(2:end-1,2:end-1));
         % colormap(subplot(2,3,4),flipud(cm1))
         % axis ij equal tight;
         % colorbar
         % title('Temperature [C]')
         % 
         % subplot(2,3,5);
-        % imagesc(xP(2:end-1),zP(2:end-1),rho(2:end-1,2:end-1));
+        % imagesc(xP(2:end-1),zP(2:end-1)./1000,rho(2:end-1,2:end-1));
         % colormap(subplot(2,3,5),cm1)
         % axis ij equal tight;
         % colorbar
         % title('bulk density [kgm^-^3]')
         % 
         % subplot(2,3,6);
-        % imagesc(xP(2:end-1),zP(2:end-1),log10(Eta(2:end-1,2:end-1)));
+        % imagesc(xP(2:end-1),zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1)));
         % colormap(subplot(2,3,6),cm1)
         % axis ij equal tight;
         % colorbar
@@ -274,16 +274,16 @@ if plot_op
 
         set(0,'CurrentFigure',fh2)
         set(fh2,'CurrentAxes',ax(21));
-        imagesc(xP(2:end-1),zP(2:end-1),philSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Si}^l$ [vol\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,philSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Si}^l$ [vol\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [km]',TX{:},FS{:});
         set(fh2,'CurrentAxes',ax(22));
-        imagesc(xP(2:end-1),zP(2:end-1),phisSi(2:end-1,2:end-1*100)); axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,phisSi(2:end-1,2:end-1*100)); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Si}^s$ [vol\%]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh2,'CurrentAxes',ax(23));
-        imagesc(xP(2:end-1),zP(2:end-1),philFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Fe}^l$ [vol\%]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,philFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Fe}^l$ [vol\%]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
         set(fh2,'CurrentAxes',ax(24));
-        imagesc(xP(2:end-1),zP(2:end-1),phisFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+        imagesc(xP(2:end-1),zP(2:end-1)./1000,phisFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\phi_{Fe}^s$ [vol\%]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
@@ -304,16 +304,16 @@ if ~exist('fh3','var'); fh3 = figure(3);
     
     set(0,'CurrentFigure',fh3)
     set(fh3,'CurrentAxes',ax(31));
-    imagesc(xP(2:end-1),zP(2:end-1),flSi(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Si}^l$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:}); 
+    imagesc(xP(2:end-1),zP(2:end-1)./1000,flSi(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Si}^l$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [km]',TX{:},FS{:}); 
     set(fh3,'CurrentAxes',ax(32));
-    imagesc(xP(2:end-1),zP(2:end-1),fsSi(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+    imagesc(xP(2:end-1),zP(2:end-1)./1000,fsSi(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Si}^s$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
     set(fh3,'CurrentAxes',ax(33));
-     imagesc(xP(2:end-1),zP(2:end-1),flFe(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Fe}^l$ [wt\%]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
+     imagesc(xP(2:end-1),zP(2:end-1)./1000,flFe(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Fe}^l$ [wt\%]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
     set(fh3,'CurrentAxes',ax(34));
-    imagesc(xP(2:end-1),zP(2:end-1),fsFe(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
+    imagesc(xP(2:end-1),zP(2:end-1)./1000,fsFe(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$f_{Fe}^s$ [wt\%]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
     sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
@@ -334,13 +334,13 @@ if ~exist('fh3','var'); fh3 = figure(3);
     set(0,'CurrentFigure',fh4)
     set(fh4,'CurrentAxes',ax(41));
     imagesc(xW(2:end-1),zW(:),-seglSi(:,2:end-1)*yr); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Si}^l$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:}); 
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Si}^l$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [km]',TX{:},FS{:}); 
     set(fh4,'CurrentAxes',ax(42));
     imagesc(xW(2:end-1),zW(:),-segsSi(:,2:end-1)*yr); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Si}^s$ [m/yr]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
     set(fh4,'CurrentAxes',ax(43));
     imagesc(xW(2:end-1),zW(:),-seglFe(:,2:end-1)*yr); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Fe}^l$ [m/yr]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Fe}^l$ [m/yr]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:});
     set(fh4,'CurrentAxes',ax(44));
     imagesc(xW(2:end-1),zW(:),-segsFe(:,2:end-1)*yr); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\Delta v_{Fe}^s$ [m/yr]',TX{:},FS{:}); xlabel('Width [m]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
@@ -362,16 +362,16 @@ if ~exist('fh3','var'); fh3 = figure(3);
 
     set(0,'CurrentFigure',fh5)
     set(fh5,'CurrentAxes',ax(51));
-    imagesc(xP(2:end-1),zP(2:end-1),xFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$x_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [m]',TX{:},FS{:});
+    imagesc(xP(2:end-1),zP(2:end-1)./1000,xFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$x_{Fe}$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[]); ylabel('Depth [km]',TX{:},FS{:});
     set(fh5,'CurrentAxes',ax(52));
-     imagesc(xP(2:end-1),zP(2:end-1),xSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+     imagesc(xP(2:end-1),zP(2:end-1)./1000,xSi(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$x_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
     set(fh5,'CurrentAxes',ax(53));
-     imagesc(xP(2:end-1),zP(2:end-1),cFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [m]',TX{:},FS{:});
+     imagesc(xP(2:end-1),zP(2:end-1)./1000,cFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
     set(fh5,'CurrentAxes',ax(54));
-    imagesc(xP(2:end-1),zP(2:end-1),(cSi(2:end-1,2:end-1)+cSimin)*100); axis ij equal tight; box on; cb = colorbar;
+    imagesc(xP(2:end-1),zP(2:end-1)./1000,(cSi(2:end-1,2:end-1)+cSimin)*100); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
     sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 

@@ -28,13 +28,17 @@ while time <= tend && step <= maxstep
     CFeoo   = CFeo;     CFeo  = CFe;
     FsFeoo   = FsFeo;   FsFeo  = FsFe;
     FsSioo   = FsSio;   FsSio  = FsSi;
+    FlFeoo   = FlFeo;   FlFeo  = FlFe;
+    FlSioo   = FlSio;   FlSio  = FlSi;
     dSdtoo  = dSdto;    dSdto = dSdt;
     dXFedtoo= dXFedto;  dXFedto = dXFedt;
     dXSidtoo= dXSidto;  dXSidto = dXSidt;
     dCFedtoo= dCFedto;  dCFedto = dCFedt;
     dCSidtoo= dCSidto;  dCSidto = dCSidt;
-    dFFedtoo= dFFedto;  dFFedto = dFFedt;
-    dFSidtoo= dFSidto;  dFSidto = dFSidt;
+    dFsFedtoo= dFsFedto;  dFsFedto = dFsFedt;
+    dFsSidtoo= dFsSidto;  dFsSidto = dFsSidt;
+    dFlFedtoo= dFlFedto;  dFlFedto = dFlFedt;
+    dFlSidtoo= dFlSidto;  dFlSidto = dFlSidt;
     rhooo   = rhoo;     rhoo    = rho;
     Div_rhoVoo = Div_rhoVo; Div_rhoVo = Div_rhoV;
     Div_Vo  = Div_V;
@@ -82,7 +86,7 @@ while time <= tend && step <= maxstep
     Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1);
 
 
-    fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [degC]\n' ,min(T(:)),mean(T(:)-273.15),max(T(:)));
+    fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [degC]\n' ,min(T(:)),mean(T(:)),max(T(:)));
     fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
     fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
     fprintf(1,'         min c_{Si}   =  %1.4f;    mean c_{Si}   = %1.4f;    max c_{Si}   = %1.4f;   [wt]\n'   ,min(cSi(:)  ),mean(cSi(:)  ),max(cSi(:)  ));

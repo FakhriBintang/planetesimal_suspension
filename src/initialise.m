@@ -98,8 +98,10 @@ dXFedt   = zeros(Nz,Nx);            % Iron system rate of change
 dXSidt   = zeros(Nz,Nx);            % Si system rate of change 
 dCSidt   = zeros(Nz,Nx);            % Silicate component density rate of change
 dCFedt   = zeros(Nz,Nx);            % Iron component density rate of change
-dFFedt   = zeros(Nz,Nx);            % Iron melt fraction rate of change
-dFSidt   = zeros(Nz,Nx);            % Silicate melt fraction rate of change
+dFsFedt   = zeros(Nz,Nx);           % Iron solid fraction rate of change
+dFsSidt   = zeros(Nz,Nx);           % Silicate solid fraction rate of change
+dFlFedt   = zeros(Nz,Nx);           % Iron liquid fraction rate of change
+dFlSidt   = zeros(Nz,Nx);           % Silicate liquid fraction rate of change
 diff_S   = zeros(Nz,Nx);            % Heat dissipation rate
 diss_T   = zeros(Nz,Nx);            % Temperature diffusion rate
 diff_CSi = zeros(Nz,Nx);            % Silicate component diffusion rate
@@ -166,6 +168,12 @@ Hr  = Hr0.*ones(size(T(2:end-1,2:end-1)));
                                            perTFe,percsFe,perclFe,clap,PhDgFe);
 [fsSi,csSi,clSi] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
                                            perTSi,percsSi,perclSi,clap,PhDgSi);
+
+rhosSi = rhosSi0.*(1 - aT.*(T-perTSi) - gCSi.*(csSi-cphsSi1));
+rholSi = rholSi0.*(1 - aT.*(T-perTSi) - gCSi.*(clSi-cphsSi1));
+rhosFe = rhosFe0.*(1 - aT.*(T-perTFe) - gCFe.*(csFe-cphsFe1));
+rholFe = rholFe0.*(1 - aT.*(T-perTFe) - gCFe.*(clFe-cphsFe1));
+
 res = 1e3;
 tol = 1e-4;
 it = 0;
@@ -174,7 +182,7 @@ while res > tol
 
     if Nx<=10; Pt = mean(mean(Pt(2:end-1,2:end-1))).*ones(size(Pt)); end
 
-    % output crystal fraction and fertile solid and liquid concentrations
+    % output crystal fraction and solid and liquid compositions
     [fsFe,csFe,clFe] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
                                                perTFe,percsFe,perclFe,clap,PhDgFe);
     [fsSi,csSi,clSi] = equilibrium(T,cSi,Pt,TSi1,TSi2,cphsSi1,cphsSi2,...
@@ -222,8 +230,10 @@ XFe   = rho.*xFe; XSi = rho.*xSi;                    % mixture Fe/Si system dens
 CFe   = rho.*cFe.*xFe;                                       % mixture Fe component density
 CSi   = rho.*cSi.*xSi;                                       % mixture Si component density
 
-GFe = 0.*flFe;
-GSi = 0.*flSi;
+GFes = 0.*fsFe;
+GSis = 0.*fsSi;
+GFel = 0.*flFe;
+GSil = 0.*flSi;
 
 
 %% initialise previous solution and auxiliary fields
@@ -234,13 +244,17 @@ CSio  = CSi;
 CFeo  = CFe;
 FsFeo  = FsFe;
 FsSio  = FsSi;
+FlFeo  = FlFe;
+FlSio  = FlSi;
 dSdto = dSdt;
 dXFedto = dXFedt;
 dXSidto = dXSidt;
 dCFedto = dCFedt;
 dCSidto = dCSidt;
-dFFedto = dFFedt;
-dFSidto = dFSidt;
+dFsFedto = dFsFedt;
+dFsSidto = dFsSidt;
+dFlFedto = dFlFedt;
+dFlSidto = dFlSidt;
 rhoo    = rho;
 Div_rhoVo = Div_rhoV;
 Div_Vo  = Div_V;
