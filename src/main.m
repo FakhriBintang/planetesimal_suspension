@@ -96,9 +96,6 @@ while time <= tend && step <= maxstep
     if ~mod(step,nop) %round(2*nop/CFL))
         output;
         %        suppfigs; % supplementary figures for testing
-%         if radheat
-%             figure(21); plot(HST.time/yr, HIST.Hr(2:end)); xlabel ('time'); ylabel('Hr (W/m^3)')
-%         end
     end
 
     % break script for NaN

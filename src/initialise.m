@@ -291,7 +291,6 @@ solve_fluidmech;
 
 %% initialise recording of model history
 history;
-output;
 
 %% initialise counting variables
 RUN.frame = 0;      % initialise output frame count
