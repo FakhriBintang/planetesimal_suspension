@@ -229,6 +229,7 @@ ssSi  = slSi + dEntrSi;
 XFe   = rho.*xFe; XSi = rho.*xSi;                    % mixture Fe/Si system densities
 CFe   = rho.*cFe.*xFe;                                       % mixture Fe component density
 CSi   = rho.*cSi.*xSi;                                       % mixture Si component density
+RHO   = XFe + XSi;
 
 GFes = 0.*fsFe;
 GSis = 0.*fsSi;
