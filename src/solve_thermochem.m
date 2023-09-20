@@ -18,14 +18,6 @@ cSii  = cSi;
 flFei = flFe;
 flSii = flSi;
 
-
-%% update phase entropies
-slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./rho;
-slSi  = slFe;
-ssFe  = slFe + dEntrFe;
-ssSi  = slSi + dEntrSi;
-
-
 %% update heat content (entropy)
 advn_S = - advect(FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...  % heat advection
          - advect(FsFe(inz,inx).*ssFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
@@ -48,31 +40,31 @@ S(inz,inx) = (alpha2*So(inz,inx) + alpha3*Soo(inz,inx) + (beta1*dSdt + beta2*dSd
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
 switch BCTTop
     case 'isothermal'
-        S(1,:) = rho(1,:).*(Cp.*log(Ttop0./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
+        S(1,:) = RHO(1,:).*(Cp.*log(Ttop0./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
     case 'insulating'
         S(1,:) = S(2,:);
     case 'flux'
-        T2    = T0.*exp((S(2,:) - FsFe(2,:).*dEntrFe - FsSi(2,:).*dEntrSi)./rho(2,:)./Cp ...
+        T2    = T0.*exp((S(2,:) - FsFe(2,:).*dEntrFe - FsSi(2,:).*dEntrSi)./RHO(2,:)./Cp ...
         + aT.*(Pt(2,:) - P0)./rhoRef./Cp);
         dTb    = qT0*h./((kT(1,:)+kT(2,:))./2);
         Tb     = max(Ttop0,T2+dTb);
-        S(1,:) = rho(1,:).*(Cp.*log(Tb./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
+        S(1,:) = RHO(1,:).*(Cp.*log(Tb./T0)+aT./rhoRef.*(Pt(1,:)-P0) + Ds(1,:));
 end
 switch BCTBot
     case 'isothermal'
-        S(end,:) = rho(end,:).*(Cp.*log(T1./T0)+aT./rhoRef.*(Pt(end,:)-P0) + Ds(end,:));
+        S(end,:) = RHO(end,:).*(Cp.*log(T1./T0)+aT./rhoRef.*(Pt(end,:)-P0) + Ds(end,:));
     case 'insulating'
         S(end,:) = S(end-1,:);
 end
 switch BCTSides
     case 'isothermal'
-        S(:,[1 end]) = rho(:,[1 end]).*(Cp.*log(T0./T0)+aT./rhoRef.*(Pt(:,[1 end])-P0) + Ds(:,[1 end]));
+        S(:,[1 end]) = RHO(:,[1 end]).*(Cp.*log(T0./T0)+aT./rhoRef.*(Pt(:,[1 end])-P0) + Ds(:,[1 end]));
     case 'insulating'
         S(:,[1 end]) = S(:,[2 end-1]);
 end
 
 % update temperature
-T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./rho./Cp ...
+T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO./Cp ...
         + aT.*(Pt - P0)./rhoRef./Cp);
 
 
@@ -92,7 +84,7 @@ if any(xFe(:)>0 & xFe(:)<1)
     % update solution
     XSi(inz,inx) = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
 
-%     XSi = rho - XFe;
+%     XSi = RHO - XFe;
 
     % apply boundaries
     XFe([1 end],:) = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
@@ -106,11 +98,13 @@ else
     XFe = xFe.*rho;
     XSi = rho - XFe;
 end
+% dynamically evolving mixture density
+RHO = XFe+XSi;
 
 % update system fractions
 
-xFe = max(0,min(1, XFe./(XFe+XSi) ));
-xSi = max(0,min(1, XSi./(XFe+XSi) ));
+xFe = max(0,min(1, XFe./RHO ));
+xSi = max(0,min(1, XSi./RHO ));
 
 hasFe   = xFe>TINY1 & xSi<1-TINY1;
 hasSi   = xSi>TINY1 & xFe<1-TINY1;
@@ -243,6 +237,11 @@ KcSi = csSiq./clSiq;
 clSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
 csSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
 
+%% update phase entropies
+slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO;
+slSi  = slFe;
+ssFe  = slFe + dEntrFe;
+ssSi  = slSi + dEntrSi;
 
 %% get residual of thermochemical equations from iterative update
 normT   = norm(T    - Ti   ,2)./(norm(T   ,2)+TINY);
