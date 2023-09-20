@@ -38,38 +38,38 @@ cFe0            =  0.15;                 % Fe-FeS fertile component fraction ([w
 cSi0            =  0.47;                 % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0.01e-3;                 % amplitude of initial random perturbation to iron system
-dcFe            =  0e-3;                 % amplitude of initial random perturbation to iron component
-dcSi            =  0e-3;                 % amplitude of initial random perturbation to silicate component
-smth            =  ((N+2)/20)^2;     % regularisation of initial random perturbation
+dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
+dcFe            =  0e-3;                    % amplitude of initial random perturbation to iron component
+dcSi            =  0e-3;                    % amplitude of initial random perturbation to silicate component
+smth            =  ((N+2)/20)^2;            % regularisation of initial random perturbation
 
 % set phase diagram parameters
-%   Fertile        ||       Refractory
-TFe1    = 1000;     TFe2    = 1540;   % iron system melting limits
-TSi1    = 1193;     TSi2    = 1839;   % silicate system melting limits
-cSimin  = 0.4080;                    % reference cSi (In testing)
-cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin; % silicate system limits
-cphsFe1 = 0     ;   cphsFe2 = 0.35;   % iron system limits
-perclSi = cphsSi2;                    % silicate peritectic liquidus composition [wt SiO2]
-percsSi = cphsSi2;                    % silicate peritectic solidus  composition [wt SiO2]
-perTSi  = TSi1;                      % silicate peritectic temperature
-PhDgSi  = [8.0,4.0,1.2,1.2];         % silicate phase diagram curvature factor (> 1)
-perclFe = cphsFe2;               % iron peritectic liquidus composition [wt SiO2]
-percsFe = cphsFe2;               % iron peritectic solidus  composition [wt SiO2]
-perTFe  = TFe1;                  % iron peritectic temperature
-PhDgFe  = [8.0,4.0,1.2,1.2];         % iron hase diagram curvature factor (> 1)
-clap    = 1e-7;                      % Clapeyron slope for P-dependence of melting T [degC/Pa]
+%      Fertile        ||       Refractory
+TFe1    = 1000+273.15;     TFe2    = 1540+273.15;   % iron system melting limits [k]
+TSi1    = 1193+273.15;     TSi2    = 1839+273.15;   % silicate system melting limits [k]
+cSimin  = 0.4080;                                   % reference cSi
+cphsSi1 = 0;        cphsSi2 = 0.5276-cSimin;        % silicate system limits
+cphsFe1 = 0     ;   cphsFe2 = 0.35;                 % iron system limits
+perclSi = cphsSi2;                                  % silicate peritectic liquidus composition [wt SiO2]
+percsSi = cphsSi2;                                  % silicate peritectic solidus  composition [wt SiO2]
+perTSi  = TSi1;                                     % silicate peritectic temperature
+PhDgSi  = [8.0,4.0,1.2,1.2];                        % silicate phase diagram curvature factor (> 1)
+perclFe = cphsFe2;                                  % iron peritectic liquidus composition [wt SiO2]
+percsFe = cphsFe2;                                  % iron peritectic solidus  composition [wt SiO2]
+perTFe  = TFe1;                                     % iron peritectic temperature
+PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvature factor (> 1)
+clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1450;                     % reference/top potential temperature [C]
-Ttop0   =  T0;   
-T1      =  1450;                     % bottom potential temperature (if different from top) [C]
-rT      =  D/6;                  % radius of hot plume [m]
-zT      =  D*0.5;                % z-position of hot plume [m]
-xT      =  L/2;                  % x-position of hot plume [m]
+T0      =  1350+273.15;                             % reference/top potential temperature [k]
+Ttop0   =  T0;                                      % isothermal top reference temperature 
+T1      =  1350+273.15;                             % bottom potential temperature (if different from top) [k]
+Tbot0   =  T0;                                      % isothermal bottom reference temperature 
+rT      =  D/6;                                     % radius of hot plume [m]
+zT      =  D*0.5;                                   % z-position of hot plume [m]
+xT      =  L/2;                                     % x-position of hot plume [m]
 
-Ttype   = 'constant';                % set initial temperature field type
-
+Ttype   = 'constant';                               % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters

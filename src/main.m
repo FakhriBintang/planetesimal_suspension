@@ -21,28 +21,28 @@ while time <= tend && step <= maxstep
     end
 
     % store previous solution and auxiliary fields
-    Soo     = So;       So    = S;
-    XFeoo   = XFeo;     XFeo  = XFe;
-    XSioo   = XSio;     XSio  = XSi;
-    CSioo   = CSio;     CSio  = CSi;
-    CFeoo   = CFeo;     CFeo  = CFe;
-    FsFeoo   = FsFeo;   FsFeo  = FsFe;
-    FsSioo   = FsSio;   FsSio  = FsSi;
-    FlFeoo   = FlFeo;   FlFeo  = FlFe;
-    FlSioo   = FlSio;   FlSio  = FlSi;
-    dSdtoo  = dSdto;    dSdto = dSdt;
-    dXFedtoo= dXFedto;  dXFedto = dXFedt;
-    dXSidtoo= dXSidto;  dXSidto = dXSidt;
-    dCFedtoo= dCFedto;  dCFedto = dCFedt;
-    dCSidtoo= dCSidto;  dCSidto = dCSidt;
-    dFsFedtoo= dFsFedto;  dFsFedto = dFsFedt;
-    dFsSidtoo= dFsSidto;  dFsSidto = dFsSidt;
-    dFlFedtoo= dFlFedto;  dFlFedto = dFlFedt;
-    dFlSidtoo= dFlSidto;  dFlSidto = dFlSidt;
-    rhooo   = rhoo;     rhoo    = rho;
-    Div_rhoVoo = Div_rhoVo; Div_rhoVo = Div_rhoV;
-    Div_Vo  = Div_V;
-    dto     = dt;
+    Soo         = So;       So          = S;
+    XFeoo       = XFeo;     XFeo        = XFe;
+    XSioo       = XSio;     XSio        = XSi;
+    CSioo       = CSio;     CSio        = CSi;
+    CFeoo       = CFeo;     CFeo        = CFe;
+    FsFeoo      = FsFeo;    FsFeo       = FsFe;
+    FsSioo      = FsSio;    FsSio       = FsSi;
+    FlFeoo      = FlFeo;    FlFeo       = FlFe;
+    FlSioo      = FlSio;    FlSio       = FlSi;
+    dSdtoo      = dSdto;    dSdto       = dSdt;
+    dXFedtoo    = dXFedto;  dXFedto     = dXFedt;
+    dXSidtoo    = dXSidto;  dXSidto     = dXSidt;
+    dCFedtoo    = dCFedto;  dCFedto     = dCFedt;
+    dCSidtoo    = dCSidto;  dCSidto     = dCSidt;
+    dFsFedtoo   = dFsFedto; dFsFedto    = dFsFedt;
+    dFsSidtoo   = dFsSidto; dFsSidto    = dFsSidt;
+    dFlFedtoo   = dFlFedto; dFlFedto    = dFlFedt;
+    dFlSidtoo   = dFlSidto; dFlSidto    = dFlSidt;
+    rhooo       = rhoo;     rhoo        = rho;
+    Div_rhoVoo  = Div_rhoVo;Div_rhoVo   = Div_rhoV;
+    Div_Vo      = Div_V;
+    dto         = dt;
     % temp
     cFeo = cFe; cSio = cSi;
 
@@ -57,8 +57,6 @@ while time <= tend && step <= maxstep
 
         % solve thermo-chemical equations
         solve_thermochem;
-
-%         if radheat; radioactive_decay; else; Hr = Hr0; end
 
         % update non-linear parameters and auxiliary variables
         up2date;
@@ -86,7 +84,7 @@ while time <= tend && step <= maxstep
     Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1);
 
 
-    fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [degC]\n' ,min(T(:)),mean(T(:)),max(T(:)));
+    fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));
     fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
     fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
     fprintf(1,'         min c_{Si}   =  %1.4f;    mean c_{Si}   = %1.4f;    max c_{Si}   = %1.4f;   [wt]\n'   ,min(cSi(:)  ),mean(cSi(:)  ),max(cSi(:)  ));
@@ -102,7 +100,6 @@ while time <= tend && step <= maxstep
     if isnan(resnorm)
         output
         print('Error, Breaking script')
-        %         output
         return
     end
     % increment time

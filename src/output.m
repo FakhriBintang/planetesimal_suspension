@@ -20,7 +20,7 @@ if plot_op
         fh1 = figure(1); clf;
         subplot(4,1,1)
         plot(HST.time/yr,HST.T,'LineWidth',2); axis xy tight; box on;
-        title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$T [^\circ$k]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(4,1,2)
         plot(HST.time/yr,HST.xFe.*100,'LineWidth',2); axis xy tight; box on;
         title('$x_{Fe}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
@@ -52,7 +52,7 @@ if plot_op
         fh1 = figure(1); clf;
         subplot(1,4,1)
         plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-        title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        title('$T [^\circ$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
         plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); hold on;  axis ij tight; box on;
@@ -194,7 +194,7 @@ if plot_op
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('dynamic pressure [Pa]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(14));
         imagesc(xP(2:end-1),zP(2:end-1)./1000,T(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$C]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$k]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(15));
         imagesc(xP(2:end-1),zP(2:end-1)./1000,rho(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\bar{\rho} [\mathrm{kg m^{-3}}]$',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
@@ -202,60 +202,6 @@ if plot_op
         imagesc(xP(2:end-1),zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1))); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('Log10($\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
-
-        % %% plot velocity and temperature solutions
-        % fh1  = figure(1); clf
-        % figure(1)
-        % subplot(2,3,1)
-        % imagesc(xU(:),zU(2:end-1),U(2:end-1,:)*yr); hold on;
-        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
-        % colormap(subplot(2,3,1),cm2)
-        % c = max(abs([min(U(:)),max(U(:))])).*yr;
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('v^*_x [m/yr]')
-        % 
-        % subplot(2,3,2)
-        % imagesc(xW(2:end-1),zW(:),-W(:,2:end-1)*yr); hold on;
-        % quiver(xP(xq),zP(zq),UP(zq,xq),WP(zq,xq),'k')
-        % colormap(subplot(2,3,2),cm2)
-        % c = max(abs([min(W(:)),max(W(:))])).*yr;
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('v_z^*-velocity [m/yr]')
-        % 
-        % subplot(2,3,3)
-        % imagesc(xP(2:end-1),zP(2:end-1)./1000,P(2:end-1,2:end-1)); hold on;
-        % colormap(subplot(2,3,3),cm2)
-        % c = max(abs([min(P(:)),max(P(:))]));
-        % if any(c)>0; caxis([-c c]); end
-        % axis ij equal tight;
-        % colorbar
-        % title('dynamic pressure [Pa]')
-        % 
-        % subplot(2,3,4)
-        % imagesc(xP(2:end-1),zP(2:end-1)./1000,T(2:end-1,2:end-1));
-        % colormap(subplot(2,3,4),flipud(cm1))
-        % axis ij equal tight;
-        % colorbar
-        % title('Temperature [C]')
-        % 
-        % subplot(2,3,5);
-        % imagesc(xP(2:end-1),zP(2:end-1)./1000,rho(2:end-1,2:end-1));
-        % colormap(subplot(2,3,5),cm1)
-        % axis ij equal tight;
-        % colorbar
-        % title('bulk density [kgm^-^3]')
-        % 
-        % subplot(2,3,6);
-        % imagesc(xP(2:end-1),zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1)));
-        % colormap(subplot(2,3,6),cm1)
-        % axis ij equal tight;
-        % colorbar
-        % title('\eta [log_1_0 Pas]')
-
 
         %% plot phase vol fractions
         if ~exist('fh2','var'); fh2 = figure(2);
@@ -395,7 +341,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     ylim([TSi1 TSi2])
     title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
-    ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
+    ylabel('Temperature [$^\circ$k]','Interpreter','latex','FontSize',15)
 
     subplot(1,2,2)
     plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
@@ -404,7 +350,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     ylim([TFe1 TSi2])
     title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
-    ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
+    ylabel('Temperature [$^\circ$k]','Interpreter','latex','FontSize',15)
     drawnow;
 
 
