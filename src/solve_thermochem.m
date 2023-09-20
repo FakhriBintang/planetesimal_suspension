@@ -4,6 +4,10 @@ if step>0
     step;
 end
 
+
+% test smaller tiny criterion
+TINY1 = 1e-6;
+
 % store previous iteration (diagnostic)
 Ti    = T;
 Si    = S;
@@ -108,8 +112,8 @@ end
 xFe = max(0,min(1, XFe./(XFe+XSi) ));
 xSi = max(0,min(1, XSi./(XFe+XSi) ));
 
-hasFe   = xFe>TINY & xSi<1-TINY;
-hasSi   = xSi>TINY & xFe<1-TINY;
+hasFe   = xFe>TINY1 & xSi<1-TINY1;
+hasSi   = xSi>TINY1 & xFe<1-TINY1;
 
 %% update composition
 
@@ -224,11 +228,11 @@ flSi(hasSi) = max(0,min(1, FlSi(hasSi)./max(TINY,XSi(hasSi)) ));
 % flSi(hasSi) = 1-fsSi(hasSi);
 
 %detect where is fully molten
-hassolSi = flSi<1-TINY & fsSi>TINY;
-hassolFe = flFe<1-TINY & fsFe>TINY;
+hassolSi = flSi<1-TINY1 & fsSi>TINY1;
+hassolFe = flFe<1-TINY1 & fsFe>TINY1;
 
-hasliqSi = fsSi<1-TINY & flSi>TINY;
-hasliqFe = fsFe<1-TINY & flFe>TINY;
+hasliqSi = fsSi<1-TINY1 & flSi>TINY1;
+hasliqFe = fsFe<1-TINY1 & flFe>TINY1;
 
 %% update phase compositions
 KcFe = csFeq./clFeq;
