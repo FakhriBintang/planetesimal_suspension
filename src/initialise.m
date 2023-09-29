@@ -215,7 +215,7 @@ philSi = xSi.* flSi .* rho ./ rholSi;
 FsFe  = rho.*xFe.*fsFe; FlFe  = rho.*xFe.*flFe;             % Solid/liquid iron phase fraction density
 FsSi  = rho.*xSi.*fsSi; FlSi  = rho.*xSi.*flSi;             % Solid/liquid silicate phase fraction density
 S     = rho.*(Cp.*log(T/T0) - aT./rhoRef.*(Pt-P0) + Ds);    % Bulk entropy density
-S0    = rho.*(Cp.*log(T0)   - aT./rhoRef.*(P0)); 
+S0    = rho.*(Cp.*log(T0)   - aT./rhoRef.*(P0)    + Ds); 
 slFe  = S./rho - Ds;                                        % phase entropies
 slSi  = S./rho - Ds;
 ssFe  = slFe + dEntrFe;

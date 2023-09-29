@@ -374,6 +374,32 @@ if ~exist('fh3','var'); fh3 = figure(3);
     ylabel('consv. $C_{Si}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
     xlabel('Time [yr]',TX{:},FS{:});
 
+    %% temporary S diagnosis
+    fh11 = figure(11); clf;
+    Ssum = FlFe.*slFe + FsFe.*ssFe + FlSi.*slSi + FsSi.*ssSi; 
+    subplot(1,6,1)
+    plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
+    plot(mean(Ssum(2:end-1,2:end-1),2),zP(2:end-1)./1000,'--k','LineWidth',2);
+    title('S')
+    subplot(1,6,2)
+    plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+    title('dSdt')   
+    subplot(1,6,3)
+    plot(advn_S,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+    title('advection S')
+    subplot(1,6,4)
+    plot(diss_T,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+    title('diss T')
+    subplot(1,6,5)
+    plot(mean(slFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
+    plot(mean(ssFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+    plot(mean(slSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+    plot(mean(ssSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
+    legend('s_{Fe}^l','s_{Fe}^s','s_{Si}^l','s_{Si}^s')
+    title('phase entropy')  
+    subplot(1,6,6)
+    plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
+    title('T')
 end
 
 

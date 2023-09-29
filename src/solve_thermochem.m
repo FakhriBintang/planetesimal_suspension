@@ -99,16 +99,6 @@ else
     XFe = xFe.*rho;
     XSi = rho - XFe;
 end
-% dynamically evolving mixture density
-RHO = XFe+XSi;
-
-% update system fractions
-
-xFe = max(0,min(1, XFe./RHO ));
-xSi = max(0,min(1, XSi./RHO ));
-
-hasFe   = xFe>TINY1 & xSi<1-TINY1;
-hasSi   = xSi>TINY1 & xFe<1-TINY1;
 
 %% update composition
 
@@ -142,11 +132,6 @@ CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);
 CFe = max(0,CFe);
 CSi = max(0,CSi);
 
-% update chemical composition
-cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
-cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
-
-
 %% update local phase equilibrium
 [fsFeq,csFeq,clFeq] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
                                   perTFe,percsFe,perclFe,clap,PhDgFe);
@@ -170,7 +155,6 @@ clSiq(:,[1 end]) = clSiq(:,[2 end-1]);
 
 flFeq = 1-fsFeq;
 flSiq = 1-fsSiq;
-
 
 %% update phase fractions
 % solid
@@ -211,6 +195,18 @@ FlSi = max(0, FlSi );
 
 % FlFe = XFe - FsFe;
 % FlSi = XSi - FsSi;
+
+% update system fractions
+
+xFe = max(0,min(1, XFe./RHO ));
+xSi = max(0,min(1, XSi./RHO ));
+
+hasFe   = xFe>TINY1 & xSi<1-TINY1;
+hasSi   = xSi>TINY1 & xFe<1-TINY1;
+
+% update chemical composition
+cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
+cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
 
 % update phase fractions [wt]
 fsFe(hasFe) = max(0,min(1, FsFe(hasFe)./max(TINY,XFe(hasFe)) ));

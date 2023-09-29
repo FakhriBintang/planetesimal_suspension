@@ -22,7 +22,8 @@ philSi = max(0,min(1,xSi.* flSi .* rho ./ rholSi));
 
 
 %% update viscosity
-% get pure phase densities
+% get pure phase viscosity
+% Simple Arrhenian model for a melt of fixed composition
 etas   = zeros(size(phisSi)) + EtaSol0; 
 etalSi = EtalSi0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTSi+273.15)));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTFe+273.15)));
@@ -138,7 +139,7 @@ SOLtxz = EtaC.* SOLexz;
 % entropy production/heat dissipation rate
 [grdTx,grdTz] = gradient(T,h);
 EntProd = ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:end-1).^2)...
-    + Hr ... % Hr in W/m^3, if we instead choose W/Kg, miltiply by \rho
+    + Hr.*rho(2:end-1,2:end-1) ... % Hr in W/m^3, if we instead choose W/Kg, miltiply by \rho
     + SOLexx(2:end-1,2:end-1).*SOLtxx(2:end-1,2:end-1) +SOLexx(2:end-1,2:end-1).*SOLtxx(2:end-1,2:end-1)...
     + 2.*(SOLexz(1:end-1,1:end-1)+SOLexz(2:end,1:end-1)+SOLexz(1:end-1,2:end)+SOLexz(2:end,2:end))./4 ...
     .*(SOLtxz(1:end-1,1:end-1)+SOLtxz(2:end,1:end-1)+SOLtxz(1:end-1,2:end)+SOLtxz(2:end,2:end))./4 ...
