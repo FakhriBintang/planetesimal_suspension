@@ -444,6 +444,8 @@ if save_op
     print(fh9,name,'-dpng','-r300','-image');
     name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
     print(fh10,name,'-dpng','-r300','-image');
+    name = [outpath '/',RunID,'_SDiagnostics',num2str(floor(step/nop))]; % figure 11 S and T diagnostics
+    print(fh11,name,'-dpng','-r300','-image');
 
     name = [outpath '/',RunID,'_',num2str(step/nop)];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
