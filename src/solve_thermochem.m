@@ -65,7 +65,7 @@ switch BCTSides
 end
 
 % update temperature
-T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO./Cp ...
+T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
     + aT.*(Pt - P0)./rhoRef./Cp);
 
 
@@ -235,16 +235,16 @@ clSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
 csSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
 
 %% update phase entropies
-slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO;
+slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi);
 slSi  = slFe;
 ssFe  = slFe + dEntrFe;
 ssSi  = slSi + dEntrSi;
 
 %% get residual of thermochemical equations from iterative update
-normT   = norm(T    - Ti   ,2)./(norm(T   ,2)+TINY);
+normS   = norm(S    - Si   ,2)./(norm(S   ,2)+TINY);
 normxFe = norm(xFe  - xFei ,2)./(norm(xFe ,2)+TINY);
 normcFe = norm(cFe  - cFei ,2)./(norm(cFe ,2)+TINY);
 normcSi = norm(cSi  - cSii ,2)./(norm(cSi ,2)+TINY);
 normfFe = norm(flFe - flFei,2)./(norm(flFe,2)+TINY);
 normfSi = norm(flSi - flSii,2)./(norm(flSi,2)+TINY);
-resnorm_TC = normT + normxFe + normcSi + normcFe + normfFe + normfSi;
+resnorm_TC = normS + normxFe + normcSi + normcFe + normfFe + normfSi;
