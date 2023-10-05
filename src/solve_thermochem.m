@@ -99,6 +99,7 @@ else
     XFe = xFe.*rho;
     XSi = rho - XFe;
 end
+    RHO = XFe+XSi;
 
 %% update composition
 
@@ -198,7 +199,7 @@ FlSi = max(0, FlSi );
 
 % update system fractions
 
-xFe = max(0,min(1, XFe./RHO ));
+xFe = max(0,min(1, XFe./RHO));
 xSi = max(0,min(1, XSi./RHO ));
 
 hasFe   = xFe>TINY1 & xSi<1-TINY1;
