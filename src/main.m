@@ -1,5 +1,4 @@
 % planetesimal: main model routine
-
 while time <= tend && step <= maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
@@ -21,6 +20,10 @@ while time <= tend && step <= maxstep
     end
 
     % store previous solution and auxiliary fields
+    if radheat
+    n26Aloo     = n26Alo;   n26Alo      = n26Al; 
+    dndtoo      = dndto;    dndto       = dndt; 
+    end
     Soo         = So;       So          = S;
     XFeoo       = XFeo;     XFeo        = XFe;
     XSioo       = XSio;     XSio        = XSi;
@@ -54,7 +57,6 @@ while time <= tend && step <= maxstep
 
     % non-linear iteration loop
     while resnorm/resnorm0 >= reltol && resnorm >= abstol && iter <= maxit
-
         % solve thermo-chemical equations
         solve_thermochem;
 
@@ -75,7 +77,6 @@ while time <= tend && step <= maxstep
 %             plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
 %             drawnow;
         end
-
         iter = iter+1;
     end
 
@@ -92,8 +93,7 @@ while time <= tend && step <= maxstep
     fprintf(1,'         min sumX=  %4.1f;    mean sumX= %4.1f;    max sumX= %4.1f;   [kg/m3]\n'  ,min(XFe(:)+XSi(:)),mean(XFe(:)+XSi(:))   ,max(XFe(:)+XSi(:)));
     fprintf(1,'         min rho =  %4.1f;    mean rho = %4.1f;    max rho = %4.1f;   [kg/m3]\n'  ,min(rho(:)),mean(rho(:))   ,max(rho(:)));
     if ~mod(step,nop) %round(2*nop/CFL))
-        output;
-        %        suppfigs; % supplementary figures for testing
+        output
     end
 
     % break script for NaN

@@ -10,6 +10,7 @@ stp = max(1,step+1);
 HST.time(t) = time;
 
 % record conserved masses at current timestep
+HST.n26Al (t)      = n26Al;
 HST.sumM  (t)      = sum(sum(rho(2:end-1,2:end-1))) .*h.*h.*1;
 HST.sumS  (t)      = sum(sum(  S(2:end-1,2:end-1)+S0(2:end-1,2:end-1))) .*h.*h.*1;
 HST.sumXFe(t)      = sum(sum(XFe(2:end-1,2:end-1))) .*h.*h.*1;

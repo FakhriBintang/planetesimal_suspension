@@ -92,23 +92,27 @@ if plot_op
         title('$\Gamma_{Si}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh3 = figure(3); clf;
-        subplot(1,4,1)
-        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2); hold on
-        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2);
-        plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
-        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2);
+        subplot(1,5,1)
+        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); hold on
+        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
+        plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
+        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
         plot(mean(-W(:,2:end-1),2)*yr,zW,'k','LineWidth',2); axis ij tight; box on;
         title('$W$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
-        subplot(1,4,2)
+        subplot(1,5,2)
         plot(mean(P(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$P$ [Pa]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        subplot(1,4,3)
+        subplot(1,5,3)
         plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        subplot(1,4,4)
+        subplot(1,5,4)
         plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        subplot(1,5,5)
+        plot(mean(Hr(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        title('$H_r [W / m^{-3}$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        ylabel('Depth [km]',TX{:},FS{:});
 
         fh4 = figure(4); clf;
         subplot(1,4,1)
@@ -357,49 +361,27 @@ if ~exist('fh3','var'); fh3 = figure(3);
     %% plot conserved quantities
     fh10 = figure(10); clf;
     % mass/energy conservation
-    subplot(5,1,1)
+    subplot(6,1,1)
     plot(HST.time./yr,HST.EM  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $Mass$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-    subplot(5,1,2)
+    subplot(6,1,2)
     plot(HST.time./yr,HST.ES  ,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $S$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-    subplot(5,1,3)
+    subplot(6,1,3)
     plot(HST.time./yr,HST.EXFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $X_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-    subplot(5,1,4)
+    subplot(6,1,4)
     plot(HST.time./yr,HST.ECFe,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $C_{Fe}$',TX{:},FS{:}); set(gca,TL{:},TS{:},'XTickLabel',[]);
-    subplot(5,1,5)
+    subplot(6,1,5)
     plot(HST.time./yr,HST.ECSi,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
     ylabel('consv. $C_{Si}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
+    if radheat
+        subplot(6,1,6)
+        plot(HST.time./yr,HST.n26Al,'k-','MarkerSize',5,'LineWidth',2); hold on; axis tight; box on;
+        ylabel('consv. $n_{Al}^{26}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
+    end
     xlabel('Time [yr]',TX{:},FS{:});
-
-    %% temporary S diagnosis
-    fh11 = figure(11); clf;
-    Ssum = FlFe.*slFe + FsFe.*ssFe + FlSi.*slSi + FsSi.*ssSi; 
-    subplot(1,6,1)
-    plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
-    plot(mean(Ssum(2:end-1,2:end-1),2),zP(2:end-1)./1000,'--k','LineWidth',2);
-    title('S')
-    subplot(1,6,2)
-    plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-    title('dSdt')   
-    subplot(1,6,3)
-    plot(advn_S,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-    title('advection S')
-    subplot(1,6,4)
-    plot(diss_T,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-    title('diss T')
-    subplot(1,6,5)
-    plot(mean(slFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
-    plot(mean(ssFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
-    plot(mean(slSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
-    plot(mean(ssSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
-    legend('s_{Fe}^l','s_{Fe}^s','s_{Si}^l','s_{Si}^s')
-    title('phase entropy')  
-    subplot(1,6,6)
-    plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
-    title('T')
 end
 
 
@@ -444,8 +426,6 @@ if save_op
     print(fh9,name,'-dpng','-r300','-image');
     name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
     print(fh10,name,'-dpng','-r300','-image');
-    name = [outpath '/',RunID,'_SDiagnostics',num2str(floor(step/nop))]; % figure 11 S and T diagnostics
-    print(fh11,name,'-dpng','-r300','-image');
 
     name = [outpath '/',RunID,'_',num2str(step/nop)];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
@@ -453,14 +433,14 @@ if save_op
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S');
+        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr','n26Al');
     name = [outpath '/',RunID,'_cont'];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
         'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S');
+        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr','n26Al');
     name = [outpath,'/',RunID,'_hist'];
     save(name,'HST');
 

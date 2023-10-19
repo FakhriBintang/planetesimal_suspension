@@ -93,6 +93,7 @@ SOLtII = zeros(nzP,nxP);               % stress magnitude on centre nodes
 
 
 %% setup heating rates
+dndt        = 0;
 dSdt        = zeros(Nz,Nx);             % entropy rate of change
 dXFedt      = zeros(Nz,Nx);             % Iron system rate of change 
 dXSidt      = zeros(Nz,Nx);             % Si system rate of change 
@@ -148,15 +149,7 @@ cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
 cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
 Pt = 0;
 
-%% initialise radioactive decay (make sure to cleanup)
-% nAl     = 2.0532e23;% initial nAl per kg
-% rAl0    = 5.25e-5;  % initial ratio of 26Al/27Al
-% eAl     = 5e-13;    % decay energy
-% NAl     = zeros(nzP,nxP); 
-% NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
-% dNdt = zeros(nzP,nxP);
-
-Hr  = Hr0.*ones(size(T(2:end-1,2:end-1)));
+Hr  = Hr0.*zeros(size(T));
 
 %% initialise loop
 [fsFe,csFe,clFe] = equilibrium(T,cFe,0,TFe1,TFe2,cphsFe1,cphsFe2,...
@@ -224,6 +217,17 @@ XFe   = rho.*xFe; XSi = rho.*xSi;                           % mixture Fe/Si syst
 CFe   = rho.*cFe.*xFe;                                      % mixture Fe component density
 CSi   = rho.*cSi.*xSi;                                      % mixture Si component density
 RHO   = XFe + XSi;                                          % dynamic density
+
+if radheat
+% initialise radiogenic isotopes (WIP)
+nAl0        = nAl_C/mean(xSi(:));    % Bulk silicate Al abundance [kg^{-1}]
+n26Al0      = nAl0*Al26_27; % initial numer of 26Al per kg Silicate at CAI formation
+tauAl       = t_halfAl/log(2); % lifetime of 26Al
+n26Al       = n26Al0*exp(-t_form/tauAl); % initial 26Al content at planetesimal formation
+
+n26Alo      = n26Al;
+dndto = dndt;
+end
 
 % reaction transfer rates
 GFes = 0.*fsFe;
