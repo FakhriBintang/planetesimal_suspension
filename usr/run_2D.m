@@ -8,8 +8,6 @@ plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
 nop             =  100;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
-%temporary
-radheat         =  0;                    % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
@@ -114,7 +112,19 @@ Cp          = 1000;                     % mixture heat capacity
 dEntrSi     = -200;                     % silicate entropy of crystallisation
 dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
 
-Hr0         =  0e-7;                    % Radiogenic heat productivity [W/kg]
+%% set heating parameters (if turned on)
+radheat = 0;
+Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
+% Dynamic radiogenic heating rate
+if radheat
+    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    mr_Al       = 27;           % atomic mass of Al [g/mol]
+    AV          = 6.022e23;     % avogadros number [mol^{-1}]
+    nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
+    Al26_27     = 5.25e-5;      % cannonical initial ratio of 26Al/27Al at CAI formation
+    t_halfAl    = 717000*yr; % half life of 26Al
+    EAl         = 5e-13;        % decay energy
+end
 
 %% set boundary conditions
 % Temperature boundary conditions

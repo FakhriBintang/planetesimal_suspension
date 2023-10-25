@@ -3,13 +3,11 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['1D'];                  % run identifier
+RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
 nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
-%temporary
-radheat         =  0;                       % radiogenic heating
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
@@ -58,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  0+273.15;                             % reference/top potential temperature [k]
+T0      =  1400+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  0+273.15;                             % bottom potential temperature (if different from top) [k]
+T1      =  1400+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -114,8 +112,20 @@ Cp          = 1000;                     % mixture heat capacity
 dEntrSi     = -200;                     % silicate entropy of crystallisation
 dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
 
-Hr0         =  0e-7;                    % Radiogenic heat productivity [W/kg]
 
+%% set heating parameters (if turned on)
+radheat = 0;
+Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
+% Dynamic radiogenic heating rate
+if radheat
+    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    mr_Al       = 27;           % atomic mass of Al [g/mol]
+    AV          = 6.022e23;     % avogadros number [mol^{-1}]
+    nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
+    Al26_27     = 5.25e-5;      % cannonical initial ratio of 26Al/27Al at CAI formation
+    t_halfAl    = 717000*yr; % half life of 26Al
+    EAl         = 5e-13;        % decay energy
+end
 %% set boundary conditions
 % Temperature boundary conditions
 BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
@@ -143,7 +153,7 @@ maxit       = 20;                       % maximum iteration count
 CFL         = 0.50;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
-TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 %% start model
 % create output directory
@@ -173,3 +183,4 @@ fprintf(1,    '************************************************************\n\n'
 
 initialise;
 run('main');
+
