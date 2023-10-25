@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  '2D_settling_2';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  100;                   % output every 'nop' grid steps of transport
+nop             =  1;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  0+273.15;                             % reference/top potential temperature [k]
+T0      =  1350+273.15;                             % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  0+273.15;                             % bottom potential temperature (if different from top) [k]
+T1      =  1350+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -175,6 +175,7 @@ addpath('../src/cbrewer/')
 % use color brewer to create colormaps
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
+load ocean.mat;
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');
