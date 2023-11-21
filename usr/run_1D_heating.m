@@ -118,7 +118,7 @@ radheat = 1;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 1*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -150,8 +150,8 @@ lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
-CFL         = 0.50;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e2*yr;                   % maximum time step
+CFL         = 0.10;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 5e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 

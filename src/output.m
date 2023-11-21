@@ -161,8 +161,9 @@ if plot_op
         TX = {'Interpreter','Latex'}; FS = {'FontSize',12};
         TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',10};
         UN = {'Units','Centimeters'};
-        xq = round(N/10/2)+1:round(N/10):nxP;  % x-indexes for quiver plots
-        zq = round(N/10/2)+1:round(N/10):nxP;  % z-indexes for quiver plots
+        xq = xP(2:N/10:end-1):round(N/10):xP(end-1);  % x-indexes for quiver plots
+        % zq = round(N/10/2)+1:round(N/10):nxP;  % z-indexes for quiver plots
+        zq = zP(2:N/10:end-1):round(N/10):nxP;  % z-indexes for quiver plots
         
         % set axis and border dimensions
         axh = 6.00*sqrt(D/L); axw = 6.00*sqrt(L/D)+1.50;
@@ -201,7 +202,7 @@ if plot_op
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$k]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(15));
         imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,rho(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\bar{\rho} [\mathrm{kg m^{-3}}]$',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [m]',TX{:},FS{:});
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\bar{\rho} [\mathrm{kg m^{-3}}]$',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(16));
         imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1))); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('Log10($\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
@@ -319,7 +320,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$x_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
     set(fh5,'CurrentAxes',ax(53));
      imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,cFe(2:end-1,2:end-1)*100); axis ij equal tight; box on; cb = colorbar;
-    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
+    set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Fe}$ [wt\%]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:}); xlabel('Width [km]',TX{:},FS{:});
     set(fh5,'CurrentAxes',ax(54));
     imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,(cSi(2:end-1,2:end-1)+cSimin)*100); axis ij equal tight; box on; cb = colorbar;
     set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$c_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [km]',TX{:},FS{:});

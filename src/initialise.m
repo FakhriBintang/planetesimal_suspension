@@ -220,13 +220,14 @@ RHO   = XFe + XSi;                                          % dynamic density
 
 if radheat
 % initialise radiogenic isotopes (WIP)
-nAl0        = nAl_C/mean(xSi(:));    % Bulk silicate Al abundance [kg^{-1}]
+Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
+nAl0        = nAl_C./mean(xSi(:))./mean(Alfrac(:));    % Bulk silicate Al abundance [kg^{-1}]
 n26Al0      = nAl0*Al26_27; % initial numer of 26Al per kg Silicate at CAI formation
 tauAl       = t_halfAl/log(2); % lifetime of 26Al
 n26Al       = n26Al0*exp(-t_form/tauAl); % initial 26Al content at planetesimal formation
 
-n26Alo      = n26Al;
-dndto = dndt;
+n26Alo      = n26Al;        % initial concentration
+dndto       = dndt;         % initial rate of change
 end
 
 % reaction transfer rates

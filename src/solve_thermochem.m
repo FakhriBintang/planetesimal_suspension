@@ -199,8 +199,9 @@ FlSi = max(0, FlSi );
 
 if radheat 
 % update radioactive isotope decay and heating rate
-[dndt,H] = rad_decay(n26Al,tauAl,EAl);
-Hr = H.*XSi;
+[dndt,H]    = rad_decay(n26Al,tauAl,EAl);
+Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
+Hr          = H.*XSi.*Alfrac;
 n26Al = (alpha2*n26Alo + alpha3*n26Aloo + (beta1*dndt + beta2*dndto + beta3*dndtoo)*dt)/alpha1;
 end
 
