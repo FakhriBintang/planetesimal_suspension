@@ -64,10 +64,6 @@ switch BCTSides
         S(:,[1 end]) = S(:,[2 end-1]);
 end
 
-% update temperature
-T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
-    + aT.*(Pt - P0)./rhoRef./Cp);
-
 
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
 if any(xFe(:)>0 & xFe(:)<1)
@@ -204,6 +200,10 @@ Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
 Hr          = H.*XSi.*Alfrac;
 n26Al = (alpha2*n26Alo + alpha3*n26Aloo + (beta1*dndt + beta2*dndto + beta3*dndtoo)*dt)/alpha1;
 end
+
+% update temperature
+T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
+    + aT.*(Pt - P0)./rhoRef./Cp);
 
 % update system fractions
 
