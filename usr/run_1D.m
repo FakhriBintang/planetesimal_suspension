@@ -19,8 +19,8 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  100000;                  % domain depth
-N               =  200;                     % number of real x/z block nodes
-
+Nz              =  200;                     % number of real x/z block nodes
+Nx              = 1;
 % [do not modify]
 h               =  D/N;                     % spacing of x/z  coordinates
 L               =  h;

@@ -19,11 +19,11 @@ dt              =  1e-3*yr;          % (initial) time step [s]
 
 %% set model domain
 D               =  100000;                  % domain depth
-N               =  120;                  % number of real x/z block nodes
-
+Nz              =  150;                  % number of real x/z block nodes
+Nx              = 10;
 % [do not modify]
-h               =  D/N;          % spacing of x/z  coordinates
-L               =  D;
+h               =  D/Nz;          % spacing of x/z  coordinates
+L               =  h*Nx;
 
 %% set thermochemical parameters
 
@@ -36,7 +36,7 @@ cSi0            =  0.47;                    % Si system fertile component fracti
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                    % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                    % amplitude of initial random perturbation to silicate component
-smth            =  ((N+2)/20)^2;            % regularisation of initial random perturbation
+smth            =  ((Nz+2)/20)^2;            % regularisation of initial random perturbation
 
 % set phase diagram parameters
 %      Fertile        ||       Refractory
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1350+273.15;                             % reference/top potential temperature [k]
-Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1350+273.15;                             % bottom potential temperature (if different from top) [k]
+T0      =  1600+273.15;                             % reference/top potential temperature [k]
+Ttop0   =  273.15;                                      % isothermal top reference temperature 
+T1      =  1600+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -117,7 +117,7 @@ radheat = 0;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 0.0*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -147,11 +147,11 @@ ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quic
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-3;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
-CFL         = 0.50;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e2*yr;                   % maximum time step
+CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e3*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 

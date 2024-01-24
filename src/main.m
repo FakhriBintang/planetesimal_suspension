@@ -82,7 +82,7 @@ while time <= tend && step <= maxstep
 
     % update mass and energy errors
     history;
-    Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1);
+    Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1)./10;
 
 
     fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));

@@ -6,8 +6,7 @@ fprintf(1,'  ---  initialise model run \n\n');
 
 %% setup numerical grid
 % set dimensions of staggered/ghosted 2D grid
-Nx          =  N*L/D;                           % number of grid points in x-direction
-Nz          =  N;                               % number of grid points in z-direction
+
 nxC         =  Nx+1;                            % number of corner nodes in x-direction
 nzC         =  Nz+1;                            % number of corner nodes in z-direction
 nxP         =  Nx+2;                            % number of centre nodes in x-direction
