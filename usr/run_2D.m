@@ -3,24 +3,24 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  '2D_settling_2';               % run identifier
+RunID           =  '2D_heating_0';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
+nop             =  50;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
-maxstep         =  10000;                  % maximum number of time steps
-tend            =  1e8*yr;           % model stopping time [s]
+maxstep         =  100000;                  % maximum number of time steps
+tend            =  1e10*yr;           % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-3*yr;          % (initial) time step [s]
 
 %% set model domain
-D               =  100000;                  % domain depth
-Nz              =  150;                  % number of real x/z block nodes
-Nx              = 10;
+D               =  10000;                  % domain depth
+Nz              =  50;                  % number of real x/z block nodes
+Nx              = 100;
 % [do not modify]
 h               =  D/Nz;          % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1600+273.15;                             % reference/top potential temperature [k]
+T0      =  1500+273.15;                             % reference/top potential temperature [k]
 Ttop0   =  273.15;                                      % isothermal top reference temperature 
-T1      =  1600+273.15;                             % bottom potential temperature (if different from top) [k]
+T1      =  1500+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -128,7 +128,7 @@ end
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -136,6 +136,12 @@ BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom bo
 BCsides     = -1;                       % side boundaries
 BCtop       = -1;                       % top boundary
 BCbot       = -1;                       % bottom boundary
+
+% segregation boundary conditions: 0 = depletion/accumulation; 1 =
+% supply/sink
+BCsegTop = 1;
+BCsegBot = 0;
+
 switch BCTTop
     case'flux'
     qT0 = -10;
@@ -151,7 +157,7 @@ reltol    	= 1e-3;                     % relative residual tolerance for nonline
 abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
 CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e3*yr;                   % maximum time step
+dtmax       = 5e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
