@@ -60,11 +60,11 @@ while time <= tend && step <= maxstep
         % solve thermo-chemical equations
         solve_thermochem;
 
-        % update non-linear parameters and auxiliary variables
-        up2date;
-
         % solve fluid-mechanical equations
         solve_fluidmech;
+
+        % update non-linear parameters and auxiliary variables
+        up2date;
 
         if ~bnchm
             resnorm = resnorm_TC + resnorm_VP;

@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  '2D_heating_0';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
 save_op         =  0;                    % switch on to save output files
-nop             =  50;                   % output every 'nop' grid steps of transport
+nop             =  5;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -15,10 +15,10 @@ maxstep         =  100000;                  % maximum number of time steps
 tend            =  1e10*yr;           % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-3*yr;          % (initial) time step [s]
+dt              =  1e-9*yr;          % (initial) time step [s]
 
 %% set model domain
-D               =  10000;                  % domain depth
+D               =  1000;                  % domain depth
 Nz              =  50;                  % number of real x/z block nodes
 Nx              = 100;
 % [do not modify]
@@ -34,8 +34,8 @@ cSi0            =  0.47;                    % Si system fertile component fracti
 
 % set parameters
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
-dcFe            =  0e-3;                    % amplitude of initial random perturbation to iron component
-dcSi            =  0e-3;                    % amplitude of initial random perturbation to silicate component
+dcFe            =  0.1e-3;                    % amplitude of initial random perturbation to iron component
+dcSi            =  0.1e-3;                    % amplitude of initial random perturbation to silicate component
 smth            =  ((Nz+2)/20)^2;            % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1500+273.15;                             % reference/top potential temperature [k]
+T0      =  1350+273.15;                             % reference/top potential temperature [k]
 Ttop0   =  273.15;                                      % isothermal top reference temperature 
-T1      =  1500+273.15;                             % bottom potential temperature (if different from top) [k]
+T1      =  1350+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -157,7 +157,7 @@ reltol    	= 1e-3;                     % relative residual tolerance for nonline
 abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
 CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 5e2*yr;                   % maximum time step
+dtmax       = 0.5e-1*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
