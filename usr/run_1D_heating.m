@@ -19,7 +19,7 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  100000;                  % domain depth
-Nz               =  150;                     % number of real x/z block nodes
+Nz              =  150;                     % number of real x/z block nodes
 Nx = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
@@ -136,6 +136,12 @@ BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom bo
 BCsides     = -1;                       % side boundaries
 BCtop       = -1;                       % top boundary
 BCbot       = -1;                       % bottom boundary
+
+% segregation boundary conditions: 0 = depletion/accumulation; 1 =
+% supply/sink
+BCsegTop = 0;
+BCsegBot = 0;
+
 switch BCTTop
     case'flux'
     qT0 = -10;

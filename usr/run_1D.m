@@ -11,7 +11,7 @@ bnchm           =  0;                       % manufactured solution benchmark on
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e5;                     % maximum number of time steps
+maxstep         =  1e6;                     % maximum number of time steps
 tend            =  1e6*yr;                  % model stopping time [s]
 
 % [do not modify]
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1400+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1400+273.15;                                % bottom potential temperature (if different from top) [k]
+T0      =  1600+273.15;                                % reference/top potential temperature [k]
+Ttop0   =  273.15;                                      % isothermal top reference temperature 
+T1      =  1600+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
