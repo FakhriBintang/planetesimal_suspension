@@ -33,8 +33,11 @@ diss_T = EntProd./T(2:end-1,2:end-1);
 
 dSdt   = advn_S + diff_S + diss_T;
 
+% % residual of entropy evolution
+% res_S = (a1*S-a2*So-a3*Soo)/dt - (b1*dSdt + b2*dSdto + b3*dSdtoo);
+
 % update solution
-S(inz,inx) = (alpha2*So(inz,inx) + alpha3*Soo(inz,inx) + (beta1*dSdt + beta2*dSdto + beta3*dSdtoo)*dt)/alpha1;
+S(inz,inx) = (a2*So(inz,inx) + a3*Soo(inz,inx) + (b1*dSdt + b2*dSdto + b3*dSdtoo)*dt)/a1;
 
 % apply boundaries
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
@@ -71,7 +74,7 @@ if any(xFe(:)>0 & xFe(:)<1)
                       - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 
     % update solution
-    XFe(inz,inx)    = (alpha2*XFeo(inz,inx) + alpha3*XFeoo(inz,inx) + (beta1*dXFedt + beta2*dXFedto + beta3*dXFedtoo)*dt)/alpha1;
+    XFe(inz,inx)    = (a2*XFeo(inz,inx) + a3*XFeoo(inz,inx) + (b1*dXFedt + b2*dXFedto + b3*dXFedtoo)*dt)/a1;
 
 
     dXSidt          = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
@@ -79,7 +82,7 @@ if any(xFe(:)>0 & xFe(:)<1)
     
 
     % update solution
-    XSi(inz,inx)    = (alpha2*XSio(inz,inx) + alpha3*XSioo(inz,inx) + (beta1*dXSidt + beta2*dXSidto + beta3*dXSidtoo)*dt)/alpha1;
+    XSi(inz,inx)    = (a2*XSio(inz,inx) + a3*XSioo(inz,inx) + (b1*dXSidt + b2*dXSidto + b3*dXSidtoo)*dt)/a1;
 
 %     XSi = RHO - XFe;
 
@@ -113,8 +116,8 @@ advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN
 dCFedt   = advn_CFe;
 
 % update solution
-CFe(inz,inx) = (alpha2*CFeo(inz,inx) + alpha3*CFeoo(inz,inx) + (beta1*dCFedt + beta2*dCFedto + beta3*dCFedtoo)*dt)/alpha1;
-CSi(inz,inx) = (alpha2*CSio(inz,inx) + alpha3*CSioo(inz,inx) + (beta1*dCSidt + beta2*dCSidto + beta3*dCSidtoo)*dt)/alpha1;
+CFe(inz,inx) = (a2*CFeo(inz,inx) + a3*CFeoo(inz,inx) + (b1*dCFedt + b2*dCFedto + b3*dCFedtoo)*dt)/a1;
+CSi(inz,inx) = (a2*CSio(inz,inx) + a3*CSioo(inz,inx) + (b1*dCSidt + b2*dCSidto + b3*dCSidtoo)*dt)/a1;
 
 % cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
 % solidus or above the liquidus
@@ -163,8 +166,8 @@ GSis        = lambda.*GSis + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSis   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsSidt     = advn_FSis + GSis(inz,inx);                                       % total rate of change
 
-FsFe(inz,inx) = (alpha2*FsFeo(inz,inx) + alpha3*FsFeoo(inz,inx) + (beta1*dFsFedt + beta2*dFsFedto + beta3*dFsFedtoo)*dt)/alpha1;
-FsSi(inz,inx) = (alpha2*FsSio(inz,inx) + alpha3*FsSioo(inz,inx) + (beta1*dFsSidt + beta2*dFsSidto + beta3*dFsSidtoo)*dt)/alpha1;
+FsFe(inz,inx) = (a2*FsFeo(inz,inx) + a3*FsFeoo(inz,inx) + (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo)*dt)/a1;
+FsSi(inz,inx) = (a2*FsSio(inz,inx) + a3*FsSioo(inz,inx) + (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo)*dt)/a1;
 
 FsFe([1 end],:) = FsFe([2 end-1],:);  FsFe(:,[1 end]) = FsFe(:,[2 end-1]);  % apply boundary conditions
 FsSi([1 end],:) = FsSi([2 end-1],:);  FsSi(:,[1 end]) = FsSi(:,[2 end-1]);  % apply boundary conditions
@@ -181,8 +184,8 @@ GSil        = lambda.*GSil + (1-lambda).*((XSi.*flSiq-FlSi)./(4.*dt));
 advn_FSil   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlSidt     = advn_FSil + GSil(inz,inx);                                       % total rate of change
 
-FlFe(inz,inx) = (alpha2*FlFeo(inz,inx) + alpha3*FlFeoo(inz,inx) + (beta1*dFlFedt + beta2*dFlFedto + beta3*dFlFedtoo)*dt)/alpha1;
-FlSi(inz,inx) = (alpha2*FlSio(inz,inx) + alpha3*FlSioo(inz,inx) + (beta1*dFlSidt + beta2*dFlSidto + beta3*dFlSidtoo)*dt)/alpha1;
+FlFe(inz,inx) = (a2*FlFeo(inz,inx) + a3*FlFeoo(inz,inx) + (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo)*dt)/a1;
+FlSi(inz,inx) = (a2*FlSio(inz,inx) + a3*FlSioo(inz,inx) + (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo)*dt)/a1;
 
 FlFe([1 end],:) = FlFe([2 end-1],:);  FlFe(:,[1 end]) = FlFe(:,[2 end-1]);  % apply boundary conditions
 FlSi([1 end],:) = FlSi([2 end-1],:);  FlSi(:,[1 end]) = FlSi(:,[2 end-1]);  % apply boundary conditions
@@ -198,7 +201,7 @@ if radheat
 [dndt,H]    = rad_decay(n26Al,tauAl,EAl);
 Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
 Hr          = H.*XSi.*Alfrac;
-n26Al = (alpha2*n26Alo + alpha3*n26Aloo + (beta1*dndt + beta2*dndto + beta3*dndtoo)*dt)/alpha1;
+n26Al = (a2*n26Alo + a3*n26Aloo + (b1*dndt + b2*dndto + b3*dndtoo)*dt)/a1;
 end
 
 % update temperature
