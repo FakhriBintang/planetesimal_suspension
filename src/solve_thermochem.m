@@ -33,11 +33,14 @@ diss_T = EntProd./T(2:end-1,2:end-1);
 
 dSdt   = advn_S + diff_S + diss_T;
 
-% % residual of entropy evolution
-% res_S = (a1*S-a2*So-a3*Soo)/dt - (b1*dSdt + b2*dSdto + b3*dSdtoo);
+% residual of entropy evolution
+res_S = (a1*S(inz,inx)-a2*So(inz,inx)-a3*Soo(inz,inx))/dt - (b1*dSdt + b2*dSdto + b3*dSdtoo);
 
 % update solution
-S(inz,inx) = (a2*So(inz,inx) + a3*Soo(inz,inx) + (b1*dSdt + b2*dSdto + b3*dSdtoo)*dt)/a1;
+% S(inz,inx) = (a2*So(inz,inx) + a3*Soo(inz,inx) + (b1*dSdt + b2*dSdto + b3*dSdtoo)*dt)/a1;
+% semi-implicit update of bulk entropy density
+S(inz,inx)     = S(inz,inx) - alpha*res_S*dt/a1 + beta*upd_S;
+upd_S =   - alpha*res_S*dt/a1 + beta*upd_S;
 
 % apply boundaries
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
@@ -82,9 +85,18 @@ if any(xFe(:)>0 & xFe(:)<1)
     
 
     % update solution
-    XSi(inz,inx)    = (a2*XSio(inz,inx) + a3*XSioo(inz,inx) + (b1*dXSidt + b2*dXSidto + b3*dXSidtoo)*dt)/a1;
+    % XFe(inz,inx)    = (a2*XFeo(inz,inx) + a3*XFeoo(inz,inx) + (b1*dXFedt + b2*dXFedto + b3*dXFedtoo)*dt)/a1;
+    % XSi(inz,inx)    = (a2*XSio(inz,inx) + a3*XSioo(inz,inx) + (b1*dXSidt + b2*dXSidto + b3*dXSidtoo)*dt)/a1;
+    % residual of entropy evolution
+    res_XFe = (a1*XFe(inz,inx)-a2*XFeo(inz,inx)-a3*XFeoo(inz,inx))/dt - (b1*dXFedt + b2*dXFedto + b3*dXFedtoo);
+    res_XSi = (a1*XSi(inz,inx)-a2*XSio(inz,inx)-a3*XSioo(inz,inx))/dt - (b1*dXSidt + b2*dXSidto + b3*dXSidtoo);
 
-%     XSi = RHO - XFe;
+    % update solution
+    % semi-implicit update of bulk entropy density
+    XFe(inz,inx)     = XFe(inz,inx) - alpha*res_XFe*dt/a1 + beta*upd_XFe;
+    XSi(inz,inx)     = XSi(inz,inx) - alpha*res_XSi*dt/a1 + beta*upd_XSi;
+    upd_XFe =   - alpha*res_XFe*dt/a1 + beta*upd_XFe;
+    upd_XSi =   - alpha*res_XSi*dt/a1 + beta*upd_XSi;
 
     % apply boundaries
     XFe([1 end],:)  = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
@@ -116,8 +128,18 @@ advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN
 dCFedt   = advn_CFe;
 
 % update solution
-CFe(inz,inx) = (a2*CFeo(inz,inx) + a3*CFeoo(inz,inx) + (b1*dCFedt + b2*dCFedto + b3*dCFedtoo)*dt)/a1;
-CSi(inz,inx) = (a2*CSio(inz,inx) + a3*CSioo(inz,inx) + (b1*dCSidt + b2*dCSidto + b3*dCSidtoo)*dt)/a1;
+% CFe(inz,inx) = (a2*CFeo(inz,inx) + a3*CFeoo(inz,inx) + (b1*dCFedt + b2*dCFedto + b3*dCFedtoo)*dt)/a1;
+% CSi(inz,inx) = (a2*CSio(inz,inx) + a3*CSioo(inz,inx) + (b1*dCSidt + b2*dCSidto + b3*dCSidtoo)*dt)/a1;
+% residual of entropy evolution
+res_CFe = (a1*CFe(inz,inx)-a2*CFeo(inz,inx)-a3*CFeoo(inz,inx))/dt - (b1*dCFedt + b2*dCFedto + b3*dCFedtoo);
+res_CSi = (a1*CSi(inz,inx)-a2*CSio(inz,inx)-a3*CSioo(inz,inx))/dt - (b1*dCSidt + b2*dCSidto + b3*dCSidtoo);
+
+% update solution
+% semi-implicit update of bulk chemical composition density
+CFe(inz,inx)     = CFe(inz,inx) - alpha*res_CFe*dt/a1 + beta*upd_CFe;
+CSi(inz,inx)     = CSi(inz,inx) - alpha*res_CSi*dt/a1 + beta*upd_CSi;
+upd_CFe =   - alpha*res_CFe*dt/a1 + beta*upd_CFe;
+upd_CSi =   - alpha*res_CSi*dt/a1 + beta*upd_CSi;
 
 % cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
 % solidus or above the liquidus
@@ -158,16 +180,20 @@ flSiq = 1-fsSiq;
 
 %% update phase fractions
 % solid
-GFes        = lambda.*GFes + (1-lambda).*((XFe.*fsFeq-FsFe)./(4.*dt));
+GFes        = ((XFe.*fsFeq-FsFe)./(4.*dt));
 advn_FFes   = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsFedt     = advn_FFes + GFes(inz,inx);
+res_FsFe = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
 
-GSis        = lambda.*GSis + (1-lambda).*((XSi.*fsSiq-FsSi)./(4.*dt));
+GFes        = ((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSis   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsSidt     = advn_FSis + GSis(inz,inx);                                       % total rate of change
+res_FsSi = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
 
-FsFe(inz,inx) = (a2*FsFeo(inz,inx) + a3*FsFeoo(inz,inx) + (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo)*dt)/a1;
-FsSi(inz,inx) = (a2*FsSio(inz,inx) + a3*FsSioo(inz,inx) + (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo)*dt)/a1;
+FsFe(inz,inx)     = FsFe(inz,inx) - alpha*res_FsFe*dt/a1 + beta*upd_FsFe;
+FsSi(inz,inx)     = FsSi(inz,inx) - alpha*res_FsSi*dt/a1 + beta*upd_FsSi;
+upd_FsFe =   - alpha*res_FsFe*dt/a1 + beta*upd_FsFe;
+upd_FsSi =   - alpha*res_FsSi*dt/a1 + beta*upd_FsSi;
 
 FsFe([1 end],:) = FsFe([2 end-1],:);  FsFe(:,[1 end]) = FsFe(:,[2 end-1]);  % apply boundary conditions
 FsSi([1 end],:) = FsSi([2 end-1],:);  FsSi(:,[1 end]) = FsSi(:,[2 end-1]);  % apply boundary conditions
@@ -176,25 +202,26 @@ FsFe = max(0, FsFe );
 FsSi = max(0, FsSi );
 
 % liquid
-GFel        = lambda.*GFel + (1-lambda).*((XFe.*flFeq-FlFe)./(4.*dt));
+GFel        = ((XFe.*flFeq-FlFe)./(4.*dt));
 advn_FFel   = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlFedt     = advn_FFel + GFel(inz,inx);
+res_FlFe = (a1*FlFe(inz,inx)-a2*FlFeo(inz,inx)-a3*FlFeoo(inz,inx))/dt - (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo);
 
-GSil        = lambda.*GSil + (1-lambda).*((XSi.*flSiq-FlSi)./(4.*dt));
+GFel        = ((XSi.*flSiq-FlSi)./(4.*dt));
 advn_FSil   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlSidt     = advn_FSil + GSil(inz,inx);                                       % total rate of change
+res_FlSi = (a1*FlSi(inz,inx)-a2*FlSio(inz,inx)-a3*FlSioo(inz,inx))/dt - (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo);
 
-FlFe(inz,inx) = (a2*FlFeo(inz,inx) + a3*FlFeoo(inz,inx) + (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo)*dt)/a1;
-FlSi(inz,inx) = (a2*FlSio(inz,inx) + a3*FlSioo(inz,inx) + (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo)*dt)/a1;
+FlFe(inz,inx)     = FlFe(inz,inx) - alpha*res_FlFe*dt/a1 + beta*upd_FlFe;
+FlSi(inz,inx)     = FlSi(inz,inx) - alpha*res_FlSi*dt/a1 + beta*upd_FlSi;
 
+upd_FlFe =   - alpha*res_FlFe*dt/a1 + beta*upd_FlFe;
+upd_FlSi =   - alpha*res_FlSi*dt/a1 + beta*upd_FlSi;
 FlFe([1 end],:) = FlFe([2 end-1],:);  FlFe(:,[1 end]) = FlFe(:,[2 end-1]);  % apply boundary conditions
 FlSi([1 end],:) = FlSi([2 end-1],:);  FlSi(:,[1 end]) = FlSi(:,[2 end-1]);  % apply boundary conditions
 
 FlFe = max(0, FlFe );
 FlSi = max(0, FlSi );
-
-% FlFe = XFe - FsFe;
-% FlSi = XSi - FsSi;
 
 if radheat 
 % update radioactive isotope decay and heating rate

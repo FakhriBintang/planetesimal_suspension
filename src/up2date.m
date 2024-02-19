@@ -133,8 +133,10 @@ if step>0
                + advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''   },[1,2],BCA);
-    F_DivV   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt + (b1*Div_rhoV + b2*Div_rhoVo + b3*Div_rhoVoo);  % get residual of mixture mass conservation
-    VolSrc   = Div_V(inz,inx) - F_DivV./rho(inz,inx)/2;  % correct volume source term by scaled residual
+    res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt + (b1*Div_rhoV + b2*Div_rhoVo + b3*Div_rhoVoo);  % get residual of mixture mass conservation
+    % volume source and background velocity passed to fluid-mechanics solver
+    VolSrc  = Div_V(2:end-1,2:end-1) - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;  % correct volume source term by scaled residual
+    upd_rho =       - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;
 end
 
 % set variable boundary conditions

@@ -128,7 +128,7 @@ end
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -158,8 +158,10 @@ abstol      = 1e-6;                     % absolute residual tolerance for nonlin
 maxit       = 20;                       % maximum iteration count
 CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 0.5e-1*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
+etareg      = 1e2;                      % regularisation factor for viscosity
 TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+alpha    =  0.50;                % iterative step size parameter
+beta     =  0.25;                % iterative damping parameter
 
 %% start model
 % create output directory

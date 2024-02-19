@@ -52,12 +52,12 @@ dsumCSidt   = sum(CSi(2,2:end-1)    .*W(1,2:end-1)  .*h.*1) ...
             - sum(CSi(2:end-1,end-1).*U(2:end-1,end).*h.*1);
 
 if step>1
-HST.dM(stp) = (alpha2*HST.dM(stp-1) + alpha3*HST.dM(max(1,stp-2)) + (beta1*dsumMdt + beta2*dsumMdto + beta3*dsumMdtoo)*dt)/alpha1; 
-HST.dS(stp) = (alpha2*HST.dS(stp-1) + alpha3*HST.dS(max(1,stp-2)) + (beta1*dsumSdt + beta2*dsumSdto + beta3*dsumSdtoo)*dt)/alpha1; 
-HST.dXFe(stp) = (alpha2*HST.dXFe(stp-1) + alpha3*HST.dXFe(max(1,stp-2)) + (beta1*dsumXFedt + beta2*dsumXFedto + beta3*dsumXFedtoo)*dt)/alpha1; 
-HST.dXSi(stp) = (alpha2*HST.dXSi(stp-1) + alpha3*HST.dXSi(max(1,stp-2)) + (beta1*dsumXSidt + beta2*dsumXSidto + beta3*dsumXSidtoo)*dt)/alpha1; 
-HST.dCFe(stp) = (alpha2*HST.dCFe(stp-1) + alpha3*HST.dCFe(max(1,stp-2)) + (beta1*dsumCFedt + beta2*dsumCFedto + beta3*dsumCFedtoo)*dt)/alpha1; 
-HST.dCSi(stp) = (alpha2*HST.dCSi(stp-1) + alpha3*HST.dCSi(max(1,stp-2)) + (beta1*dsumCSidt + beta2*dsumCSidto + beta3*dsumCSidtoo)*dt)/alpha1; 
+HST.dM(stp) = (a2*HST.dM(stp-1) + a3*HST.dM(max(1,stp-2)) + (b1*dsumMdt + b2*dsumMdto + b3*dsumMdtoo)*dt)/a1; 
+HST.dS(stp) = (a2*HST.dS(stp-1) + a3*HST.dS(max(1,stp-2)) + (b1*dsumSdt + b2*dsumSdto + b3*dsumSdtoo)*dt)/a1; 
+HST.dXFe(stp) = (a2*HST.dXFe(stp-1) + a3*HST.dXFe(max(1,stp-2)) + (b1*dsumXFedt + b2*dsumXFedto + b3*dsumXFedtoo)*dt)/a1; 
+HST.dXSi(stp) = (a2*HST.dXSi(stp-1) + a3*HST.dXSi(max(1,stp-2)) + (b1*dsumXSidt + b2*dsumXSidto + b3*dsumXSidtoo)*dt)/a1; 
+HST.dCFe(stp) = (a2*HST.dCFe(stp-1) + a3*HST.dCFe(max(1,stp-2)) + (b1*dsumCFedt + b2*dsumCFedto + b3*dsumCFedtoo)*dt)/a1; 
+HST.dCSi(stp) = (a2*HST.dCSi(stp-1) + a3*HST.dCSi(max(1,stp-2)) + (b1*dsumCSidt + b2*dsumCSidto + b3*dsumCSidtoo)*dt)/a1; 
 else
     HST.dM  (stp) = 0;
     HST.dS  (stp) = 0;
