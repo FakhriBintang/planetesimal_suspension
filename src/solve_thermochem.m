@@ -185,7 +185,7 @@ advn_FFes   = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],B
 dFsFedt     = advn_FFes + GFes(inz,inx);
 res_FsFe = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
 
-GFes        = ((XSi.*fsSiq-FsSi)./(4.*dt));
+GSis        = ((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSis   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsSidt     = advn_FSis + GSis(inz,inx);                                       % total rate of change
 res_FsSi = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
@@ -207,7 +207,7 @@ advn_FFel   = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],B
 dFlFedt     = advn_FFel + GFel(inz,inx);
 res_FlFe = (a1*FlFe(inz,inx)-a2*FlFeo(inz,inx)-a3*FlFeoo(inz,inx))/dt - (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo);
 
-GFel        = ((XSi.*flSiq-FlSi)./(4.*dt));
+GSil        = ((XSi.*flSiq-FlSi)./(4.*dt));
 advn_FSil   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlSidt     = advn_FSil + GSil(inz,inx);                                       % total rate of change
 res_FlSi = (a1*FlSi(inz,inx)-a2*FlSio(inz,inx)-a3*FlSioo(inz,inx))/dt - (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo);

@@ -3,10 +3,10 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  '2D_heating_0';               % run identifier
+RunID           =  '2D_cooling';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  0;                    % switch on to save output files
-nop             =  10;                   % output every 'nop' grid steps of transport
+save_op         =  1;                    % switch on to save output files
+nop             =  500;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -34,8 +34,8 @@ cSi0            =  0.47;                    % Si system fertile component fracti
 
 % set parameters
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
-dcFe            =  0.1e-3;                    % amplitude of initial random perturbation to iron component
-dcSi            =  0.1e-3;                    % amplitude of initial random perturbation to silicate component
+dcFe            =  0.0e-3;                    % amplitude of initial random perturbation to iron component
+dcSi            =  0.0e-3;                    % amplitude of initial random perturbation to silicate component
 smth            =  ((Nz+2)/20)^2;            % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1350+273.15;                             % reference/top potential temperature [k]
+T0      =  1630+273.15;                             % reference/top potential temperature [k]
 Ttop0   =  273.15;                                      % isothermal top reference temperature 
-T1      =  1350+273.15;                             % bottom potential temperature (if different from top) [k]
+T1      =  1630+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]

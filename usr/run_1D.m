@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -56,7 +56,7 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1600+273.15;                                % reference/top potential temperature [k]
+T0      =  1500+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  273.15;                                      % isothermal top reference temperature 
 T1      =  1600+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
@@ -159,6 +159,8 @@ CFL         = 0.50;                     % (physical) time stepping courant numbe
 dtmax       = 1e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+alpha    =  0.50;                % iterative step size parameter
+beta     =  0.25;                % iterative damping parameter
 
 %% start model
 % create output directory
