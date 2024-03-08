@@ -41,7 +41,9 @@ Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
 thtv = squeeze(prod(Mv.^Xf,2));
 
 % get momentum flux and transfer coefficients
-Cv = ((1-ff)./[dx;dm;df].^2.*kv.*thtv).^-1;
+% Cv = ((1-ff)./[dx;dm;df].^2.*kv.*thtv).^-1;
+Cv   = ff.*(1-ff)./[dx;dm;df].^2.*kv.*thtv;
+Ksgr = ff./Cv;
 
 % compose effective viscosity, segregation coefficients
 Eta  = squeeze(sum(ff.*kv.*thtv,1));                                   % effective magma viscosity
@@ -52,15 +54,20 @@ Eta(:,[1 end]) = Eta(:,[2 end-1]);
 EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in cell corners
     .* Eta(1:end-1,2:end  ).*Eta(2:end,2:end  )).^0.25;
 
-
 %% update segregation cofficients
-Ksgr_x = squeeze(Cv(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]);
-Ksgr_m = squeeze(Cv(2,:,:)) + TINY^2;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]);
-Ksgr_f = squeeze(Cv(3,:,:)) + TINY^2;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]);
+Ksgr_x = squeeze(Ksgr(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]); % crystal
+Ksgr_m = squeeze(Ksgr(2,:,:)) + TINY^2;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]); % silicate melt
+Ksgr_f = squeeze(Ksgr(3,:,:)) + TINY^2;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]); % iron melt
 % dampen liquid segregation at low crystalinities
 Ksgr_m = Ksgr_m.*(1-philSi).^2; Ksgr_m = max(TINY^2,Ksgr_m);
 Ksgr_f = Ksgr_f.*(1-philFe).^2; Ksgr_f = max(TINY^2,Ksgr_f);
 
+%% segregation coefficients for compaction length calculation
+% Cv_m = squeeze(Cv(2,:,:)); % silicate melt
+% Cv_f = squeeze(Cv(3,:,:)); % iron melt
+% % dampened coefficients
+% Cv_m = squeeze(ff(2,:,:))./Ksgr_m;
+% Cv_f = squeeze(ff(3,:,:))./Ksgr_f;
 
 %% calculate stokes settling velocity
 sds = BCsides;      % side boundary type
