@@ -1,34 +1,34 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close all
+clear all;% close all
 
-RunID           =  ['23Nov_1D_Sifrac'];     % run identifier
+RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  1;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e5;                     % maximum number of time steps
+maxstep         =  1e6;                     % maximum number of time steps
 tend            =  1e6*yr;                  % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  100000;                  % domain depth
-N               =  200;                     % number of real x/z block nodes
-
+D               =  10000;                  % domain depth
+Nz              =  200;                     % number of real x/z block nodes
+Nx              = 1;
 % [do not modify]
-h               =  D/N;                     % spacing of x/z  coordinates
-L               =  h;
+h               =  D/Nz;                     % spacing of x/z  coordinates
+L               =  h*Nx;
 
 %% set thermochemical parameters
 
 % set initial system and component fractions
-xFe0            =  0.0;                     % Fe-FeS system fraction
+xFe0            =  0;                     % Fe-FeS system fraction
 cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
 
@@ -36,7 +36,7 @@ cSi0            =  0.47;                    % Si system fertile component fracti
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                    % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                    % amplitude of initial random perturbation to silicate component
-smth            =  ((N+2)/20)^2;            % regularisation of initial random perturbation
+smth            =  ((Nz+2)/20)^2;            % regularisation of initial random perturbation
 
 % set phase diagram parameters
 %      Fertile        ||       Refractory
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1500+273.15;                                % reference/top potential temperature [k]
+T0      =  1300+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1500+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1300+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-4;                 % solid grain size [m]
-df          =  1e-4;                 % metal droplet size [m]
-dm          =  1e-4;                 % melt film size [m]
+dx          =  0.5e-2;                 % solid grain size [m]
+df          =  0.5e-2;                 % metal droplet size [m]
+dm          =  0.5e-2;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -129,13 +129,18 @@ end
 %% set boundary conditions
 % Temperature boundary conditions
 BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
-BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTBot      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
 BCsides     = -1;                       % side boundaries
 BCtop       = -1;                       % top boundary
 BCbot       = -1;                       % bottom boundary
+
+% segregation boundary conditions: 0 = depletion/accumulation; 1 =
+% supply/sink
+BCsegTop = 0;
+BCsegBot = 0;
 switch BCTTop
     case'flux'
     qT0 = -10;
@@ -149,11 +154,13 @@ TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 20;                       % maximum iteration count
-CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 100*yr;                   % maximum time step
+maxit       = 10;                       % maximum iteration count
+CFL         = 0.10;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e-5*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+alpha    =  0.50;                % iterative step size parameter
+beta     =  0.25;                % iterative damping parameter
 
 %% start model
 % create output directory
@@ -170,11 +177,11 @@ end
 
 % add path to source directory
 addpath('../src')
-%addpath('../src/cbrewer/')
+addpath('../src/cbrewer/')
 
 % use color brewer to create colormaps
-%cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
-%cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
+cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
+cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');

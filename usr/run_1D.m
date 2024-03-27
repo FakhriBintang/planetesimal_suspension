@@ -18,7 +18,7 @@ tend            =  1e6*yr;                  % model stopping time [s]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  100000;                  % domain depth
+D               =  10000;                  % domain depth
 Nz              =  200;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1500+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  273.15;                                      % isothermal top reference temperature 
-T1      =  1600+273.15;                                % bottom potential temperature (if different from top) [k]
+T0      =  1350+273.15;                                % reference/top potential temperature [k]
+Ttop0   =  1350+273.15;                                      % isothermal top reference temperature 
+T1      =  1350+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-4;                 % solid grain size [m]
-df          =  1e-4;                 % metal droplet size [m]
-dm          =  1e-4;                 % melt film size [m]
+dx          =  1e-2;                 % solid grain size [m]
+df          =  1e-2;                 % metal droplet size [m]
+dm          =  1e-2;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -128,7 +128,7 @@ if radheat
 end
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -155,8 +155,8 @@ lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
-CFL         = 0.50;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e2*yr;                   % maximum time step
+CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 0.5e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter

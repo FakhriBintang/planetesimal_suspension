@@ -5,8 +5,8 @@ clear ; close all
 
 RunID           =  '2D_cooling';               % run identifier
 plot_op         =  1;                    % switch on to plot live output
-save_op         =  1;                    % switch on to save output files
-nop             =  500;                   % output every 'nop' grid steps of transport
+save_op         =  0;                    % switch on to save output files
+nop             =  5;                   % output every 'nop' grid steps of transport
 bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -28,7 +28,7 @@ L               =  h*Nx;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-xFe0            =  0.2;                     % Fe-FeS system fraction
+xFe0            =  0.0;                     % Fe-FeS system fraction
 cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
 
@@ -56,15 +56,15 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1630+273.15;                             % reference/top potential temperature [k]
-Ttop0   =  273.15;                                      % isothermal top reference temperature 
-T1      =  1630+273.15;                             % bottom potential temperature (if different from top) [k]
+T0      =  1500+273.15;                             % reference/top potential temperature [k]
+Ttop0   =  T0;                                      % isothermal top reference temperature 
+T1      =  1500+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
 xT      =  L/2;                                     % x-position of hot plume [m]
 
-Ttype   = 'constant';                               % set initial temperature field type
+Ttype   = 'constant';                         1      % set initial temperature field type
 
 %% set material parameters
 % buoyancy parameters
@@ -128,7 +128,7 @@ end
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -157,8 +157,8 @@ reltol    	= 1e-3;                     % relative residual tolerance for nonline
 abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
 CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.5e-1*yr;                   % maximum time step
-etareg      = 1e2;                      % regularisation factor for viscosity
+dtmax       = 10.0e-1*yr;                   % maximum time step
+etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter
 beta     =  0.25;                % iterative damping parameter

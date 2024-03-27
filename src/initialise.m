@@ -218,7 +218,7 @@ CSi   = rho.*cSi.*xSi;                                      % mixture Si compone
 RHO   = XFe + XSi;                                          % dynamic density
 
 if radheat
-% initialise radiogenic isotopes (WIP)
+% initialise radiogenic isotopes 
 Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
 nAl0        = nAl_C./mean(xSi(:))./mean(Alfrac(:));    % Bulk silicate Al abundance [kg^{-1}]
 n26Al0      = nAl0*Al26_27; % initial numer of 26Al per kg Silicate at CAI formation

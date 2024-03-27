@@ -73,9 +73,10 @@ while time <= tend && step <= maxstep
             end
             fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
-%             figure(100); if iter==1; clf; else; hold on; end
-%             plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
-%             drawnow;
+            figure(100); if iter==1; clf; else; hold on; end
+            % plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
+            plot(iter,log10(resnorm_TC),'b.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
+            drawnow;
         end
         iter = iter+1;
     end

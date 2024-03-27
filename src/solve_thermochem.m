@@ -37,8 +37,6 @@ dSdt   = advn_S + diff_S + diss_T;
 res_S = (a1*S(inz,inx)-a2*So(inz,inx)-a3*Soo(inz,inx))/dt - (b1*dSdt + b2*dSdto + b3*dSdtoo);
 
 % update solution
-% S(inz,inx) = (a2*So(inz,inx) + a3*Soo(inz,inx) + (b1*dSdt + b2*dSdto + b3*dSdtoo)*dt)/a1;
-% semi-implicit update of bulk entropy density
 S(inz,inx)     = S(inz,inx) - alpha*res_S*dt/a1 + beta*upd_S;
 upd_S =   - alpha*res_S*dt/a1 + beta*upd_S;
 
@@ -59,7 +57,7 @@ switch BCTTop
 end
 switch BCTBot
     case 'isothermal'
-        S(end,:) = RHO(end,:).*(Cp.*log(T1./T0)+aT./rhoRef.*(Pt(end,:)-P0) + Ds(end,:));
+S(end,:)  = RHO(end,:).*(Cp.*log(Tbot0./T0)+aT./rhoRef.*(Pt(end,:)-P0) + Ds(end,:));    
     case 'insulating'
         S(end,:) = S(end-1,:);
 end
@@ -85,8 +83,6 @@ if any(xFe(:)>0 & xFe(:)<1)
     
 
     % update solution
-    % XFe(inz,inx)    = (a2*XFeo(inz,inx) + a3*XFeoo(inz,inx) + (b1*dXFedt + b2*dXFedto + b3*dXFedtoo)*dt)/a1;
-    % XSi(inz,inx)    = (a2*XSio(inz,inx) + a3*XSioo(inz,inx) + (b1*dXSidt + b2*dXSidto + b3*dXSidtoo)*dt)/a1;
     % residual of entropy evolution
     res_XFe = (a1*XFe(inz,inx)-a2*XFeo(inz,inx)-a3*XFeoo(inz,inx))/dt - (b1*dXFedt + b2*dXFedto + b3*dXFedtoo);
     res_XSi = (a1*XSi(inz,inx)-a2*XSio(inz,inx)-a3*XSioo(inz,inx))/dt - (b1*dXSidt + b2*dXSidto + b3*dXSidtoo);
@@ -128,8 +124,6 @@ advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN
 dCFedt   = advn_CFe;
 
 % update solution
-% CFe(inz,inx) = (a2*CFeo(inz,inx) + a3*CFeoo(inz,inx) + (b1*dCFedt + b2*dCFedto + b3*dCFedtoo)*dt)/a1;
-% CSi(inz,inx) = (a2*CSio(inz,inx) + a3*CSioo(inz,inx) + (b1*dCSidt + b2*dCSidto + b3*dCSidtoo)*dt)/a1;
 % residual of entropy evolution
 res_CFe = (a1*CFe(inz,inx)-a2*CFeo(inz,inx)-a3*CFeoo(inz,inx))/dt - (b1*dCFedt + b2*dCFedto + b3*dCFedtoo);
 res_CSi = (a1*CSi(inz,inx)-a2*CSio(inz,inx)-a3*CSioo(inz,inx))/dt - (b1*dCSidt + b2*dCSidto + b3*dCSidtoo);
