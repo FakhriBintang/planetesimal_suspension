@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  1;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -19,7 +19,7 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  10000;                  % domain depth
-Nz              =  500;                     % number of real x/z block nodes
+Nz              =  250;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates

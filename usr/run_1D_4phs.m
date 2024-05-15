@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  500;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-2;                 % solid grain size [m]
-df          =  1e-2;                 % metal droplet size [m]
-dm          =  1e-2;                 % melt film size [m]
+dx          =  1e-3;                 % solid grain size [m]
+df          =  1e-3;                 % metal droplet size [m]
+dm          =  1e-3;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -156,7 +156,7 @@ reltol    	= 1e-6;                     % relative residual tolerance for nonline
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.5e2*yr;                   % maximum time step
+dtmax       = 1e-3*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter

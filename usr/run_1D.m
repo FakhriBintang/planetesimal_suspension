@@ -6,7 +6,7 @@ clear ; close all
 RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -15,7 +15,7 @@ maxstep         =  1e6;                     % maximum number of time steps
 tend            =  1e6*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  1e-6*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  10000;                  % domain depth
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1350+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  1350+273.15;                                      % isothermal top reference temperature 
-T1      =  1350+273.15;                                % bottom potential temperature (if different from top) [k]
+T0      =  600+273.15;                                % reference/top potential temperature [k]
+Ttop0   =  T0;                                      % isothermal top reference temperature 
+T1      =  600+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -87,7 +87,7 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtaSol0     =  1e20;                    % reference silicate/iron crystal viscosity
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
@@ -154,9 +154,9 @@ TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 20;                       % maximum iteration count
+maxit       = 30;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.5e2*yr;                   % maximum time step
+dtmax       = 1e-3*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter

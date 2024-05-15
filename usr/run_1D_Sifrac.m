@@ -6,7 +6,7 @@ clear all;% close all
 RunID           =  ['1D_4phs_heating'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  1;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -28,7 +28,7 @@ L               =  h*Nx;
 %% set thermochemical parameters
 
 % set initial system and component fractions
-xFe0            =  0;                     % Fe-FeS system fraction
+xFe0            =  1e-16;                     % Fe-FeS system fraction
 cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
 
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1300+273.15;                                % reference/top potential temperature [k]
+T0      =  1500+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1300+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1500+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  0.5e-2;                 % solid grain size [m]
-df          =  0.5e-2;                 % metal droplet size [m]
-dm          =  0.5e-2;                 % melt film size [m]
+dx          =  1e-2;                 % solid grain size [m]
+df          =  1e-2;                 % metal droplet size [m]
+dm          =  1e-2;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -129,7 +129,7 @@ end
 %% set boundary conditions
 % Temperature boundary conditions
 BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
-BCTBot      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
 % Velocity boundary conditions: free slip = -1; no slip = 1
@@ -152,12 +152,12 @@ ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quic
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-3;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 10;                       % maximum iteration count
 CFL         = 0.10;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-5*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
+dtmax       = 1e-2*yr;                   % maximum time step
+etareg      = 1e5;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter
 beta     =  0.25;                % iterative damping parameter

@@ -41,7 +41,6 @@ Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
 thtv = squeeze(prod(Mv.^Xf,2));
 
 % get momentum flux and transfer coefficients
-% Cv = ((1-ff)./[dx;dm;df].^2.*kv.*thtv).^-1;
 Cv   = ff.*(1-ff)./[dx;dm;df].^2.*kv.*thtv;
 Ksgr = ff./Cv;
 

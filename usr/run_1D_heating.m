@@ -3,10 +3,10 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['1D_10km_heating_04myr'];     % run identifier
+RunID           =  ['1D_10km_heating_05myr'];     % run identifier
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+nop             =  23100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -18,7 +18,7 @@ tend            =  5e5*yr;                  % model stopping time [s]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  100000;                  % domain depth
+D               =  10000;                  % domain depth
 Nz              =  200;                     % number of real x/z block nodes
 Nx = 1;
 % [do not modify]
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-4;                 % solid grain size [m]
-df          =  1e-4;                 % metal droplet size [m]
-dm          =  1e-4;                 % melt film size [m]
+dx          =  0.5e-2;                 % solid grain size [m]
+df          =  0.5e-2;                 % metal droplet size [m]
+dm          =  0.5e-2;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -87,7 +87,7 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtaSol0     =  1e18;                    % reference silicate/iron crystal viscosity
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
@@ -118,7 +118,7 @@ radheat = 1;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.6*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -155,9 +155,9 @@ TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 20;                       % maximum iteration count
+maxit       = 15;                       % maximum iteration count
 CFL         = 0.10;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 5e2*yr;                   % maximum time step
+dtmax       = 1e2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.50;                % iterative step size parameter

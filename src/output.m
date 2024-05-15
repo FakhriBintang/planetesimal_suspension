@@ -85,10 +85,12 @@ if plot_op
         title('$\phi_{j}^i$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
         subplot(1,4,3)
-        plot(mean(GFes(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        plot(mean(GFes(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(GFel(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
         title('$\Gamma_{Fe}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(GSis(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        plot(mean(GSis(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
+        plot(mean(GFel(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
         title('$\Gamma_{Si}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh3 = figure(3); clf;
@@ -136,6 +138,7 @@ if plot_op
         plot(mean(XSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
         plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1)./1000,'-k','LineWidth',2);
         plot(mean(XFe(2:end-1,2:end-1),2)+ mean(XSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'--','LineWidth',2);
+        plot(mean(FlFe(2:end-1,2:end-1),2)+ mean(FlSi(2:end-1,2:end-1),2)+mean(FsFe(2:end-1,2:end-1),2)+ mean(FsSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'--','LineWidth',2);
         legend('XFe', 'XSi', 'rho', 'XFe +XSi')
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,5,2)
@@ -384,6 +387,28 @@ if ~exist('fh3','var'); fh3 = figure(3);
     end
     xlabel('Time [yr]',TX{:},FS{:});
 end
+
+%% diagnose thermal spike in 4 phs
+fh18 = figure(18); clf;
+subplot(1,4,1)
+plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+title('$T [^\circ$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+ylabel('Depth [km]',TX{:},FS{:});
+subplot(1,4,2)
+plot(mean(S(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+title('S',TX{:},FS{:}); set(gca,TL{:},TS{:});
+ylabel('Depth [km]',TX{:},FS{:});
+subplot(1,4,3)
+plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(advn_S,zP(2:end-1)./1000,'LineWidth',2);
+plot(diff_S,zP(2:end-1)./1000,'LineWidth',2);
+plot(diss_T,zP(2:end-1)./1000,'LineWidth',2);
+title('dSdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('dSdt', 'adv S', 'diff S', 'ent prod')
+ylabel('Depth [km]',TX{:},FS{:});
+subplot(1,4,4)
+ plot((mean(T(2:end-1,2:end-1),2)-mean(To(2:end-1,2:end-1),2))./dt,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+title('dTdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
 drawnow
 
 %% save output
@@ -407,6 +432,8 @@ if save_op
         print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_consv_',num2str(floor(step/nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-image');
+        name = [outpath '/',RunID,'_diagnostics_',num2str(floor(step/nop))]; % figure 5
+        print(fh18,name,'-dpng','-r300','-image');
 
     else  % save 2D plots
 
@@ -434,7 +461,8 @@ if save_op
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr');
+        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr',...
+        'advn_S', 'To', 'So');
     name = [outpath '/',RunID,'_cont'];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
         'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
