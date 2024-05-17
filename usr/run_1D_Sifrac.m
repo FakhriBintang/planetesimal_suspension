@@ -166,6 +166,7 @@ beta     =  0.25;                % iterative damping parameter
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
+
 switch systemname
     case 'Horatio'
         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
@@ -182,6 +183,9 @@ addpath('../src/cbrewer/')
 % use color brewer to create colormaps
 cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
+load ocean.mat;
+
+infile = ['run_1D_Sifrac.m'];
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');
@@ -190,4 +194,3 @@ fprintf(1,    '************************************************************\n\n'
 
 initialise;
 run('main');
-

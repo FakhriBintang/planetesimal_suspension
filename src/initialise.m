@@ -3,6 +3,9 @@
 % print initialisation header
 fprintf(1,'  ---  initialise model run \n\n');
 
+if save_op
+copyfile(infile, outpath);
+end
 
 %% setup numerical grid
 % set dimensions of staggered/ghosted 2D grid

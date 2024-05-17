@@ -3,26 +3,26 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['1D_4phs_heating'];     % run identifier
-plot_op         =  1;                       % switch on to plot live output
-save_op         =  0;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
-bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
+RunID           =  '2D_settling_2';               % run identifier
+plot_op         =  1;                    % switch on to plot live output
+save_op         =  0;                    % switch on to save output files
+nop             =  50;                   % output every 'nop' grid steps of transport
+bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
-yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e6;                     % maximum number of time steps
-tend            =  1e6*yr;                  % model stopping time [s]
+yr              =  3600*24*365.25;       % seconds per year
+maxstep         =  100000;                  % maximum number of time steps
+tend            =  1e8*yr;           % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  1e-3*yr;          % (initial) time step [s]
 
 %% set model domain
-D               =  10000;                  % domain depth
-Nz              =  200;                     % number of real x/z block nodes
-Nx              = 1;
+D               =  100000;                  % domain depth
+Nz              =  200;                  % number of real x/z block nodes
+Nx              = 20;
 % [do not modify]
-h               =  D/Nz;                     % spacing of x/z  coordinates
+h               =  D/Nz;          % spacing of x/z  coordinates
 L               =  h*Nx;
 
 %% set thermochemical parameters
@@ -56,9 +56,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1350+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1350+273.15;                                % bottom potential temperature (if different from top) [k]
+T0      =  1600+273.15;                             % reference/top potential temperature [k]
+Ttop0   =  273.15;                                      % isothermal top reference temperature 
+T1      =  1600+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -75,9 +75,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-3;                 % solid grain size [m]
-df          =  1e-3;                 % metal droplet size [m]
-dm          =  1e-3;                 % melt film size [m]
+dx          =  1e-4;                 % solid grain size [m]
+df          =  1e-4;                 % metal droplet size [m]
+dm          =  1e-4;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -112,13 +112,12 @@ Cp          = 1000;                     % mixture heat capacity
 dEntrSi     = -200;                     % silicate entropy of crystallisation
 dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
 
-
 %% set heating parameters (if turned on)
 radheat = 0;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 0.0*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -126,9 +125,10 @@ if radheat
     t_halfAl    = 717000*yr; % half life of 26Al
     EAl         = 5e-13;        % decay energy
 end
+
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -136,11 +136,6 @@ BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom bo
 BCsides     = -1;                       % side boundaries
 BCtop       = -1;                       % top boundary
 BCbot       = -1;                       % bottom boundary
-
-% segregation boundary conditions: 0 = depletion/accumulation; 1 =
-% supply/sink
-BCsegTop = 0;
-BCsegBot = 0;
 switch BCTTop
     case'flux'
     qT0 = -10;
@@ -152,21 +147,18 @@ ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quic
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-3;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 20;                       % maximum iteration count
-CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-tmax       = 1e-3*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
-TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha    =  0.50;                % iterative step size parameter
-beta     =  0.25;                % iterative damping parameter
+CFL         = 0.25;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e3*yr;                   % maximum time step
+etareg      = 1e5;                      % regularisation factor for viscosity
+TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 
 %% start model
 % create output directory
 [~,systemname]  = system('hostname');
 systemname(end) = [];
-
 switch systemname
     case 'Horatio'
         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
@@ -185,8 +177,6 @@ cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
-infile = ['run_1D_4phs.m'];
-
 % print run header
 fprintf(1,'\n\n************************************************************\n');
 fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);
@@ -194,3 +184,5 @@ fprintf(1,    '************************************************************\n\n'
 
 initialise;
 run('main');
+
+
