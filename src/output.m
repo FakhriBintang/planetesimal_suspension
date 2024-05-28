@@ -90,7 +90,7 @@ if plot_op
         title('$\Gamma_{Fe}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
         plot(mean(GSis(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
-        plot(mean(GFel(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
+        plot(mean(GSil(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
         title('$\Gamma_{Si}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         fh3 = figure(3); clf;

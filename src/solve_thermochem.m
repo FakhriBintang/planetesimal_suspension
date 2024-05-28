@@ -68,10 +68,6 @@ switch BCTSides
         S(:,[1 end]) = S(:,[2 end-1]);
 end
 
-% update temperature
-T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
-    + aT.*(Pt - P0)./rhoRef./Cp);
-
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
 if any(xFe(:)>0 & xFe(:)<1)
     dXFedt          = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
@@ -199,14 +195,14 @@ FsFe = max(0, FsFe );
 FsSi = max(0, FsSi );
 
 % liquid
-% GFel        = ((XFe.*flFeq-FlFe)./(4.*dt));
-GFel = -GFes;
+GFel        = ((XFe.*flFeq-FlFe)./(4.*dt));
+% GFel = -GFes;
 advn_FFel   = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlFedt     = advn_FFel + GFel(inz,inx);
 res_FlFe = (a1*FlFe(inz,inx)-a2*FlFeo(inz,inx)-a3*FlFeoo(inz,inx))/dt - (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo);
 
-% GSil        = ((XSi.*flSiq-FlSi)./(4.*dt));
-GSil = -GSis;
+GSil        = ((XSi.*flSiq-FlSi)./(4.*dt));
+% GSil = -GSis;
 advn_FSil   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFlSidt     = advn_FSil + GSil(inz,inx);                                       % total rate of change
 res_FlSi = (a1*FlSi(inz,inx)-a2*FlSio(inz,inx)-a3*FlSioo(inz,inx))/dt - (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo);
@@ -231,8 +227,8 @@ n26Al = (a2*n26Alo + a3*n26Aloo + (b1*dndt + b2*dndto + b3*dndtoo)*dt)/a1;
 end
 
 % % update temperature
-% T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
-%     + aT.*(Pt - P0)./rhoRef./Cp);
+T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
+    + aT.*(Pt - P0)./rhoRef./Cp);
 
 % update system fractions
 xFe = max(0,min(1, XFe./RHO));
