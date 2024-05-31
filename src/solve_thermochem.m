@@ -218,6 +218,8 @@ FlSi([1 end],:) = FlSi([2 end-1],:);  FlSi(:,[1 end]) = FlSi(:,[2 end-1]);  % ap
 FlFe = max(0, FlFe );
 FlSi = max(0, FlSi );
 
+RHO = FsSi+FsFe+FlSi+FlFe;
+
 if radheat 
 % update radioactive isotope decay and heating rate
 [dndt,H]    = rad_decay(n26Al,tauAl,EAl);
@@ -238,15 +240,15 @@ hasFe   = xFe>TINY1 & xSi<1-TINY1;
 hasSi   = xSi>TINY1 & xFe<1-TINY1;
 
 % update chemical composition
-cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
-cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
+cSi(hasSi) = CSi(hasSi)./(FlSi(hasSi)+FsSi(hasSi));
+cFe(hasFe) = CFe(hasFe)./(FlFe(hasFe)+FsFe(hasFe));
 
 % update phase fractions [wt]
-fsFe(hasFe) = max(0,min(1, FsFe(hasFe)./max(TINY,XFe(hasFe)) ));
-fsSi(hasSi) = max(0,min(1, FsSi(hasSi)./max(TINY,XSi(hasSi)) ));
+flFe(hasFe) = max(0,min(1,FlFe(hasFe)./XFe(hasFe)));
+flSi(hasSi) = max(0,min(1,FlSi(hasSi)./XSi(hasSi)));
+fsFe(hasFe) = max(0,min(1,FsFe(hasFe)./XFe(hasFe)));
+fsSi(hasSi) = max(0,min(1,FsSi(hasSi)./XSi(hasSi)));
 
-flFe(hasFe) = max(0,min(1, FlFe(hasFe)./max(TINY,XFe(hasFe)) ));
-flSi(hasSi) = max(0,min(1, FlSi(hasSi)./max(TINY,XSi(hasSi)) ));
 
 % flFe(hasFe) = 1-fsFe(hasFe); 
 % flSi(hasSi) = 1-fsSi(hasSi);
