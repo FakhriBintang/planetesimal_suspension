@@ -40,6 +40,8 @@ res_S = (a1*S(inz,inx)-a2*So(inz,inx)-a3*Soo(inz,inx))/dt - (b1*dSdt + b2*dSdto 
 S(inz,inx)     = S(inz,inx) - alpha*res_S*dt/a1 + beta*upd_S;
 upd_S =   - alpha*res_S*dt/a1 + beta*upd_S;
 
+%% test whether forcing Si to stay constant 
+
 % apply boundaries
 Ds = xFe.*fsFe.*dEntrFe + xSi.*fsSi.*dEntrSi;
 
@@ -240,8 +242,8 @@ hasFe   = xFe>TINY1 & xSi<1-TINY1;
 hasSi   = xSi>TINY1 & xFe<1-TINY1;
 
 % update chemical composition
-cSi(hasSi) = CSi(hasSi)./(FlSi(hasSi)+FsSi(hasSi));
-cFe(hasFe) = CFe(hasFe)./(FlFe(hasFe)+FsFe(hasFe));
+cSi(hasSi) = CSi(hasSi)./max(XSi(hasSi),(FlSi(hasSi)+FsSi(hasSi)));
+cFe(hasFe) = CFe(hasFe)./max(XFe(hasFe),(FlFe(hasFe)+FsFe(hasFe)));
 
 % update phase fractions [wt]
 flFe(hasFe) = max(0,min(1,FlFe(hasFe)./XFe(hasFe)));
