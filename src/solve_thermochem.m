@@ -138,8 +138,8 @@ upd_CSi =   - alpha*res_CSi*dt/a1 + beta*upd_CSi;
 
 % cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
 % solidus or above the liquidus
-CSi(~hassolSi|~hasliqSi) = XSi(~hassolSi|~hasliqSi) .*cSi(~hassolSi|~hasliqSi);
-CFe(~hassolFe|~hasliqFe) = XFe(~hassolFe|~hasliqFe) .*cFe(~hassolFe|~hasliqFe);
+% CSi(~hassolSi|~hasliqSi) = XSi(~hassolSi|~hasliqSi) .*cSi(~hassolSi|~hasliqSi);
+% CFe(~hassolFe|~hasliqFe) = XFe(~hassolFe|~hasliqFe) .*cFe(~hassolFe|~hasliqFe);
 
 % apply boundaries
 CSi([1 end],:) = CSi([2 end-1],:);  CSi(:,[1 end]) = CSi(:,[2 end-1]);
@@ -244,13 +244,17 @@ hasSi   = xSi>TINY1 & xFe<1-TINY1;
 % update chemical composition
 cSi(hasSi) = CSi(hasSi)./max(XSi(hasSi),(FlSi(hasSi)+FsSi(hasSi)));
 cFe(hasFe) = CFe(hasFe)./max(XFe(hasFe),(FlFe(hasFe)+FsFe(hasFe)));
+% change when nan is produced to zero
+cSi(isnan(cSi)) = 0; cFe(isnan(cFe)) = 0;
 
 % update phase fractions [wt]
 flFe(hasFe) = max(0,min(1,FlFe(hasFe)./XFe(hasFe)));
 flSi(hasSi) = max(0,min(1,FlSi(hasSi)./XSi(hasSi)));
 fsFe(hasFe) = max(0,min(1,FsFe(hasFe)./XFe(hasFe)));
 fsSi(hasSi) = max(0,min(1,FsSi(hasSi)./XSi(hasSi)));
-
+% ensure real numbers
+flFe(isnan(flFe)) = 0; fsFe(isnan(fsFe)) = 0;
+flSi(isnan(flSi)) = 0; fsFe(isnan(fsSi)) = 0;
 
 % flFe(hasFe) = 1-fsFe(hasFe); 
 % flSi(hasSi) = 1-fsSi(hasSi);
