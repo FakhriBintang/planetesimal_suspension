@@ -202,6 +202,9 @@ if restart
                     ,RunID,'/',RunID,'_hist.mat'];
         end
     end
+    % make new output folder for restart
+    outpath = [outpath,'/_cont'];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end 
 
 end
 
