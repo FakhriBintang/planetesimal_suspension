@@ -116,13 +116,13 @@ Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
     + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
 Vel([1 end],:) = Vel([2 end-1],:);
 Vel(:,[1 end]) = Vel(:,[2 end-1]);
-kW  = Vel/10*h/10; % diffusivity due to turbulent eddies
+kW    = Vel/10*h/10; % diffusivity due to turbulent eddies
 kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f*df*10);                                   % segregation fluctuation diffusivity
 kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x*dx*10);
 kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x*dx*10);
-klFe  = philSi.*philFe.*(kwlFe + kW);
-ksFe  = philSi.*phisFe.*(kwsFe + kW);
-ksSi  = philSi.*phisSi.*(kwsSi + kW);
+klFe  = philFe.*(kwlFe + 0*kW) + mink;
+ksFe  = phisFe.*(kwsFe + 0*kW) + mink;
+ksSi  = phisSi.*(kwsSi + 0*kW) + mink;
 
 
 
@@ -134,20 +134,12 @@ Div_V([1 end],:) = Div_V([2 end-1],:);                                     % app
 Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
 
 % update volume source
-if step>0
+if ~bnchm && step>0
     Div_rhoV = + advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''   },[1,2],BCA) ...
                + advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''   },[1,2],BCA);
-    res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt + (b1*Div_rhoV + b2*Div_rhoVo + b3*Div_rhoVoo);  % get residual of mixture mass conservation
-    % volume source and background velocity passed to fluid-mechanics solver
-    VolSrc  = Div_V(2:end-1,2:end-1) - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;  % correct volume source term by scaled residual
-    upd_rho =       - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;
 end
-
-% set variable boundary conditions
-UBG    = mean(mean(VolSrc))./2 .* (L/2 - XU);
-WBG    = mean(mean(VolSrc))./2 .* (D/2 - ZW);
 
 
 %% Calculate stress and strain rates

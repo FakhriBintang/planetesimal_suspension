@@ -71,7 +71,9 @@ gx  = zeros(nzU,nxU) + gx0;      gz  = zeros(nzW,nxW) + gz0;
 
 %% setup velocity-pressure solution arrays
 W           = zeros(nzW,nxW);               % z-velocity on z-face nodes
+WBG = W; %wf = 0.*W; wx = 0.*W; wm = 0.*W; upd_W = 0*W;
 U           = zeros(nzU,nxU);               % x-velocity on x-face nodes
+UBG = U;
 P           = zeros(nzP,nxP);               % pressure on centre nodes
 SOL         = [W(:);U(:);P(:)];             % full solution vector
 Vel         = zeros(nzP,nxP);               % velocity magnitude
@@ -164,6 +166,7 @@ rholSi = rholSi0.*(1 - aT.*(T-perTSi) - gCSi.*(clSi-cphsSi1));
 rhosFe = rhosFe0.*(1 - aT.*(T-perTFe) - gCFe.*(csFe-cphsFe1));
 rholFe = rholFe0.*(1 - aT.*(T-perTFe) - gCFe.*(clFe-cphsFe1));
 
+a1      = 1; a2 = 0; a3 = 0; b1 = 1; b2 = 0; b3 = 0;
 res = 1e3;
 tol = 1e-4;
 it = 0;
@@ -306,3 +309,69 @@ time        = 0;      % initialise time count
 step        = 1;      % initialise time step count
 iter        = 1;      % initialise iteration count
 dtlimit     = 'none'; % initialise time limiter
+
+% overwrite fields from file if restarting run
+if restart
+    if exist(name,'file')
+        fprintf('\n   restart from %s \n\n',name);
+        load(name);
+        load(name_h);
+
+        SOL = [W(:);U(:);P(:)];
+        RHO = FlFe+FlSi+FsFe+FsSi;
+        slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi);
+        slSi  = slFe;
+        ssFe  = slFe + dEntrFe;
+        ssSi  = slSi + dEntrSi;
+
+        up2date; 
+
+        So          = S;
+        XFeo        = XFe;
+        XSio        = XSi;
+        CSio        = CSi;
+        CFeo        = CFe;
+        FsFeo       = FsFe;
+        FsSio       = FsSi;
+        FlFeo       = FlFe;
+        FlSio       = FlSi;
+        dSdto       = dSdt;
+        dXFedto     = dXFedt;
+        dXSidto     = dXSidt;
+        dCFedto     = dCFedt;
+        dCSidto     = dCSidt;
+        dFsFedto    = dFsFedt;
+        dFsSidto    = dFsSidt;
+        dFlFedto    = dFlFedt;
+        dFlSidto    = dFlSidt;
+        rhoo        = rho;
+        Div_rhoVo   = Div_rhoV;
+        Div_Vo      = Div_V;
+        dto         = dt;
+        dsumMdt     = 0; dsumMdto = dsumMdt;
+        dsumSdt     = 0; dsumSdto = dsumSdt;
+        dsumXFedt   = 0; dsumXFedto = dsumXFedt;
+        dsumXSidt   = 0; dsumXSidto = dsumXSidt;
+        dsumCFedt   = 0; dsumCFedto = dsumCFedt;
+        dsumCSidt   = 0; dsumCSidto = dsumCSidt;
+      
+        output;
+
+        time    = time+dt;
+        step    = step+1;
+
+    else % continuation file does not exist, start from scratch
+        fprintf('\n   !!! restart file does not exist !!! \n   => starting run from scratch %s \n\n',runID);
+        solve_fluidmech;
+        up2date;
+        history;
+        output;
+    end
+else
+    % complete, plot, and save initial condition
+    solve_fluidmech;
+    up2date;
+    history;
+    output;
+    step = step+1;
+end

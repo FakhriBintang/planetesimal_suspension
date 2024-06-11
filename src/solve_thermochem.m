@@ -136,11 +136,6 @@ CSi(inz,inx)     = CSi(inz,inx) - alpha*res_CSi*dt/a1 + beta*upd_CSi;
 upd_CFe =   - alpha*res_CFe*dt/a1 + beta*upd_CFe;
 upd_CSi =   - alpha*res_CSi*dt/a1 + beta*upd_CSi;
 
-% cheat a little bit again and force C_i = X_i*c_i(t-1) when below the
-% solidus or above the liquidus
-% CSi(~hassolSi|~hasliqSi) = XSi(~hassolSi|~hasliqSi) .*cSi(~hassolSi|~hasliqSi);
-% CFe(~hassolFe|~hasliqFe) = XFe(~hassolFe|~hasliqFe) .*cFe(~hassolFe|~hasliqFe);
-
 % apply boundaries
 CSi([1 end],:) = CSi([2 end-1],:);  CSi(:,[1 end]) = CSi(:,[2 end-1]);
 CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);
@@ -178,12 +173,12 @@ flSiq = 1-fsSiq;
 GFes        = ((XFe.*fsFeq-FsFe)./(4.*dt));
 advn_FFes   = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsFedt     = advn_FFes + GFes(inz,inx);
-res_FsFe = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
+res_FsFe    = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
 
 GSis        = ((XSi.*fsSiq-FsSi)./(4.*dt));
 advn_FSis   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
 dFsSidt     = advn_FSis + GSis(inz,inx);                                       % total rate of change
-res_FsSi = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
+res_FsSi    = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
 
 FsFe(inz,inx)     = FsFe(inz,inx) - alpha*res_FsFe*dt/a1 + beta*upd_FsFe;
 FsSi(inz,inx)     = FsSi(inz,inx) - alpha*res_FsSi*dt/a1 + beta*upd_FsSi;

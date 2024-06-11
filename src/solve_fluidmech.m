@@ -1,6 +1,16 @@
 % Wi = W; Ui = U; Pi = P;
 % profile on
 
+if ~bnchm && step>0
+    res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt + (b1*Div_rhoV + b2*Div_rhoVo + b3*Div_rhoVoo);  % get residual of mixture mass conservation
+    % volume source and background velocity passed to fluid-mechanics solver
+    VolSrc  = Div_V(2:end-1,2:end-1) - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;  % correct volume source term by scaled residual
+    upd_rho =       - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;
+    % set variable boundary conditions
+    UBG    = mean(mean(VolSrc))./2 .* (L/2 - XU);
+    WBG    = mean(mean(VolSrc))./2 .* (D/2 - ZW);
+end
+
 %% assemble coefficients for matrix velocity diagonal and right-hand side
 II  = [];       % equation indeces into A
 JJ  = [];       % variable indeces into A

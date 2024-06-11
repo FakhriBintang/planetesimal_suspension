@@ -164,9 +164,9 @@ if plot_op
         TX = {'Interpreter','Latex'}; FS = {'FontSize',12};
         TL = {'TickLabelInterpreter','Latex'}; TS = {'FontSize',10};
         UN = {'Units','Centimeters'};
-        xq = xP(2:Nx/10:end-1):round(Nx/10):xP(end-1);  % x-indexes for quiver plots
+        % xq = xP(2:Nx/10:end-1):round(Nx/10):xP(end-1);  % x-indexes for quiver plots
         % zq = round(N/10/2)+1:round(N/10):nxP;  % z-indexes for quiver plots
-        zq = zP(2:Nz/10:end-1):round(Nz/10):nxP;  % z-indexes for quiver plots
+        % zq = zP(2:Nz/10:end-1):round(Nz/10):nxP;  % z-indexes for quiver plots
         
         % set axis and border dimensions
         axh = 6.00*sqrt(D/L); axw = 6.00*sqrt(L/D)+1.50;
