@@ -7,7 +7,7 @@ RunID           =  ['Jun_1D_4phs_reducedlimiters_test'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  10;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -156,7 +156,7 @@ reltol    	= 1e-6;                     % relative residual tolerance for nonline
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-1*yr;                   % maximum time step
+dtmax       = 0.5e-1*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha    =  0.75;                % iterative step size parameter

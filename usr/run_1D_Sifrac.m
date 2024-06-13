@@ -1,13 +1,13 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close all
+clear ;% close all
 
 RunID           =  ['1D_Sifrac'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+nop             =  10;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -20,7 +20,7 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  10000;                  % domain depth
-Nz              =  200;                     % number of real x/z block nodes
+Nz              =  250;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
@@ -78,7 +78,7 @@ gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx          =  1e-3;                 % solid grain size [m]
 df          =  1e-3;                 % metal droplet size [m]
-dm          =  1e-3;                 % melt film size [m]
+dm          =  1e-6;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
@@ -153,9 +153,9 @@ ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quic
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                       % maximum iteration count
+reltol    	= 1e-3;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
+maxit       = 20;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e-2*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
