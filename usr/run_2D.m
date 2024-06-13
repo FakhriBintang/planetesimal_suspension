@@ -3,11 +3,12 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  '2D_cooling_testing';               % run identifier
-plot_op         =  1;                    % switch on to plot live output
-save_op         =  1;                    % switch on to save output files
-nop             =  1;                   % output every 'nop' grid steps of transport
-bnchm           =  0;                    % manufactured solution benchmark on fluid mechanics solver
+RunID           =  ['2D'];     % run identifier
+restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+plot_op         =  1;                       % switch on to plot live output
+save_op         =  0;                       % switch on to save output files
+nop             =  1;                     % output every 'nop' grid steps of transport
+bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;       % seconds per year
@@ -56,9 +57,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1380+273.15;                             % reference/top potential temperature [k]
-Ttop0   =  0+273.15;                                      % isothermal top reference temperature 
-T1      =  1380+273.15;                             % bottom potential temperature (if different from top) [k]
+T0      =  1400+273.15;                             % reference/top potential temperature [k]
+Ttop0   =  T0+273.15;                                      % isothermal top reference temperature 
+T1      =  1400+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -128,7 +129,7 @@ end
 
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -152,16 +153,16 @@ end
 ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
-lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-3;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-5;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 20;                       % maximum iteration count
-CFL         = 0.1;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 10.0e-1*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
-TINT        =  'bd3i';                  % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha    =  0.50;                % iterative step size parameter
-beta     =  0.25;                % iterative damping parameter
+abstol      = 1e-6;                     % absolute residual tolerance for nonlinear iterations
+maxit       = 50;                       % maximum iteration count
+CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 10e-2*yr;                   % maximum time step
+etareg      = 1e3;                      % regularisation factor for viscosity
+TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
+alpha    =  0.75;                % iterative step size parameter
+beta     =  0.125;               % iterative damping parameter
+mink        = 1e-7;                     % minimum diffusivity
 
 %% start model
 % create output directory
@@ -176,6 +177,36 @@ switch systemname
         outpath = ['../out/',RunID];
         if ~exist(outpath, 'dir'); mkdir(outpath); end
 end
+% initialise restart frame if switched on
+if restart
+    if     restart < 0  % restart from last continuation frame
+        switch systemname
+            case 'Horatio'
+                name    = [outpath,'/',RunID,'_cont.mat']; 
+                name_h  = [outpath,'/',RunID,'_hist.mat']; 
+            otherwise % must specify full output directory, not necessarily nestled in the same model folder
+                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_cont.mat'];
+                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_hist.mat'];
+        end
+    elseif restart > 0  % restart from specified continuation frame
+        switch systemname
+            case 'Horatio'
+                name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
+                name_h  = [outpath,'/',RunID,'_hist.mat']; 
+            otherwise % must specify full output directory, not necessarily nestled in the same model folder
+                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
+                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_hist.mat'];
+        end
+    end
+    % make new output folder for restart
+    outpath = [outpath,'/_cont'];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end 
+
+end
 
 % add path to source directory
 addpath('../src')
@@ -186,7 +217,7 @@ cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
-infile = ['run_2D.m'];
+infile = ['run_1D_4phs.m'];
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');

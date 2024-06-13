@@ -4,10 +4,10 @@
 clear ; close all
 
 RunID           =  ['Jun_1D_4phs_reducedlimiters_test'];     % run identifier
-restart         =  45;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -152,16 +152,15 @@ end
 ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
-lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-3*yr;                   % maximum time step
+dtmax       = 1e-1*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       =  0.50;                % iterative step size parameter
-beta        =  0.25;                % iterative damping parameter
+alpha    =  0.75;                % iterative step size parameter
+beta     =  0.125;               % iterative damping parameter
 mink        = 1e-8;                     % minimum diffusivity
 
 %% start model

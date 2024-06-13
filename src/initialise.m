@@ -306,7 +306,7 @@ history;
 %% initialise counting variables
 RUN.frame   = 0;      % initialise output frame count
 time        = 0;      % initialise time count
-step        = 1;      % initialise time step count
+step        = 0;      % initialise time step count
 iter        = 1;      % initialise iteration count
 dtlimit     = 'none'; % initialise time limiter
 

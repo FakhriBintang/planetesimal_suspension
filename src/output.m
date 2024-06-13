@@ -389,6 +389,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
 end
 
 %% diagnose thermal spike in 4 phs
+if step>0
 fh18 = figure(18); clf;
 subplot(1,4,1)
 plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
@@ -410,6 +411,7 @@ subplot(1,4,4)
  plot((mean(T(2:end-1,2:end-1),2)-mean(To(2:end-1,2:end-1),2))./dt,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
 title('dTdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
 drawnow
+end
 
 %% save output
 if save_op
@@ -432,8 +434,10 @@ if save_op
         print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_consv_',num2str(floor(step/nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-image');
+        if step>0
         name = [outpath '/',RunID,'_diagnostics_',num2str(floor(step/nop))]; % figure 5
         print(fh18,name,'-dpng','-r300','-image');
+        end
 
     else  % save 2D plots
 
@@ -461,19 +465,18 @@ if save_op
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr',...
-        'advn_S', 'To', 'So');
+        'rhoo','T','yr','nxP','nzP','time','step','Hr');
     name = [outpath '/',RunID,'_cont'];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
         'fsFe','flFe','fsSi','flSi','S','XFe','XSi','CFe','CSi','FsFe','FlFe','FsSi','FlSi',...
         'phisFe','philFe','phisSi','philSi','rho','Eta','segsFe','seglFe','segsSi','seglSi',...
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
-        'rhoo','T','yr','nxP','nzP','time','step','EntProd','dSdt','diss_T','advn_S','Hr');
+        'rhoo','T','yr','nxP','nzP','time','step','Hr');
     name = [outpath,'/',RunID,'_hist'];
     save(name,'HST');
 
-    if step == 0
+    if (step==0 || restart)
         logfile = [outpath '/',RunID,'.log'];
         if exist(logfile,'file'); delete(logfile); end
         diary(logfile)

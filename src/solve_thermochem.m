@@ -11,12 +11,12 @@ TINY1 = 1e-6;
 % store previous iteration (diagnostic)
 Ti    = T;
 Si    = S;
-xFei  = xFe;
-xSii  = xSi;
-cFei  = cFe;
-cSii  = cSi;
-flFei = flFe;
-flSii = flSi;
+XFei  = XFe;
+XSii  = XSi;
+CFei  = CFe;
+CSii  = CSi;
+FlFei = FlFe;
+FlSii = FlSi;
 
 %% update heat content (entropy)
 advn_S = - advect(FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...  % heat advection
@@ -278,9 +278,10 @@ ssSi  = slSi + dEntrSi;
 
 %% get residual of thermochemical equations from iterative update
 normS   = norm(S    - Si   ,2)./(norm(S   ,2)+TINY);
-normxFe = norm(xFe  - xFei ,2)./(norm(xFe ,2)+TINY);
-normcFe = norm(cFe  - cFei ,2)./(norm(cFe ,2)+TINY);
-normcSi = norm(cSi  - cSii ,2)./(norm(cSi ,2)+TINY);
-normfFe = norm(flFe - flFei,2)./(norm(flFe,2)+TINY);
-normfSi = norm(flSi - flSii,2)./(norm(flSi,2)+TINY);
-resnorm_TC = normS + normxFe + normcSi + normcFe + normfFe + normfSi;
+normXFe = norm(XFe  - XFei ,2)./(norm(XFe ,2)+TINY);
+normXSi = norm(XSi  - XSii ,2)./(norm(XSi ,2)+TINY);
+normCFe = norm(CFe  - CFei ,2)./(norm(CFe ,2)+TINY);
+normCSi = norm(CSi  - CSii ,2)./(norm(CSi ,2)+TINY);
+normFFe = norm(FlFe - FlFei,2)./(norm(FlFe,2)+TINY);
+normFSi = norm(FlSi - FlSii,2)./(norm(FlSi,2)+TINY);
+resnorm_TC = normS + normXFe + normXSi + normCSi + normCFe + normFFe + normFSi;
