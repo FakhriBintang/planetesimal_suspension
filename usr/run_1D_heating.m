@@ -3,24 +3,24 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['1D_heating'];     % run identifier
+RunID           =  ['1D_heating_50km_ef'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  1000;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e6;                     % maximum number of time steps
-tend            =  1e6*yr;                  % model stopping time [s]
+maxstep         =  1e7;                     % maximum number of time steps
+tend            =  5e6*yr;                  % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  10000;                  % domain depth
-Nz              =  200;                     % number of real x/z block nodes
+D               =  50000;                  % domain depth
+Nz              =  300;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
@@ -119,7 +119,7 @@ radheat = 1;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 1*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -157,7 +157,7 @@ reltol    	= 1e-6;                     % relative residual tolerance for nonline
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
 CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-3*yr;                   % maximum time step
+dtmax       = 5e1*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       =  0.50;                % iterative step size parameter

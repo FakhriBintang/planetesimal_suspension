@@ -411,6 +411,35 @@ subplot(1,4,4)
  plot((mean(T(2:end-1,2:end-1),2)-mean(To(2:end-1,2:end-1),2))./dt,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
 title('dTdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
 drawnow
+
+fh88 = figure(88); clf;
+subplot(1,5,1)
+plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+title('dSdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+ylabel('Depth [km]',TX{:},FS{:});
+subplot(1,5,2)
+plot(dCSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dCFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dCdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si', 'Fe')
+subplot(1,5,3)
+plot(dXSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dXFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dXdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si', 'Fe')
+subplot(1,5,4)
+plot(dFsSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dFlSidt,zP(2:end-1)./1000,'LineWidth',2);
+plot(dFsFedt,zP(2:end-1)./1000,'LineWidth',2);
+plot(dFlFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dFdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si s','Si l', 'Fe s', 'Fe l')
+subplot(1,5,5)
+plot(advn_FSis,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(advn_FSil,zP(2:end-1)./1000,'LineWidth',2);
+title('adv FSi',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('s', 'l')
+drawnow
 end
 
 %% save output

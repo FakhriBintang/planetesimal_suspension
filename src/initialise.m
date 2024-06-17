@@ -313,6 +313,7 @@ dtlimit     = 'none'; % initialise time limiter
 % overwrite fields from file if restarting run
 if restart
     if exist(name,'file')
+        %path specified in the run script
         fprintf('\n   restart from %s \n\n',name);
         load(name);
         load(name_h);
