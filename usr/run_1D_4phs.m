@@ -162,49 +162,49 @@ alpha       =  0.75;                    % iterative step size parameter
 beta        =  0.25;                    % iterative damping parameter
 mink        =  1e-8;                    % minimum diffusivity
 
-% %% start model
-% % create output directory
-% [~,systemname]  = system('hostname');
-% systemname(end) = [];
-% 
-% switch systemname
-%     case 'Horatio'
-%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-%     otherwise
-%         outpath = ['../out/',RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-% end
-% % initialise restart frame if switched on
-% if restart
-%     if     restart < 0  % restart from last continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_cont.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_cont.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     elseif restart > 0  % restart from specified continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     end
-%     % make new output folder for restart
-%     outpath = [outpath,'/_cont'];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
-% 
-% end
+%% start model
+% create output directory
+[~,systemname]  = system('hostname');
+systemname(end) = [];
+
+switch systemname
+    case 'Horatio'
+        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end
+    otherwise
+        outpath = ['../out/',RunID];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end
+end
+% initialise restart frame if switched on
+if restart
+    if     restart < 0  % restart from last continuation frame
+        switch systemname
+            case 'Horatio'
+                name    = [outpath,'/',RunID,'_cont.mat']; 
+                name_h  = [outpath,'/',RunID,'_hist.mat']; 
+            otherwise % must specify full output directory, not necessarily nestled in the same model folder
+                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_cont.mat'];
+                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_hist.mat'];
+        end
+    elseif restart > 0  % restart from specified continuation frame
+        switch systemname
+            case 'Horatio'
+                name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
+                name_h  = [outpath,'/',RunID,'_hist.mat']; 
+            otherwise % must specify full output directory, not necessarily nestled in the same model folder
+                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
+                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+                    ,RunID,'/',RunID,'_hist.mat'];
+        end
+    end
+    % make new output folder for restart
+    outpath = [outpath,'/_cont'];
+        if ~exist(outpath, 'dir'); mkdir(outpath); end 
+
+end
 
 % add path to source directory
 addpath('../src')
