@@ -58,8 +58,10 @@ Ksgr_x = squeeze(Ksgr(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:)
 Ksgr_m = squeeze(Ksgr(2,:,:)) + TINY^2;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]); % silicate melt
 Ksgr_f = squeeze(Ksgr(3,:,:)) + TINY^2;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]); % iron melt
 % dampen liquid segregation at low crystalinities
-Ksgr_m = Ksgr_m.*(1-philSi).^2; Ksgr_m = max(TINY^2,Ksgr_m);
-Ksgr_f = Ksgr_f.*(1-philFe).^2; Ksgr_f = max(TINY^2,Ksgr_f);
+Ksgr_m = Ksgr_m.*(1-philSi).^1; 
+Ksgr_f = Ksgr_f.*(1-philFe).^1; 
+Ksgr_m = max(TINY^2,Ksgr_m);
+Ksgr_f = max(TINY^2,Ksgr_f);
 
 %% segregation coefficients for compaction length calculation
 % Cv_m = squeeze(Cv(2,:,:)); % silicate melt
@@ -132,14 +134,6 @@ Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                   % get velocit
     + ddx(U(2:end-1,:),h);
 Div_V([1 end],:) = Div_V([2 end-1],:);                                     % apply boundary conditions
 Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
-
-% update volume source
-if ~bnchm && step>0
-    Div_rhoV = + advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
-               + advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''   },[1,2],BCA) ...
-               + advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''   },[1,2],BCA) ...
-               + advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''   },[1,2],BCA);
-end
 
 
 %% Calculate stress and strain rates

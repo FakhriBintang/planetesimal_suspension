@@ -6,7 +6,7 @@ end
 
 
 % test smaller tiny criterion
-TINY1 = 1e-6;
+SMALL = 1e-6;% TINY^0.5;
 
 % store previous iteration (diagnostic)
 Ti    = T;
@@ -71,43 +71,43 @@ switch BCTSides
 end
 
 %% update system fractions, only one system needs to be solved as SUM_i(X_i) = 1
-if any(xFe(:)>0 & xFe(:)<1)
-    dXFedt          = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
-                      - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
-
-    % update solution
-    XFe(inz,inx)    = (a2*XFeo(inz,inx) + a3*XFeoo(inz,inx) + (b1*dXFedt + b2*dXFedto + b3*dXFedtoo)*dt)/a1;
-
-
-    dXSidt          = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
-                      - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
-    
-
-    % update solution
-    % residual of entropy evolution
-    res_XFe = (a1*XFe(inz,inx)-a2*XFeo(inz,inx)-a3*XFeoo(inz,inx))/dt - (b1*dXFedt + b2*dXFedto + b3*dXFedtoo);
-    res_XSi = (a1*XSi(inz,inx)-a2*XSio(inz,inx)-a3*XSioo(inz,inx))/dt - (b1*dXSidt + b2*dXSidto + b3*dXSidtoo);
-
-    % update solution
-    % semi-implicit update of bulk entropy density
-    XFe(inz,inx)     = XFe(inz,inx) - alpha*res_XFe*dt/a1 + beta*upd_XFe;
-    XSi(inz,inx)     = XSi(inz,inx) - alpha*res_XSi*dt/a1 + beta*upd_XSi;
-    upd_XFe =   - alpha*res_XFe*dt/a1 + beta*upd_XFe;
-    upd_XSi =   - alpha*res_XSi*dt/a1 + beta*upd_XSi;
-
-    % apply boundaries
-    XFe([1 end],:)  = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
-    XSi([1 end],:)  = XSi([2 end-1],:);  XSi(:,[1 end]) = XSi(:,[2 end-1]);
-
-    % enforce 0,rho limits
-    XFe = max(0, XFe ); 
-    XSi = max(0, XSi ); 
-
-else
-    XFe = xFe.*rho;
-    XSi = rho - XFe;
-end
-    RHO = XFe+XSi;
+% if any(xFe(:)>0 & xFe(:)<1)
+%     dXFedt          = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
+%                       - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
+% 
+%     % update solution
+%     XFe(inz,inx)    = (a2*XFeo(inz,inx) + a3*XFeoo(inz,inx) + (b1*dXFedt + b2*dXFedto + b3*dXFedtoo)*dt)/a1;
+% 
+% 
+%     dXSidt          = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
+%                       - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
+% 
+% 
+%     % update solution
+%     % residual of entropy evolution
+%     res_XFe = (a1*XFe(inz,inx)-a2*XFeo(inz,inx)-a3*XFeoo(inz,inx))/dt - (b1*dXFedt + b2*dXFedto + b3*dXFedtoo);
+%     res_XSi = (a1*XSi(inz,inx)-a2*XSio(inz,inx)-a3*XSioo(inz,inx))/dt - (b1*dXSidt + b2*dXSidto + b3*dXSidtoo);
+% 
+%     % update solution
+%     % semi-implicit update of bulk entropy density
+%     XFe(inz,inx)     = XFe(inz,inx) - alpha*res_XFe*dt/a1 + beta*upd_XFe;
+%     XSi(inz,inx)     = XSi(inz,inx) - alpha*res_XSi*dt/a1 + beta*upd_XSi;
+%     upd_XFe =   - alpha*res_XFe*dt/a1 + beta*upd_XFe;
+%     upd_XSi =   - alpha*res_XSi*dt/a1 + beta*upd_XSi;
+% 
+%     % apply boundaries
+%     XFe([1 end],:)  = XFe([2 end-1],:);  XFe(:,[1 end]) = XFe(:,[2 end-1]);
+%     XSi([1 end],:)  = XSi([2 end-1],:);  XSi(:,[1 end]) = XSi(:,[2 end-1]);
+% 
+%     % enforce 0,rho limits
+%     XFe = max(0, XFe ); 
+%     XSi = max(0, XSi ); 
+% 
+% else
+%     XFe = xFe.*rho;
+%     XSi = rho - XFe;
+% end
+% RHOX  = XFe + XSi;
 
 %% update composition
 
@@ -144,6 +144,7 @@ CFe([1 end],:) = CFe([2 end-1],:);  CFe(:,[1 end]) = CFe(:,[2 end-1]);
 CFe = max(0,CFe);
 CSi = max(0,CSi);
 
+
 %% update local phase equilibrium
 [fsFeq,csFeq,clFeq] = equilibrium(T,cFe,Pt,TFe1,TFe2,cphsFe1,cphsFe2,...
                                   perTFe,percsFe,perclFe,clap,PhDgFe);
@@ -168,16 +169,20 @@ clSiq(:,[1 end]) = clSiq(:,[2 end-1]);
 flFeq = 1-fsFeq;
 flSiq = 1-fsSiq;
 
+
 %% update phase fractions
 % solid
-GFes        = ((XFe.*fsFeq-FsFe)./(4.*dt));
-advn_FFes   = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
-dFsFedt     = advn_FFes + GFes(inz,inx);
+GsFe        = ((XFe.*fsFeq-FsFe)./(4.*dt));
+GlFe        = ((XFe.*flFeq-FlFe)./(4.*dt));
+GsSi        = ((XSi.*fsSiq-FsSi)./(4.*dt));
+GlSi        = ((XSi.*flSiq-FlSi)./(4.*dt));
+
+advn_FsFe   = - advect(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA);
+dFsFedt     = advn_FsFe + GsFe(inz,inx);
 res_FsFe    = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
 
-GSis        = ((XSi.*fsSiq-FsSi)./(4.*dt));
-advn_FSis   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
-dFsSidt     = advn_FSis + GSis(inz,inx);                                       % total rate of change
+advn_FsSi   = - advect(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA);
+dFsSidt     = advn_FsSi + GsSi(inz,inx);                                       % total rate of change
 res_FsSi    = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
 
 FsFe(inz,inx)     = FsFe(inz,inx) - alpha*res_FsFe*dt/a1 + beta*upd_FsFe;
@@ -192,16 +197,14 @@ FsFe = max(0, FsFe );
 FsSi = max(0, FsSi );
 
 % liquid
-GFel        = ((XFe.*flFeq-FlFe)./(4.*dt));
 % GFel = -GFes;
-advn_FFel   = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
-dFlFedt     = advn_FFel + GFel(inz,inx);
+advn_FlFe   = - advect(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
+dFlFedt     = advn_FlFe + GlFe(inz,inx);
 res_FlFe = (a1*FlFe(inz,inx)-a2*FlFeo(inz,inx)-a3*FlFeoo(inz,inx))/dt - (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo);
 
-GSil        = ((XSi.*flSiq-FlSi)./(4.*dt));
 % GSil = -GSis;
-advn_FSil   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
-dFlSidt     = advn_FSil + GSil(inz,inx);                                       % total rate of change
+advn_FlSi   = - advect(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
+dFlSidt     = advn_FlSi + GlSi(inz,inx);                                       % total rate of change
 res_FlSi = (a1*FlSi(inz,inx)-a2*FlSio(inz,inx)-a3*FlSioo(inz,inx))/dt - (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo);
 
 FlFe(inz,inx)     = FlFe(inz,inx) - alpha*res_FlFe*dt/a1 + beta*upd_FlFe;
@@ -215,7 +218,11 @@ FlSi([1 end],:) = FlSi([2 end-1],:);  FlSi(:,[1 end]) = FlSi(:,[2 end-1]);  % ap
 FlFe = max(0, FlFe );
 FlSi = max(0, FlSi );
 
-RHO = FsSi+FsFe+FlSi+FlFe;
+XFe  = FsFe + FlFe;
+XSi  = FsSi + FlSi;
+RHO  = XFe + XSi;
+
+advn_RHO = advn_FsFe + advn_FlFe + advn_FsSi + advn_FlSi;
 
 if radheat 
 % update radioactive isotope decay and heating rate
@@ -233,13 +240,13 @@ T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
 xFe = max(0,min(1, XFe./RHO));
 xSi = max(0,min(1, XSi./RHO ));
 
-hasFe   = xFe>TINY1 & xSi<1-TINY1;
-hasSi   = xSi>TINY1 & xFe<1-TINY1;
+hasFe   = xFe>SMALL & xSi<1-SMALL;
+hasSi   = xSi>SMALL & xFe<1-SMALL;
 
 % update chemical composition
-cSi(hasSi) = CSi(hasSi)./max(XSi(hasSi),(FlSi(hasSi)+FsSi(hasSi)));
-cFe(hasFe) = CFe(hasFe)./max(XFe(hasFe),(FlFe(hasFe)+FsFe(hasFe)));
-% change when nan is produced to zero
+cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
+cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
+% ensure real numbers
 cSi(isnan(cSi)) = 0; cFe(isnan(cFe)) = 0;
 
 % update phase fractions [wt]
@@ -271,7 +278,7 @@ clSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
 csSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
 
 %% update phase entropies
-slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi);
+slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO;
 slSi  = slFe;
 ssFe  = slFe + dEntrFe;
 ssSi  = slSi + dEntrSi;

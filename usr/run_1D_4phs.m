@@ -3,11 +3,11 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['Jun_1D_4phs_reducedlimiters_test'];     % run identifier
+RunID           =  ['test'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  10;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -20,8 +20,8 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  10000;                  % domain depth
-Nz              =  200;                     % number of real x/z block nodes
-Nx              = 1;
+Nz              =  300;                     % number of real x/z block nodes
+Nx              =  1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -30,11 +30,11 @@ L               =  h*Nx;
 
 % set initial system and component fractions
 xFe0            =  0.2;                     % Fe-FeS system fraction
-cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
+cFe0            =  0.11;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+cSi0            =  0.50;                    % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
-dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
+dxFe            =  0e-3;                  % amplitude of initial random perturbation to iron system
 dcFe            =  0e-3;                    % amplitude of initial random perturbation to iron component
 dcSi            =  0e-3;                    % amplitude of initial random perturbation to silicate component
 smth            =  ((Nz+2)/20)^2;            % regularisation of initial random perturbation
@@ -57,9 +57,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1350+273.15;                                % reference/top potential temperature [k]
+T0      =  1400+273.15;                             % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1350+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1400+273.15;                             % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -110,13 +110,13 @@ kC          =  1e-7;                    % chemical diffusivity [m^2/s]
 
 Cp          = 1000;                     % mixture heat capacity
 
-dEntrSi     = -200;                     % silicate entropy of crystallisation
-dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
+dEntrSi     = -350;                     % silicate entropy of crystallisation
+dEntrFe     = -250;                     % iron-sulfide entropy of crystallisation
 
 
 %% set heating parameters (if turned on)
 radheat = 0;
-Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
+Hr0     = 0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
     t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
@@ -138,8 +138,7 @@ BCsides     = -1;                       % side boundaries
 BCtop       = -1;                       % top boundary
 BCbot       = -1;                       % bottom boundary
 
-% segregation boundary conditions: 0 = depletion/accumulation; 1 =
-% supply/sink
+% segregation boundary conditions: 0 = depletion/accumulation; 1 = supply/sink
 BCsegTop = 0;
 BCsegBot = 0;
 switch BCTTop
@@ -152,60 +151,60 @@ end
 ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                       % maximum iteration count
-CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.5e-1*yr;                   % maximum time step
+reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
+maxit       = 100;                      % maximum iteration count
+CFL         = 1/8;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 0.5*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha    =  0.75;                % iterative step size parameter
-beta     =  0.125;               % iterative damping parameter
-mink        = 1e-8;                     % minimum diffusivity
+alpha       =  0.75;                    % iterative step size parameter
+beta        =  0.25;                    % iterative damping parameter
+mink        =  1e-8;                    % minimum diffusivity
 
-%% start model
-% create output directory
-[~,systemname]  = system('hostname');
-systemname(end) = [];
-
-switch systemname
-    case 'Horatio'
-        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-    otherwise
-        outpath = ['../out/',RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-end
-% initialise restart frame if switched on
-if restart
-    if     restart < 0  % restart from last continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_cont.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_cont.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    elseif restart > 0  % restart from specified continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    end
-    % make new output folder for restart
-    outpath = [outpath,'/_cont'];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end 
-
-end
+% %% start model
+% % create output directory
+% [~,systemname]  = system('hostname');
+% systemname(end) = [];
+% 
+% switch systemname
+%     case 'Horatio'
+%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+%     otherwise
+%         outpath = ['../out/',RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+% end
+% % initialise restart frame if switched on
+% if restart
+%     if     restart < 0  % restart from last continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_cont.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_cont.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     elseif restart > 0  % restart from specified continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     end
+%     % make new output folder for restart
+%     outpath = [outpath,'/_cont'];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
+% 
+% end
 
 % add path to source directory
 addpath('../src')

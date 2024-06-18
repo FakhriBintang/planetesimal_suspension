@@ -112,7 +112,7 @@ diss_T      = zeros(Nz,Nx);             % Temperature diffusion rate
 diff_CSi    = zeros(Nz,Nx);             % Silicate component diffusion rate
 diff_CFe    = zeros(Nz,Nx);             % Iron component diffusion rate
 Div_V       = zeros(Nz+2,Nx+2);         % Stokes velocity divergence
-Div_rhoV    = zeros(Nz,Nx);             % Mixture mass flux divergence
+advn_RHO    = zeros(Nz,Nx);             % Mixture mass flux divergence
 VolSrc      = zeros(Nz,Nx);             % volume source term
 
 % initialise counting variables
@@ -221,7 +221,10 @@ ssSi  = slSi + dEntrSi;
 XFe   = rho.*xFe; XSi = rho.*xSi;                           % mixture Fe/Si system densities
 CFe   = rho.*cFe.*xFe;                                      % mixture Fe component density
 CSi   = rho.*cSi.*xSi;                                      % mixture Si component density
-RHO   = XFe + XSi;                                          % dynamic density
+RHOX  = XFe + XSi;                                          % dynamic density
+XFE   = FsFe + FlFe;
+XSI   = FsSi + FlSi;
+RHOF  = XFE + XSI;
 
 if radheat
 % initialise radiogenic isotopes 
@@ -236,10 +239,10 @@ dndto       = dndt;         % initial rate of change
 end
 
 % reaction transfer rates
-GFes = 0.*fsFe;
-GSis = 0.*fsSi;
-GFel = 0.*flFe;
-GSil = 0.*flSi;
+GsFe = 0.*fsFe;
+GsSi = 0.*fsSi;
+GlFe = 0.*flFe;
+GlSi = 0.*flSi;
 
 
 %% initialise previous solution and auxiliary fields
@@ -262,7 +265,7 @@ dFsSidto    = dFsSidt;
 dFlFedto    = dFlFedt;
 dFlSidto    = dFlSidt;
 rhoo        = rho;
-Div_rhoVo   = Div_rhoV;
+advn_RHOo   = advn_RHO;
 Div_Vo      = Div_V;
 dto         = dt;
 upd_S       = 0.*dSdt;

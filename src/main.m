@@ -43,7 +43,7 @@ while time <= tend && step <= maxstep
     dFlFedtoo   = dFlFedto; dFlFedto    = dFlFedt;
     dFlSidtoo   = dFlSidto; dFlSidto    = dFlSidt;
     rhooo       = rhoo;     rhoo        = rho;
-    Div_rhoVoo  = Div_rhoVo;Div_rhoVo   = Div_rhoV;
+    advn_RHOoo  = advn_RHOo;advn_RHOo   = advn_RHO;
     Div_Vo      = Div_V;
     dto         = dt;
     To = T;
@@ -72,7 +72,7 @@ while time <= tend && step <= maxstep
             if iter == 0
                 resnorm0 = resnorm+TINY;
             end
-            if ~mod(iter,5); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+            if ~mod(iter,1); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end
@@ -93,7 +93,6 @@ while time <= tend && step <= maxstep
     history;
     Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1)./10;
 
-
     fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));
     fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
     fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
@@ -108,8 +107,7 @@ while time <= tend && step <= maxstep
     % break script for NaN
     if isnan(resnorm)
         output
-        print('Error, Breaking script')
-        return
+        error('Error, nan detected')
     end
     % increment time
     dt;
