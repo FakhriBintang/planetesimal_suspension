@@ -28,10 +28,16 @@ etas   = zeros(size(phisSi)) + EtaSol0;
 etalSi = EtalSi0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTSi+273.15)));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTFe+273.15)));
 
+% update effective constituent sizes
+dx = dx0.*(1-phisFe-phisSi);
+dm = dm0.*(1-philSi);
+df = df0.*(1-philFe);
+
 % get permission weights
 kv = permute(cat(3,etas,etalSi,etalFe),[3,1,2]);
 Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
 
+dd = max(1e-6,min(1-1e-6,permute(cat(3,dx ,dm ,df ),[3,1,2])));
 ff = max(1e-6,min(1-1e-6,permute(cat(3,phisSi+phisFe,philSi,philFe),[3,1,2])));
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
 Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
@@ -41,7 +47,7 @@ Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
 thtv = squeeze(prod(Mv.^Xf,2));
 
 % get momentum flux and transfer coefficients
-Cv   = ff.*(1-ff)./[dx;dm;df].^2.*kv.*thtv;
+Cv   = ff.*(1-ff)./dd.^2.*kv.*thtv;
 Ksgr = ff./Cv;
 
 % compose effective viscosity, segregation coefficients
@@ -57,11 +63,11 @@ EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in ce
 Ksgr_x = squeeze(Ksgr(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]); % crystal
 Ksgr_m = squeeze(Ksgr(2,:,:)) + TINY^2;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]); % silicate melt
 Ksgr_f = squeeze(Ksgr(3,:,:)) + TINY^2;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]); % iron melt
-% dampen liquid segregation at low crystalinities
-Ksgr_m = Ksgr_m.*(1-philSi).^1; 
-Ksgr_f = Ksgr_f.*(1-philFe).^1; 
-Ksgr_m = max(TINY^2,Ksgr_m);
-Ksgr_f = max(TINY^2,Ksgr_f);
+% % dampen liquid segregation at low crystalinities
+% Ksgr_m = Ksgr_m.*(1-philSi).^1; 
+% Ksgr_f = Ksgr_f.*(1-philFe).^1; 
+% Ksgr_m = max(TINY^2,Ksgr_m);
+% Ksgr_f = max(TINY^2,Ksgr_f);
 
 %% segregation coefficients for compaction length calculation
 % Cv_m = squeeze(Cv(2,:,:)); % silicate melt
@@ -119,9 +125,9 @@ Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
 Vel([1 end],:) = Vel([2 end-1],:);
 Vel(:,[1 end]) = Vel(:,[2 end-1]);
 kW    = Vel/10*h/10; % diffusivity due to turbulent eddies
-kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f*df*10);                                   % segregation fluctuation diffusivity
-kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x*dx*10);
-kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x*dx*10);
+kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10);                                   % segregation fluctuation diffusivity
+kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10);
+kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10);
 klFe  = philFe.*(kwlFe + 0*kW) + mink;
 ksFe  = phisFe.*(kwsFe + 0*kW) + mink;
 ksSi  = phisSi.*(kwsSi + 0*kW) + mink;
