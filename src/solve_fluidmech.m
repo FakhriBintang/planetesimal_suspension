@@ -314,17 +314,17 @@ if ~bnchm
 
     qlSiz = qsSiz - qsFez - qlFez; qlSix = qsSix - qsFex - qlFex;
     
-    wqlSi = qlSiz./max(TINY^0.5,(philSi(1:end-1,:)+philSi(2:end,:))./2);
-    uqlSi = qlSix./max(TINY^0.5,(philSi(:,1:end-1)+philSi(:,2:end))./2);
+    wqlSi = qlSiz./max(1e-6,(philSi(1:end-1,:)+philSi(2:end,:))./2);
+    uqlSi = qlSix./max(1e-6,(philSi(:,1:end-1)+philSi(:,2:end))./2);
 
-    wqsSi = qsSiz./max(TINY^0.5,(phisSi(1:end-1,:)+phisSi(2:end,:))./2);
-    uqsSi = qsSix./max(TINY^0.5,(phisSi(:,1:end-1)+phisSi(:,2:end))./2);
+    wqsSi = qsSiz./max(1e-6,(phisSi(1:end-1,:)+phisSi(2:end,:))./2);
+    uqsSi = qsSix./max(1e-6,(phisSi(:,1:end-1)+phisSi(:,2:end))./2);
 
-    wqlFe = qlFez./max(TINY^0.5,(philFe(1:end-1,:)+philFe(2:end,:))./2);
-    uqlFe = qlFex./max(TINY^0.5,(philFe(:,1:end-1)+philFe(:,2:end))./2);
+    wqlFe = qlFez./max(1e-6,(philFe(1:end-1,:)+philFe(2:end,:))./2);
+    uqlFe = qlFex./max(1e-6,(philFe(:,1:end-1)+philFe(:,2:end))./2);
 
-    wqsFe = qsFez./max(TINY^0.5,(phisFe(1:end-1,:)+phisFe(2:end,:))./2);
-    uqsFe = qsFex./max(TINY^0.5,(phisFe(:,1:end-1)+phisFe(:,2:end))./2);
+    wqsFe = qsFez./max(1e-6,(phisFe(1:end-1,:)+phisFe(2:end,:))./2);
+    uqsFe = qsFex./max(1e-6,(phisFe(:,1:end-1)+phisFe(:,2:end))./2);
     
     % update phase velocities (reference + diffusion + segregation)
     WlSi = W + wqlSi + seglSi;

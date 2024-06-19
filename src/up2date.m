@@ -125,12 +125,12 @@ Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
 Vel([1 end],:) = Vel([2 end-1],:);
 Vel(:,[1 end]) = Vel(:,[2 end-1]);
 kW    = Vel/10*h/10; % diffusivity due to turbulent eddies
-kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10);                                   % segregation fluctuation diffusivity
-kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10);
-kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10);
-klFe  = philFe.*(kwlFe + 0*kW) + mink;
-ksFe  = phisFe.*(kwsFe + 0*kW) + mink;
-ksSi  = phisSi.*(kwsSi + 0*kW) + mink;
+kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10) + kmin;                                   % segregation fluctuation diffusivity
+kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
+kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
+klFe  = philFe.*(kwlFe + 0*kW);
+ksFe  = phisFe.*(kwsFe + 0*kW);
+ksSi  = phisSi.*(kwsSi + 0*kW);
 
 
 

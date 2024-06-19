@@ -7,7 +7,7 @@ RunID           =  ['1D_heating_50km_ef'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  1000;                     % output every 'nop' grid steps of transport
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -129,7 +129,7 @@ if radheat
 end
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -153,60 +153,61 @@ ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quic
 BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 5e1*yr;                   % maximum time step
+CFL         = 0.250;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e3*yr;                   % maximum time step
 etareg      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       =  0.50;                % iterative step size parameter
-beta        =  0.25;                % iterative damping parameter
-mink        = 1e-8;                     % minimum diffusivity
+alpha       =  0.75;                    % iterative step size parameter
+beta        =  0.25;                    % iterative damping parameter
+kmin        =  1e-9;                    % minimum diffusivity
+
 
 %% start model
-% create output directory
-[~,systemname]  = system('hostname');
-systemname(end) = [];
-
-switch systemname
-    case 'Horatio'
-        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-    otherwise
-        outpath = ['../out/',RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-end
-% initialise restart frame if switched on
-if restart
-    if     restart < 0  % restart from last continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_cont.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_cont.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    elseif restart > 0  % restart from specified continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    end
-    % make new output folder for restart
-    outpath = [outpath,'/_cont'];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end 
-
-end
+% % create output directory
+% [~,systemname]  = system('hostname');
+% systemname(end) = [];
+% 
+% switch systemname
+%     case 'Horatio'
+%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+%     otherwise
+%         outpath = ['../out/',RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+% end
+% % initialise restart frame if switched on
+% if restart
+%     if     restart < 0  % restart from last continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_cont.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_cont.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     elseif restart > 0  % restart from specified continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     end
+%     % make new output folder for restart
+%     outpath = [outpath,'/_cont'];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
+% 
+% end
 
 % add path to source directory
 addpath('../src')

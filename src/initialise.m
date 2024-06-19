@@ -221,10 +221,9 @@ ssSi  = slSi + dEntrSi;
 XFe   = rho.*xFe; XSi = rho.*xSi;                           % mixture Fe/Si system densities
 CFe   = rho.*cFe.*xFe;                                      % mixture Fe component density
 CSi   = rho.*cSi.*xSi;                                      % mixture Si component density
-RHOX  = XFe + XSi;                                          % dynamic density
-XFE   = FsFe + FlFe;
-XSI   = FsSi + FlSi;
-RHOF  = XFE + XSI;
+XFe   = FsFe + FlFe;
+XSi   = FsSi + FlSi;
+RHO   = XFe + XSi;                                          % dynamic density
 
 if radheat
 % initialise radiogenic isotopes 
