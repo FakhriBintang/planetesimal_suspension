@@ -76,9 +76,9 @@ rholFe0     =  7600;                 % reference desnity liquid refractory iron 
 gCSi        =  0.50;                 % compositional expansivity silicate
 gCFe        =  0.65;                 % compositional expansivity iron
 aT          =  3e-5;                 % thermal expansivity silicate [1/K]
-dx          =  1e-3;                 % solid grain size [m]
-df          =  1e-3;                 % metal droplet size [m]
-dm          =  1e-3;                 % melt film size [m]
+dx0          =  1e-3;                 % solid grain size [m]
+df0          =  1e-3;                 % metal droplet size [m]
+dm0          =  1e-3;                 % melt film size [m]
 gz0         =  0.1;                  % z-gravity
 gx0         =  0;               	 % x-gravity
 
