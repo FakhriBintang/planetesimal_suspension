@@ -29,9 +29,9 @@ etalSi = EtalSi0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTSi+273.15)));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*(T+273.15))-Em./(8.3145.*(perTFe+273.15)));
 
 % update effective constituent sizes
-dx = dx0.*(1-phisFe-phisSi);
-dm = dm0.*(1-philSi);
-df = df0.*(1-philFe);
+dx = dx0.*(1-phisFe-phisSi).^0.5;
+dm = dm0.*(1-philSi).^0.5;
+df = df0.*(1-philFe).^0.5;
 
 % get permission weights
 kv = permute(cat(3,etas,etalSi,etalFe),[3,1,2]);
@@ -52,12 +52,7 @@ Ksgr = ff./Cv;
 
 % compose effective viscosity, segregation coefficients
 Eta  = squeeze(sum(ff.*kv.*thtv,1));                                   % effective magma viscosity
-etamax   = 1e+6.*min(Eta(:));                                          % set max eta for 1e6 max range
-Eta  = (1./etamax + 1./(Eta * etareg)).^(-1);                      % limit viscosity range
-Eta([1 end],:) = Eta([2 end-1],:);
-Eta(:,[1 end]) = Eta(:,[2 end-1]);
-EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in cell corners
-    .* Eta(1:end-1,2:end  ).*Eta(2:end,2:end  )).^0.25;
+
 
 %% update segregation cofficients
 Ksgr_x = squeeze(Ksgr(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]); % crystal
@@ -117,53 +112,82 @@ segsFe(:,[1 end]) = sds*segsFe(:,[2 end-1]);
 seglSi(:,[1 end]) = sds*seglSi(:,[2 end-1]);
 seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 
-%% update diffusion parameters
-kT    =  (xFe.*kTFe + xSi.*kTSi);               % magma thermal conductivity
-ks    = kT./T;
-Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
-    + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
-Vel([1 end],:) = Vel([2 end-1],:);
-Vel(:,[1 end]) = Vel(:,[2 end-1]);
-kW    = Vel/10*h/10; % diffusivity due to turbulent eddies
-kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10) + kmin;                                   % segregation fluctuation diffusivity
-kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
-kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
-klFe  = philFe.*(kwlFe + 0*kW);
-ksFe  = phisFe.*(kwsFe + 0*kW);
-ksSi  = phisSi.*(kwsSi + 0*kW);
-
-
 
 %% velocity divergence and volume source
 % update velocity divergence
-Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                   % get velocity divergence
-    + ddx(U(2:end-1,:),h);
+Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                           % get velocity divergence
+                       + ddx(U(2:end-1,:),h);
 Div_V([1 end],:) = Div_V([2 end-1],:);                                     % apply boundary conditions
 Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
 
 
-%% Calculate stress and strain rates
+%% strain rates and velocity magnitude
 % update strain rates
-SOLexx(:,2:end-1) = diff(U,1,2)./h - Div_V(:,2:end-1)./3;                     % x-normal strain rate
-SOLexx([1 end],:) = SOLexx([2 end-1],:);                                         % apply boundary conditions
-SOLexx(:,[1 end]) = SOLexx(:,[2 end-1]);
-SOLezz(2:end-1,:) = diff(W,1,1)./h - Div_V(2:end-1,:)./3;                        % z-normal strain rate
-SOLezz([1 end],:) = SOLezz([2 end-1],:);                                         % apply boundary conditions
-SOLezz(:,[1 end]) = SOLezz(:,[2 end-1]);
-SOLexz            = 1/2.*(diff(U,1,1)./h+diff(W,1,2)./h);                     % shear strain rate
+exx(:,2:end-1) = diff(U,1,2)./h - Div_V(:,2:end-1)./3;                     % x-normal strain rate
+exx([1 end],:) = exx([2 end-1],:);                                         % apply boundary conditions
+exx(:,[1 end]) = exx(:,[2 end-1]);
+ezz(2:end-1,:) = diff(W,1,1)./h - Div_V(2:end-1,:)./3;                     % z-normal strain rate
+ezz([1 end],:) = ezz([2 end-1],:);                                         % apply boundary conditions
+ezz(:,[1 end]) = ezz(:,[2 end-1]);
+exz            = 1/2.*(diff(U,1,1)./h+diff(W,1,2)./h);                     % shear strain rate
 
-% update stresses
-SOLtxx = Eta .* SOLexx;                                                          % x-normal stress
-SOLtzz = Eta .* SOLezz;                                                          % z-normal stress
-SOLtxz = EtaC.* SOLexz;
+Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
+                          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
+Vel([1 end],:) = Vel([2 end-1],:);
+Vel(:,[1 end]) = Vel(:,[2 end-1]);
 
-% entropy production/heat dissipation rate
+
+%% update diffusion parameters
+kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
+kT    = (xFe.*kTFe + xSi.*kTSi);                                           % magma thermal conductivity
+ks    = kT./T;                                                             % entropy conductivity
+ksW   = kW.*rho.*Cp./T;                                                    % turbulent eddy entropy conductivity
+kc    = kW;                                                                % turbulent eddy composition diffusivity
+kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
+kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
+kwlSi = abs((rholSi-rho).*gz0.*Ksgr_m.*dm*10) + kmin;
+kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
+klFe  = philFe.*kwlFe;
+ksFe  = phisFe.*kwsFe;
+klSi  = philSi.*kwlSi;
+ksSi  = phisSi.*kwsSi;
+
+
+%% Regularise and limit viscosity
+Eta = Eta + kW.*rho + etamin;
+etamax = 1e+6.*min(Eta(:));                                                % set max eta for 1e6 max range
+Eta    = (1./etamax + 1./Eta).^(-1);                                       % limit viscosity range
+Eta([1 end],:) = Eta([2 end-1],:);
+Eta(:,[1 end]) = Eta(:,[2 end-1]);
+EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in cell corners
+     .* Eta(1:end-1,2:end  ).*Eta(2:end,2:end  )).^0.25;
+
+
+%% update stresses
+txx = Eta .* exx;                                                          % x-normal stress
+tzz = Eta .* ezz;                                                          % z-normal stress
+txz = EtaC.* exz;
+
+eII(2:end-1,2:end-1) = (0.5.*(exx(2:end-1,2:end-1).^2 + ezz(2:end-1,2:end-1).^2 ...
+       + 2.*(exz(1:end-1,1:end-1).^2+exz(2:end,1:end-1).^2 ...
+       +     exz(1:end-1,2:end  ).^2+exz(2:end,2:end  ).^2)/4)).^0.5 + TINY;
+eII([1 end],:) = eII([2 end-1],:);
+eII(:,[1 end]) = eII(:,[2 end-1]);
+
+tII(2:end-1,2:end-1) = (0.5.*(txx(2:end-1,2:end-1).^2 + tzz(2:end-1,2:end-1).^2 ...
+       + 2.*(txz(1:end-1,1:end-1).^2+txz(2:end,1:end-1).^2 ...
+       +     txz(1:end-1,2:end  ).^2+txz(2:end,2:end  ).^2)/4)).^0.5 + TINY;
+tII([1 end],:) = tII([2 end-1],:);
+tII(:,[1 end]) = tII(:,[2 end-1]);
+
+
+%% entropy production/heat dissipation rate
 [grdTx,grdTz] = gradient(T,h);
 EntProd = ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:end-1).^2)...
     + Hr(2:end-1,2:end-1) ... % Hr in W/m^3, if we instead choose W/Kg, miltiply by \rho
-    + SOLexx(2:end-1,2:end-1).*SOLtxx(2:end-1,2:end-1) +SOLexx(2:end-1,2:end-1).*SOLtxx(2:end-1,2:end-1)...
-    + 2.*(SOLexz(1:end-1,1:end-1)+SOLexz(2:end,1:end-1)+SOLexz(1:end-1,2:end)+SOLexz(2:end,2:end))./4 ...
-    .*(SOLtxz(1:end-1,1:end-1)+SOLtxz(2:end,1:end-1)+SOLtxz(1:end-1,2:end)+SOLtxz(2:end,2:end))./4 ...
+    + exx(2:end-1,2:end-1).*txx(2:end-1,2:end-1) +exx(2:end-1,2:end-1).*txx(2:end-1,2:end-1)...
+    + 2.*(exz(1:end-1,1:end-1)+exz(2:end,1:end-1)+exz(1:end-1,2:end)+exz(2:end,2:end))./4 ...
+    .*(txz(1:end-1,1:end-1)+txz(2:end,1:end-1)+txz(1:end-1,2:end)+txz(2:end,2:end))./4 ...
     +  phisFe(2:end-1,2:end-1)./Ksgr_x(2:end-1,2:end-1) .* ((segsFe(1:end-1,2:end-1)+segsFe(2:end,2:end-1))./2).^2  ...
     +  philFe(2:end-1,2:end-1)./Ksgr_f(2:end-1,2:end-1) .* ((seglFe(1:end-1,2:end-1)+seglFe(2:end,2:end-1))./2).^2  ...
     +  phisSi(2:end-1,2:end-1)./Ksgr_x(2:end-1,2:end-1) .* ((segsSi(1:end-1,2:end-1)+segsSi(2:end,2:end-1))./2).^2  ...

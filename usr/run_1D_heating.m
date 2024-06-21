@@ -7,7 +7,7 @@ RunID           =  ['1D_heating_50km_ef'];     % run identifier
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -57,9 +57,9 @@ PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  0+273.15;                                % reference/top potential temperature [k]
+T0      =  500+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  0+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  500+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -110,8 +110,8 @@ kC          =  1e-7;                    % chemical diffusivity [m^2/s]
 
 Cp          = 1000;                     % mixture heat capacity
 
-dEntrSi     = -200;                     % silicate entropy of crystallisation
-dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
+dEntrSi     = -300;                     % silicate entropy of crystallisation
+dEntrFe     = -250;                     % iron-sulfide entropy of crystallisation
 
 
 %% set heating parameters (if turned on)
@@ -156,13 +156,13 @@ lambda      = 0.5;   	                % iterative lagging for phase fraction
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 0.250;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+CFL         = 1/16;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e3*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
+etamin      = 1e0;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       =  0.75;                    % iterative step size parameter
-beta        =  0.25;                    % iterative damping parameter
-kmin        =  1e-9;                    % minimum diffusivity
+alpha       =  0.50;                    % iterative step size parameter
+beta        =  0.10;                    % iterative damping parameter
+kmin        =  1e-8;                    % minimum diffusivity
 
 
 %% start model

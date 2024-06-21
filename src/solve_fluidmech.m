@@ -299,32 +299,65 @@ resnorm_VP = 0;
 if ~bnchm
 
     % set phase diffusion speeds
-    qsSiz    = - (ksSi(1:end-1,:)+ksSi(2:end,:))./2 .* ddz(phisSi,h);
-    qsSix    = - (ksSi(:,1:end-1)+ksSi(:,2:end))./2 .* ddx(phisSi,h);
-    diff_sSi = - ddz(qsSiz(:,2:end-1),h)  ...                                 % heat diffusion
-               - ddx(qsSix(2:end-1,:),h);
-    qlFez    = - (klFe(1:end-1,:)+klFe(2:end,:))./2 .* ddz(philFe,h);
-    qlFex    = - (klFe(:,1:end-1)+klFe(:,2:end))./2 .* ddx(philFe,h);
-    diff_lFe = - ddz(qlFez(:,2:end-1),h)  ...                                 % heat diffusion
-               - ddx(qlFex(2:end-1,:),h);
-    qsFez    = - (ksFe(1:end-1,:)+ksFe(2:end,:))./2 .* ddz(phisFe,h);
-    qsFex    = - (ksFe(:,1:end-1)+ksFe(:,2:end))./2 .* ddx(phisFe,h);
-    diff_sFe = - ddz(qsFez(:,2:end-1),h)  ...                                 % heat diffusion
-               - ddx(qsFex(2:end-1,:),h);
+    grd_philSi_z = ddz(philSi,h);
+    grd_philSi_x = ddx(philSi,h);
 
-    qlSiz = qsSiz - qsFez - qlFez; qlSix = qsSix - qsFex - qlFex;
+    grd_phisSi_z = ddz(phisSi,h);
+    grd_phisSi_x = ddx(phisSi,h);
+
+    grd_philFe_z = ddz(philFe,h);
+    grd_philFe_x = ddx(philFe,h);
+
+    grd_phisFe_z = ddz(phisFe,h);
+    grd_phisFe_x = ddx(phisFe,h);
+
+    klSiz = (klSi(1:end-1,:)+klSi(2:end,:))./2;
+    klSix = (klSi(:,1:end-1)+klSi(:,2:end))./2;
+
+    ksSiz = (ksSi(1:end-1,:)+ksSi(2:end,:))./2;
+    ksSix = (ksSi(:,1:end-1)+ksSi(:,2:end))./2;
+
+    klFez = (klFe(1:end-1,:)+klFe(2:end,:))./2;
+    klFex = (klFe(:,1:end-1)+klFe(:,2:end))./2;
+
+    ksFez = (ksFe(1:end-1,:)+ksFe(2:end,:))./2;
+    ksFex = (ksFe(:,1:end-1)+ksFe(:,2:end))./2;
+
+    sumkz = klSiz + ksSiz + klFez + ksFez;
+    grd_phistar_z = klSiz./sumkz .* grd_philSi_z ...
+                  + ksSiz./sumkz .* grd_phisSi_z ...
+                  + klFez./sumkz .* grd_philFe_z ...
+                  + ksFez./sumkz .* grd_phisFe_z;
+
+    sumkx = klSix + ksSix + klFex + ksFex;
+    grd_phistar_x = klSix./sumkx .* grd_philSi_x ...
+                  + ksSix./sumkx .* grd_phisSi_x ...
+                  + klFex./sumkx .* grd_philFe_x ...
+                  + ksFex./sumkx .* grd_phisFe_x;
+
+    qlSiz    = - klSiz .* (grd_philSi_z - grd_phistar_z);
+    qlSix    = - klSix .* (grd_philSi_x - grd_phistar_x);
+
+    qsSiz    = - ksSiz .* (grd_phisSi_z - grd_phistar_z);
+    qsSix    = - ksSix .* (grd_phisSi_x - grd_phistar_x);
+
+    qlFez    = - klFez .* (grd_philFe_z - grd_phistar_z);
+    qlFex    = - klFex .* (grd_philFe_x - grd_phistar_x);
+
+    qsFez    = - ksFez .* (grd_phisFe_z - grd_phistar_z);
+    qsFex    = - ksFex .* (grd_phisFe_x - grd_phistar_x);
     
-    wqlSi = qlSiz./max(1e-6,(philSi(1:end-1,:)+philSi(2:end,:))./2);
-    uqlSi = qlSix./max(1e-6,(philSi(:,1:end-1)+philSi(:,2:end))./2);
+    wqlSi = qlSiz./max(1e-8,(philSi(1:end-1,:)+philSi(2:end,:))./2);
+    uqlSi = qlSix./max(1e-8,(philSi(:,1:end-1)+philSi(:,2:end))./2);
 
-    wqsSi = qsSiz./max(1e-6,(phisSi(1:end-1,:)+phisSi(2:end,:))./2);
-    uqsSi = qsSix./max(1e-6,(phisSi(:,1:end-1)+phisSi(:,2:end))./2);
+    wqsSi = qsSiz./max(1e-8,(phisSi(1:end-1,:)+phisSi(2:end,:))./2);
+    uqsSi = qsSix./max(1e-8,(phisSi(:,1:end-1)+phisSi(:,2:end))./2);
 
-    wqlFe = qlFez./max(1e-6,(philFe(1:end-1,:)+philFe(2:end,:))./2);
-    uqlFe = qlFex./max(1e-6,(philFe(:,1:end-1)+philFe(:,2:end))./2);
+    wqlFe = qlFez./max(1e-8,(philFe(1:end-1,:)+philFe(2:end,:))./2);
+    uqlFe = qlFex./max(1e-8,(philFe(:,1:end-1)+philFe(:,2:end))./2);
 
-    wqsFe = qsFez./max(1e-6,(phisFe(1:end-1,:)+phisFe(2:end,:))./2);
-    uqsFe = qsFex./max(1e-6,(phisFe(:,1:end-1)+phisFe(:,2:end))./2);
+    wqsFe = qsFez./max(1e-8,(phisFe(1:end-1,:)+phisFe(2:end,:))./2);
+    uqsFe = qsFex./max(1e-8,(phisFe(:,1:end-1)+phisFe(:,2:end))./2);
     
     % update phase velocities (reference + diffusion + segregation)
     WlSi = W + wqlSi + seglSi;

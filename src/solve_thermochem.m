@@ -6,7 +6,7 @@ end
 
 
 % test smaller tiny criterion
-SMALL = 1e-6;% TINY^0.5;
+SMALL = 1e-6; % TINY^0.5;
 
 % store previous iteration (diagnostic)
 Ti    = T;
@@ -26,8 +26,14 @@ advn_S = - advect(FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,'
 
 qSz    = - (ks(1:end-1,:)+ks(2:end,:))./2 .* ddz(T,h);
 qSx    = - (ks(:,1:end-1)+ks(:,2:end))./2 .* ddx(T,h);
-diff_S = - ddz(qSz(:,2:end-1),h)  ...                                 % heat diffusion
+diff_S = - ddz(qSz(:,2:end-1),h)  ...                                      % heat diffusion
          - ddx(qSx(2:end-1,:),h);
+
+qSz    = - (ksW(1:end-1,:)+ksW(2:end,:))./2 .* ddz(Tp,h);
+qSx    = - (ksW(:,1:end-1)+ksW(:,2:end))./2 .* ddx(Tp,h);
+diff_S = - ddz(qSz(:,2:end-1),h) ...                                       % turbulent eddy heat diffusion
+         - ddx(qSx(2:end-1,:),h) ...
+         + diff_S;
 
 diss_T = EntProd./T(2:end-1,2:end-1);
 
@@ -117,12 +123,34 @@ end
 advn_CSi = - advect(FsSi(inz,inx).*csSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
            - advect(FlSi(inz,inx).*clSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 
-dCSidt   = advn_CSi;
+kclSi    = FlSi.*kc;
+kcsSi    = FsSi.*kc;
+qclSiz   = - (kclSi(1:end-1,:)+kclSi(2:end,:))./2 .* ddz(clSi,h);
+qclSix   = - (kclSi(:,1:end-1)+kclSi(:,2:end))./2 .* ddx(clSi,h);
+qcsSiz   = - (kcsSi(1:end-1,:)+kcsSi(2:end,:))./2 .* ddz(csSi,h);
+qcsSix   = - (kcsSi(:,1:end-1)+kcsSi(:,2:end))./2 .* ddx(csSi,h);
+diff_CSi = - ddz(qclSiz(:,2:end-1),h)  ...                                 % heat diffusion
+           - ddx(qclSix(2:end-1,:),h)  ...
+           - ddz(qcsSiz(:,2:end-1),h)  ...                                 % heat diffusion
+           - ddx(qcsSix(2:end-1,:),h);
+
+dCSidt   = advn_CSi + diff_CSi;
 
 advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
            - advect(FlFe(inz,inx).*clFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 
-dCFedt   = advn_CFe;
+kclFe    = FlFe.*kc;
+kcsFe    = FsFe.*kc;
+qclFez   = - (kclFe(1:end-1,:)+kclFe(2:end,:))./2 .* ddz(clFe,h);
+qclFex   = - (kclFe(:,1:end-1)+kclFe(:,2:end))./2 .* ddx(clFe,h);
+qcsFez   = - (kcsFe(1:end-1,:)+kcsFe(2:end,:))./2 .* ddz(csFe,h);
+qcsFex   = - (kcsFe(:,1:end-1)+kcsFe(:,2:end))./2 .* ddx(csFe,h);
+diff_CFe = - ddz(qclFez(:,2:end-1),h)  ...                                 % heat diffusion
+           - ddx(qclFex(2:end-1,:),h)  ...
+           - ddz(qcsFez(:,2:end-1),h)  ...                                 % heat diffusion
+           - ddx(qcsFex(2:end-1,:),h);
+
+dCFedt   = advn_CFe + diff_CFe;
 
 % update solution
 % residual of entropy evolution
@@ -235,17 +263,21 @@ end
 % % update temperature
 T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
     + aT.*(Pt - P0)./rhoRef./Cp);
+Tp  = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp);
 
 % update system fractions
 xFe = max(0,min(1, XFe./RHO));
 xSi = max(0,min(1, XSi./RHO ));
 
-hasFe   = xFe>SMALL & xSi<1-SMALL;
-hasSi   = xSi>SMALL & xFe<1-SMALL;
+hasFe   = xFe>SMALL;
+hasSi   = xSi>SMALL;
 
 % update chemical composition
 cSi(hasSi) = CSi(hasSi)./XSi(hasSi);
 cFe(hasFe) = CFe(hasFe)./XFe(hasFe);
+cSi(~hasSi) = fsSiq(~hasSi).*csSiq(~hasSi) + flSiq(~hasSi).*clSiq(~hasSi);
+cFe(~hasFe) = fsFeq(~hasFe).*csFeq(~hasFe) + flFeq(~hasFe).*clFeq(~hasFe);
+
 % ensure real numbers
 cSi(isnan(cSi)) = 0; cFe(isnan(cFe)) = 0;
 
@@ -261,21 +293,27 @@ flSi(isnan(flSi)) = 0; fsFe(isnan(fsSi)) = 0;
 % flFe(hasFe) = 1-fsFe(hasFe); 
 % flSi(hasSi) = 1-fsSi(hasSi);
 
-%detect where is fully molten
-hassolSi = flSi<1 & fsSi>0;
-hassolFe = flFe<1 & fsFe>0;
+%detect where is fully solid or molten
+hassolSi = fsSi>SMALL;
+hassolFe = fsFe>SMALL;
 
-hasliqSi = fsSi<1 & flSi>0;
-hasliqFe = fsFe<1 & flFe>0;
+hasliqSi = flSi>SMALL;
+hasliqFe = flFe>SMALL;
 
 %% update phase compositions
 KcFe = csFeq./clFeq;
-clFe(hasFe) = cFe(hasFe)./max(TINY,(flFe(hasFe) + fsFe(hasFe).*KcFe(hasFe)));
-csFe(hasFe) = cFe(hasFe)./max(TINY,(flFe(hasFe)./KcFe(hasFe) + fsFe(hasFe)));
+clFe(hasFe) = max(TINY,cFe(hasFe))./max(SMALL,(flFe(hasFe) + fsFe(hasFe).*KcFe(hasFe)));
+csFe(hasFe) = max(TINY,cFe(hasFe))./max(SMALL,(flFe(hasFe)./KcFe(hasFe) + fsFe(hasFe)));
+ind = ~hassolFe | ~hasliqFe;
+csFe(ind) = csFeq(ind);
+clFe(ind) = clFeq(ind);
 
 KcSi = csSiq./clSiq;
-clSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
-csSi(hasSi) = cSi(hasSi)./max(TINY,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
+clSi(hasSi) = cSi(hasSi)./max(SMALL,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
+csSi(hasSi) = cSi(hasSi)./max(SMALL,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
+ind = ~hassolSi | ~hasliqSi;
+csSi(ind) = csSiq(ind);
+clSi(ind) = clSiq(ind);
 
 %% update phase entropies
 slFe  = (S - FsFe.*dEntrFe - FsSi.*dEntrSi)./RHO;

@@ -85,15 +85,15 @@ UP(:,2:end-1)   = (U(:,1:end-1)+U(:,2:end))./2;
 WP(2:end-1,:)   = (W(1:end-1,:)+W(2:end,:))./2;
 
 %% setup deformation property arrays
-SOLups = zeros(nzP,nxP);               % velocity divergence on centre nodes
-SOLexx = zeros(nzP,nxP);               % x-normal strain rate on centre nodes
-SOLezz = zeros(nzP,nxP);               % z-normal strain rate on centre nodes
-SOLexz = zeros(nzC,nxC);               % xz-shear strain rate on corner nodes
-SOLeII = zeros(nzP,nxP);               % strain rate magnitude on centre nodes
-SOLtxx = zeros(nzP,nxP);               % x-normal stress on centre nodes
-SOLtzz = zeros(nzP,nxP);               % z-normal stress on centre nodes
-SOLtxz = zeros(nzC,nxC);               % xz-shear stress on corner nodes
-SOLtII = zeros(nzP,nxP);               % stress magnitude on centre nodes
+ups = zeros(nzP,nxP);               % velocity divergence on centre nodes
+exx = zeros(nzP,nxP);               % x-normal strain rate on centre nodes
+ezz = zeros(nzP,nxP);               % z-normal strain rate on centre nodes
+exz = zeros(nzC,nxC);               % xz-shear strain rate on corner nodes
+eII = zeros(nzP,nxP);               % strain rate magnitude on centre nodes
+txx = zeros(nzP,nxP);               % x-normal stress on centre nodes
+tzz = zeros(nzP,nxP);               % z-normal stress on centre nodes
+txz = zeros(nzC,nxC);               % xz-shear stress on corner nodes
+tII = zeros(nzP,nxP);               % stress magnitude on centre nodes
 
 
 %% setup heating rates
