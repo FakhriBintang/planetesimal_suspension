@@ -131,6 +131,12 @@ ezz([1 end],:) = ezz([2 end-1],:);                                         % app
 ezz(:,[1 end]) = ezz(:,[2 end-1]);
 exz            = 1/2.*(diff(U,1,1)./h+diff(W,1,2)./h);                     % shear strain rate
 
+eII(2:end-1,2:end-1) = (0.5.*(exx(2:end-1,2:end-1).^2 + ezz(2:end-1,2:end-1).^2 ...
+       + 2.*(exz(1:end-1,1:end-1).^2+exz(2:end,1:end-1).^2 ...
+       +     exz(1:end-1,2:end  ).^2+exz(2:end,2:end  ).^2)/4)).^0.5 + TINY;
+eII([1 end],:) = eII([2 end-1],:);
+eII(:,[1 end]) = eII(:,[2 end-1]);
+
 Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
                           + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
 Vel([1 end],:) = Vel([2 end-1],:);
@@ -167,12 +173,6 @@ EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in ce
 txx = Eta .* exx;                                                          % x-normal stress
 tzz = Eta .* ezz;                                                          % z-normal stress
 txz = EtaC.* exz;
-
-eII(2:end-1,2:end-1) = (0.5.*(exx(2:end-1,2:end-1).^2 + ezz(2:end-1,2:end-1).^2 ...
-       + 2.*(exz(1:end-1,1:end-1).^2+exz(2:end,1:end-1).^2 ...
-       +     exz(1:end-1,2:end  ).^2+exz(2:end,2:end  ).^2)/4)).^0.5 + TINY;
-eII([1 end],:) = eII([2 end-1],:);
-eII(:,[1 end]) = eII(:,[2 end-1]);
 
 tII(2:end-1,2:end-1) = (0.5.*(txx(2:end-1,2:end-1).^2 + tzz(2:end-1,2:end-1).^2 ...
        + 2.*(txz(1:end-1,1:end-1).^2+txz(2:end,1:end-1).^2 ...

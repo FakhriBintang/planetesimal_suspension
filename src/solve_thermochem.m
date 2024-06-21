@@ -309,8 +309,8 @@ csFe(ind) = csFeq(ind);
 clFe(ind) = clFeq(ind);
 
 KcSi = csSiq./clSiq;
-clSi(hasSi) = cSi(hasSi)./max(SMALL,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi)));
-csSi(hasSi) = cSi(hasSi)./max(SMALL,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi)));
+clSi(hasSi) = max(TINY,cSi(hasSi)./max(SMALL,(flSi(hasSi) + fsSi(hasSi).*KcSi(hasSi))));
+csSi(hasSi) = max(TINY,cSi(hasSi)./max(SMALL,(flSi(hasSi)./KcSi(hasSi) + fsSi(hasSi))));
 ind = ~hassolSi | ~hasliqSi;
 csSi(ind) = csSiq(ind);
 clSi(ind) = clSiq(ind);
