@@ -348,7 +348,7 @@ if restart
         dFlFedto    = dFlFedt;
         dFlSidto    = dFlSidt;
         rhoo        = rho;
-        Div_rhoVo   = Div_rhoV;
+        advn_RHOo   = advn_RHO;
         Div_Vo      = Div_V;
         dto         = dt;
         dsumMdt     = 0; dsumMdto = dsumMdt;
@@ -358,7 +358,7 @@ if restart
         dsumCFedt   = 0; dsumCFedto = dsumCFedt;
         dsumCSidt   = 0; dsumCSidto = dsumCSidt;
       
-        output;
+        % output;
 
         time    = time+dt;
         step    = step+1;

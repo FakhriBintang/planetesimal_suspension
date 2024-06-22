@@ -50,15 +50,16 @@ if plot_op
     elseif Nx <= 10 % 1D plots
 
         fh1 = figure(1); clf;
+        sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,4,1)
-        plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-        title('$T [^\circ$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(Tp(2:end-1,2:end-1),2)-273.15,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        title('$T [^\circ$C]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); hold on;  axis ij tight; box on;
-        plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
-        title('$x_{Fe}$ / $x_{Si}$ [wt\% Fe-FeS]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        legend('$x_{\mathrm{Fe}}$', '$x_{\mathrm{Si}}$',TX{:})
+        plot(mean(xFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'r-','LineWidth',2); hold on;  axis ij tight; box on;
+        plot(mean(xSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'b-','LineWidth',2);
+        title('$x_{Fe}$ / $x_{Si}$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('$x_{\mathrm{Fe}}$', '$x_{\mathrm{Si}}$',TX{:},'location','west')
         subplot(1,4,3)
         plot(mean(clFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'-r','LineWidth',2); axis ij tight; box on; hold on
         plot(mean(csFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'-b','LineWidth',2);
@@ -69,13 +70,15 @@ if plot_op
         plot((mean(csSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1)./1000,'-b','LineWidth',2);
         plot((mean(cSi(2:end-1,2:end-1),2)+cSimin).*100,zP(2:end-1)./1000,'k-','LineWidth',2);
         title('$\bar{c}_{Si}$ [wt\% SiO$_2$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('melt', 'solid', 'bulk', TX{:},'location','west')
 
         fh2 = figure(2); clf;
+        sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,4,1)
         plot(mean(flFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
         plot(mean(flSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         title('$f_{j}^\ell$ [wt\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        legend('Fe', 'Si')
+        legend('Fe melt', 'Si melt', TX{:},'location','west')
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
         plot(mean(phisFe(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
@@ -83,7 +86,7 @@ if plot_op
         plot(mean(phisSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         plot(mean(philSi(2:end-1,2:end-1),2).*100,zP(2:end-1)./1000,'LineWidth',2);
         title('$\phi_{j}^i$ [vol\%]',TX{:},FS{:}); set(gca,TL{:},TS{:});
-        legend('\phi_{Fe}^s','\phi_{Fe}^{l}','\phi_{Si}^s','\phi_{Si}^{l}')
+        legend('$\phi_{Fe}^s$','$\phi_{Fe}^{l}$','$\phi_{Si}^s$','$\phi_{Si}^{l}$',TX{:},'location','west')
         subplot(1,4,3)
         plot(mean(GsFe(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
         plot(mean(GlFe(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
@@ -92,8 +95,10 @@ if plot_op
         plot(mean(GsSi(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on
         plot(mean(GlSi(2:end-1,2:end-1)./rho(2:end-1,2:end-1).*100.*yr,2),zP(2:end-1)./1000,'LineWidth',2);
         title('$\Gamma_{Si}^s$ [wt\%/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        legend('solid', 'melt', TX{:},'location','west')
 
         fh3 = figure(3); clf;
+        sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,5,1)
         plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); hold on
         plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
@@ -117,6 +122,7 @@ if plot_op
         ylabel('Depth [km]',TX{:},FS{:});
 
         fh4 = figure(4); clf;
+        sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,4,1)
         plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Fe}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
@@ -133,6 +139,7 @@ if plot_op
 
         % plot conserved quantities
         fh5 = figure(5); clf;
+        sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,5,1)
         plot(mean(XFe(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
         plot(mean(XSi(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2);
@@ -202,14 +209,14 @@ if plot_op
         imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,P(2:end-1,2:end-1)); hold on; axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('dynamic pressure [Pa]',TX{:},FS{:}); set(gca,'XTickLabel',[],'YTickLabel',[]);
         set(fh1,'CurrentAxes',ax(14));
-        imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,T(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$k]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
+        imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,Tp(2:end-1,2:end-1)-273.15); axis ij equal tight; box on; cb = colorbar;
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('T [$^{\circ}$C]',TX{:},FS{:}); ylabel('Depth [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(15));
         imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,rho(2:end-1,2:end-1)); axis ij equal tight; box on; cb = colorbar;
         set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('$\bar{\rho} [\mathrm{kg m^{-3}}]$',TX{:},FS{:}); set(gca,'YTickLabel',[]); xlabel('Width [km]',TX{:},FS{:});
         set(fh1,'CurrentAxes',ax(16));
         imagesc(xP(2:end-1)./1000,zP(2:end-1)./1000,log10(Eta(2:end-1,2:end-1))); axis ij equal tight; box on; cb = colorbar;
-        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('Log10($\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
+        set(cb,TL{:},TS{:}); set(gca,TL{:},TS{:}); title('log$_{10}(\bar{\eta})$ [Pas]',TX{:},FS{:}); set(gca,'YTickLabel',[]);
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
         %% plot phase vol fractions
@@ -344,22 +351,24 @@ if ~exist('fh3','var'); fh3 = figure(3);
     [~,CCxFe,CClFe] = equilibrium(TT2,cc2,0.*TT2,TFe1,TFe2,cphsFe1,cphsFe2,...
         perTFe,percsFe,perclFe,clap,PhDgFe);
     subplot(1,2,1)
-    plot(CCxSi+cSimin,TT,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
-    plot(CClSi+cSimin,TT,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
-    plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([TSi1 TSi2])
+    plot(CCxSi+cSimin,TT-273.15,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
+    plot(CClSi+cSimin,TT-273.15,'k-','LineWidth',2); axis tight; hold on; axis square; box on;
+    plot(cSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1)-273.15, '.k', csSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1)-273.15, '.b', clSi(2:end-1,2:end-1)+cSimin,T(2:end-1,2:end-1)-273.15, '.r','MarkerSize',25)
+    ylim([TFe1 TSi2]-273.15)
     title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
     ylabel('Temperature [$^\circ$k]','Interpreter','latex','FontSize',15)
+    set(gca,TL{:},TS{:});
 
     subplot(1,2,2)
-    plot(CCxFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
-    plot(CClFe,TT2,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
-    plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1), '.r','MarkerSize',25)
-    ylim([TFe1 TSi2])
+    plot(CCxFe,TT2-273.15,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
+    plot(CClFe,TT2-273.15,'k-','LineWidth',2); axis tight; axis square; hold on; box on;
+    plot(cFe(2:end-1,2:end-1),T(2:end-1,2:end-1)-273.15, '.k', csFe(2:end-1,2:end-1),T(2:end-1,2:end-1)-273.15, '.b', clFe(2:end-1,2:end-1),T(2:end-1,2:end-1)-273.15, '.r','MarkerSize',25)
+    ylim([TFe1 TSi2]-273.15)
     title('Fe-FeS Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% S]','Interpreter','latex','FontSize',15)
-    ylabel('Temperature [$^\circ$k]','Interpreter','latex','FontSize',15)
+    ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
+    set(gca,TL{:},TS{:});
     drawnow;
 
 
