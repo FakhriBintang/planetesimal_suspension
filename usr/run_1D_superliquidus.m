@@ -3,24 +3,25 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  ['NewDemo_1D_superliquidus'];     % run identifier
-restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+RunID           =  'test_high';     % run identifier
+outpath         =  '../out/';
+restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  200;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e6;                     % maximum number of time steps
-tend            =  1e6*yr;                  % model stopping time [s]
+maxstep         =  1e7;                     % maximum number of time steps
+tend            =  5e6*yr;                  % model stopping time [s]
 
 % [do not modify]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  10000;                  % domain depth
-Nz              =  200;                     % number of real x/z block nodes
+D               =  50000;                  % domain depth
+Nz              =  500;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
@@ -49,17 +50,17 @@ cphsFe1 = 0     ;   cphsFe2 = 0.35;                 % iron system limits
 perclSi = cphsSi2;                                  % silicate peritectic liquidus composition [wt SiO2]
 percsSi = cphsSi2;                                  % silicate peritectic solidus  composition [wt SiO2]
 perTSi  = TSi1;                                     % silicate peritectic temperature
-PhDgSi  = [8.0,4.0,1.2,1.2];                        % silicate phase diagram curvature factor (> 1)
+PhDgSi  = [6.0,4.0,1.2,1.2];                        % silicate phase diagram curvature factor (> 1)
 perclFe = cphsFe2;                                  % iron peritectic liquidus composition [wt SiO2]
 percsFe = cphsFe2;                                  % iron peritectic solidus  composition [wt SiO2]
 perTFe  = TFe1;                                     % iron peritectic temperature
-PhDgFe  = [8.0,4.0,1.2,1.2];                        % iron hase diagram curvature factor (> 1)
+PhDgFe  = [6.0,4.0,1.2,1.2];                        % iron hase diagram curvature factor (> 1)
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  2000+273.15;                                % reference/top potential temperature [k]
+T0      =  1600+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  2000+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1600+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -110,8 +111,8 @@ kC          =  1e-7;                    % chemical diffusivity [m^2/s]
 
 Cp          = 1000;                     % mixture heat capacity
 
-dEntrSi     = -200;                     % silicate entropy of crystallisation
-dEntrFe     = -200;                     % iron-sulfide entropy of crystallisation
+dEntrSi     = -300;                     % silicate entropy of crystallisation
+dEntrFe     = -250;                     % iron-sulfide entropy of crystallisation
 
 
 %% set heating parameters (if turned on)
@@ -119,7 +120,7 @@ radheat = 0;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 0.5*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 1*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -129,7 +130,7 @@ if radheat
 end
 %% set boundary conditions
 % Temperature boundary conditions
-BCTTop      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
+BCTTop      = 'isothermal';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTBot      = 'insulating';             % 'isothermal', 'insulating', or 'flux' bottom boundaries
 BCTSides    = 'insulating';             % 'isothermal' or 'insulating' bottom boundaries
 
@@ -149,64 +150,64 @@ end
 
 %% set solver options
 % advection scheme
-ADVN        =  'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA         =  {'',''};                 % boundary condition on advection (top/bot, sides)
+ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
-lambda      = 0.5;   	                % iterative lagging for phase fraction
-reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
+reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
+abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 0.250;                     % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e-2*yr;                   % maximum time step
-etareg      = 1e0;                      % regularisation factor for viscosity
+CFL         = 1/50;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e3*yr;                   % maximum time step
+etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       =  0.50;                % iterative step size parameter
-beta        =  0.25;                % iterative damping parameter
-mink        = 1e-8;                     % minimum diffusivity
+alpha       = 0.50;                    % iterative step size parameter
+beta        = 0.05;                    % iterative damping parameter
+kmin        = 1e-8;                    % minimum diffusivity
+
 
 %% start model
-% create output directory
-[~,systemname]  = system('hostname');
-systemname(end) = [];
-
-switch systemname
-    case 'Horatio'
-        outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-    otherwise
-        outpath = ['../out/',RunID];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end
-end
-% initialise restart frame if switched on
-if restart
-    if     restart < 0  % restart from last continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_cont.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_cont.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    elseif restart > 0  % restart from specified continuation frame
-        switch systemname
-            case 'Horatio'
-                name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-                name_h  = [outpath,'/',RunID,'_hist.mat']; 
-            otherwise % must specify full output directory, not necessarily nestled in the same model folder
-                name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-                name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-                    ,RunID,'/',RunID,'_hist.mat'];
-        end
-    end
-    % make new output folder for restart
-    outpath = [outpath,'/_cont'];
-        if ~exist(outpath, 'dir'); mkdir(outpath); end 
-
-end
+% % create output directory
+% [~,systemname]  = system('hostname');
+% systemname(end) = [];
+% 
+% switch systemname
+%     case 'Horatio'
+%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+%     otherwise
+%         outpath = ['../out/',RunID];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end
+% end
+% % initialise restart frame if switched on
+% if restart
+%     if     restart < 0  % restart from last continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_cont.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_cont.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     elseif restart > 0  % restart from specified continuation frame
+%         switch systemname
+%             case 'Horatio'
+%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
+%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
+%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
+%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
+%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
+%                     ,RunID,'/',RunID,'_hist.mat'];
+%         end
+%     end
+%     % make new output folder for restart
+%     outpath = [outpath,'/_cont'];
+%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
+% 
+% end
 
 % add path to source directory
 addpath('../src')
@@ -218,7 +219,8 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
 infile = ['run_1D_4phs.m'];
-
+name    = [outpath,'/',RunID,'_cont.mat'];
+name_h  = [outpath,'/',RunID,'_hist.mat']; 
 % print run header
 fprintf(1,'\n\n************************************************************\n');
 fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);

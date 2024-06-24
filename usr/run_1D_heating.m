@@ -5,7 +5,7 @@ clear ; close all
 
 RunID           =  'test_high';     % run identifier
 outpath         =  '../out/';
-restart         = -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  1;                       % switch on to save output files
 nop             =  100;                     % output every 'nop' grid steps of transport
