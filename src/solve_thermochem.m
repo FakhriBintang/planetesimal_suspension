@@ -29,11 +29,11 @@ qSx    = - (ks(:,1:end-1)+ks(:,2:end))./2 .* ddx(T,h);
 diff_S = - ddz(qSz(:,2:end-1),h)  ...                                      % heat diffusion
          - ddx(qSx(2:end-1,:),h);
 
-qSz    = - (ksW(1:end-1,:)+ksW(2:end,:))./2 .* ddz(Tp,h);
-qSx    = - (ksW(:,1:end-1)+ksW(:,2:end))./2 .* ddx(Tp,h);
-diff_S = - ddz(qSz(:,2:end-1),h) ...                                       % turbulent eddy heat diffusion
-         - ddx(qSx(2:end-1,:),h) ...
-         + diff_S;
+% qSz    = - (ksW(1:end-1,:)+ksW(2:end,:))./2 .* ddz(Tp,h);
+% qSx    = - (ksW(:,1:end-1)+ksW(:,2:end))./2 .* ddx(Tp,h);
+% diff_S = - ddz(qSz(:,2:end-1),h) ...                                       % turbulent eddy heat diffusion
+%          - ddx(qSx(2:end-1,:),h) ...
+%          + diff_S;
 
 diss_T = EntProd./T(2:end-1,2:end-1);
 
@@ -123,34 +123,34 @@ end
 advn_CSi = - advect(FsSi(inz,inx).*csSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA) ...
            - advect(FlSi(inz,inx).*clSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA);
 
-kclSi    = FlSi.*kc;
-kcsSi    = FsSi.*kc;
-qclSiz   = - (kclSi(1:end-1,:)+kclSi(2:end,:))./2 .* ddz(clSi,h);
-qclSix   = - (kclSi(:,1:end-1)+kclSi(:,2:end))./2 .* ddx(clSi,h);
-qcsSiz   = - (kcsSi(1:end-1,:)+kcsSi(2:end,:))./2 .* ddz(csSi,h);
-qcsSix   = - (kcsSi(:,1:end-1)+kcsSi(:,2:end))./2 .* ddx(csSi,h);
-diff_CSi = - ddz(qclSiz(:,2:end-1),h)  ...                                 % heat diffusion
-           - ddx(qclSix(2:end-1,:),h)  ...
-           - ddz(qcsSiz(:,2:end-1),h)  ...                                 % heat diffusion
-           - ddx(qcsSix(2:end-1,:),h);
+% kclSi    = FlSi.*kc;
+% kcsSi    = FsSi.*kc;
+% qclSiz   = - (kclSi(1:end-1,:)+kclSi(2:end,:))./2 .* ddz(clSi,h);
+% qclSix   = - (kclSi(:,1:end-1)+kclSi(:,2:end))./2 .* ddx(clSi,h);
+% qcsSiz   = - (kcsSi(1:end-1,:)+kcsSi(2:end,:))./2 .* ddz(csSi,h);
+% qcsSix   = - (kcsSi(:,1:end-1)+kcsSi(:,2:end))./2 .* ddx(csSi,h);
+% diff_CSi = - ddz(qclSiz(:,2:end-1),h)  ...                                 % heat diffusion
+%            - ddx(qclSix(2:end-1,:),h)  ...
+%            - ddz(qcsSiz(:,2:end-1),h)  ...                                 % heat diffusion
+%            - ddx(qcsSix(2:end-1,:),h);
 
-dCSidt   = advn_CSi + diff_CSi;
+dCSidt   = advn_CSi; % + diff_CSi;
 
 advn_CFe = - advect(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA) ...
            - advect(FlFe(inz,inx).*clFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA);
 
-kclFe    = FlFe.*kc;
-kcsFe    = FsFe.*kc;
-qclFez   = - (kclFe(1:end-1,:)+kclFe(2:end,:))./2 .* ddz(clFe,h);
-qclFex   = - (kclFe(:,1:end-1)+kclFe(:,2:end))./2 .* ddx(clFe,h);
-qcsFez   = - (kcsFe(1:end-1,:)+kcsFe(2:end,:))./2 .* ddz(csFe,h);
-qcsFex   = - (kcsFe(:,1:end-1)+kcsFe(:,2:end))./2 .* ddx(csFe,h);
-diff_CFe = - ddz(qclFez(:,2:end-1),h)  ...                                 % heat diffusion
-           - ddx(qclFex(2:end-1,:),h)  ...
-           - ddz(qcsFez(:,2:end-1),h)  ...                                 % heat diffusion
-           - ddx(qcsFex(2:end-1,:),h);
+% kclFe    = FlFe.*kc;
+% kcsFe    = FsFe.*kc;
+% qclFez   = - (kclFe(1:end-1,:)+kclFe(2:end,:))./2 .* ddz(clFe,h);
+% qclFex   = - (kclFe(:,1:end-1)+kclFe(:,2:end))./2 .* ddx(clFe,h);
+% qcsFez   = - (kcsFe(1:end-1,:)+kcsFe(2:end,:))./2 .* ddz(csFe,h);
+% qcsFex   = - (kcsFe(:,1:end-1)+kcsFe(:,2:end))./2 .* ddx(csFe,h);
+% diff_CFe = - ddz(qclFez(:,2:end-1),h)  ...                                 % heat diffusion
+%            - ddx(qclFex(2:end-1,:),h)  ...
+%            - ddz(qcsFez(:,2:end-1),h)  ...                                 % heat diffusion
+%            - ddx(qcsFex(2:end-1,:),h);
 
-dCFedt   = advn_CFe + diff_CFe;
+dCFedt   = advn_CFe; % + diff_CFe;
 
 % update solution
 % residual of entropy evolution

@@ -144,11 +144,11 @@ Vel(:,[1 end]) = Vel(:,[2 end-1]);
 
 
 %% update diffusion parameters
-kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
+% kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
 kT    = (xFe.*kTFe + xSi.*kTSi);                                           % magma thermal conductivity
 ks    = kT./T;                                                             % entropy conductivity
-ksW   = kW.*rho.*Cp./T;                                                    % turbulent eddy entropy conductivity
-kc    = kW;                                                                % turbulent eddy composition diffusivity
+% ksW   = kW.*rho.*Cp./T;                                                    % turbulent eddy entropy conductivity
+% kc    = kW;                                                                % turbulent eddy composition diffusivity
 kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
 kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
 kwlSi = abs((rholSi-rho).*gz0.*Ksgr_m.*dm*10) + kmin;
@@ -160,8 +160,8 @@ ksSi  = phisSi.*kwsSi;
 
 
 %% Regularise and limit viscosity
-Eta = Eta + kW.*rho + etamin;
-etamax = 1e+6.*min(Eta(:));                                                % set max eta for 1e6 max range
+Eta = Eta + etamin;
+etamax = 1e+8.*min(Eta(:));                                                % set max eta for 1e8 max range
 Eta    = (1./etamax + 1./Eta).^(-1);                                       % limit viscosity range
 Eta([1 end],:) = Eta([2 end-1],:);
 Eta(:,[1 end]) = Eta(:,[2 end-1]);
