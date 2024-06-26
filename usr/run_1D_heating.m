@@ -7,7 +7,7 @@ RunID           =  'test_high';     % run identifier
 outpath         =  '../out/';
 restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
+save_op         =  0;                       % switch on to save output files
 nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
@@ -21,7 +21,7 @@ dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
 D               =  50000;                  % domain depth
-Nz              =  500;                     % number of real x/z block nodes
+Nz              =  400;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
@@ -89,7 +89,9 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasSi0     =  1e18;                    % reference silicate crystal viscosity
+EtasFe0     =  1e15;                    % reference iron crystal viscosity
+
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...

@@ -166,6 +166,9 @@ rholSi = rholSi0.*(1 - aT.*(T-perTSi) - gCSi.*(clSi-cphsSi1));
 rhosFe = rhosFe0.*(1 - aT.*(T-perTFe) - gCFe.*(csFe-cphsFe1));
 rholFe = rholFe0.*(1 - aT.*(T-perTFe) - gCFe.*(clFe-cphsFe1));
 
+etasSi = zeros(nzP,nxP) + EtasSi0;
+etasFe = zeros(nzP,nxP) + EtasFe0;
+
 a1      = 1; a2 = 0; a3 = 0; b1 = 1; b2 = 0; b3 = 0;
 res = 1e3;
 tol = 1e-4;

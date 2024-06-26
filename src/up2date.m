@@ -24,7 +24,7 @@ philSi = max(0,min(1,xSi.* flSi .* rho ./ rholSi));
 %% update viscosity
 % get pure phase viscosity
 % Simple Arrhenian model for a melt of fixed composition
-etas   = zeros(size(phisSi)) + EtaSol0;
+etas   = ((etasSi.*phisSi)+(etasFe.*phisFe))./(phisSi+phisFe); % weighted average of solid viscosities
 etalSi = EtalSi0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTSi));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTFe));
 
