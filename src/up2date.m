@@ -29,9 +29,9 @@ etalSi = EtalSi0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTSi));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTFe));
 
 % update effective constituent sizes
-dx = dx0.*(1-phisFe-phisSi).^0.5;
-dm = dm0.*(1-philSi).^0.5;
-df = df0.*(1-philFe).^0.5;
+dx = dx0.*(1-phisFe-phisSi).^dscale;
+dm = dm0.*(1-philSi).^dscale;
+df = df0.*(1-philFe).^dscale;
 
 % get permission weights
 kv = permute(cat(3,etas,etalSi,etalFe),[3,1,2]);

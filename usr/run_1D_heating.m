@@ -165,6 +165,7 @@ TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi'
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
+dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 
 %% start model

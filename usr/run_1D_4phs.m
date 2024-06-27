@@ -90,7 +90,7 @@ P0 = 0;
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
 EtasSi0     =  1e18;                    % reference silicate crystal viscosity
-EtasFe0     =  1e16;                    % reference iron crystal viscosity
+EtasFe0     =  1e15;                    % reference iron crystal viscosity
 
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
