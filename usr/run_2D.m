@@ -3,12 +3,12 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  'test_2D';     % run identifier
+RunID           =  '2D_cooling_jul';     % run identifier
 outpath         =  '../out/';
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  20;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -17,12 +17,12 @@ maxstep         =  1e7;                     % maximum number of time steps
 tend            =  5e6*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  1e-9*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  50000;                  % domain depth
-Nz              =  150;                     % number of real x/z block nodes
-Nx              =  75;
+D               =  1000;                  % domain depth
+Nz              =  120;                     % number of real x/z block nodes
+Nx              = 120;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -31,13 +31,13 @@ L               =  h*Nx;
 
 % set initial system and component fractions
 xFe0            =  0.2;                     % Fe-FeS system fraction
-cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
+cFe0            =  0.12;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+cSi0            =  0.49;                    % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
-dcFe            =  1e-4;                    % amplitude of initial random perturbation to iron component
-dcSi            =  1e-4;                    % amplitude of initial random perturbation to silicate component
+dcFe            =  0e-4;                    % amplitude of initial random perturbation to iron component
+dcSi            =  0e-4;                    % amplitude of initial random perturbation to silicate component
 smth            =  ((Nz+2)/40)^2;           % regularisation of initial random perturbation
 
 % set phase diagram parameters
@@ -58,9 +58,9 @@ PhDgFe  = [6.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1550+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1550+273.15;                                % bottom potential temperature (if different from top) [k]
+T0      =  1400+273.15;                                % reference/top potential temperature [k]
+Ttop0   =  273.15;                                      % isothermal top reference temperature 
+T1      =  1400+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -89,7 +89,9 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasSi0     =  1e18;                    % reference silicate crystal viscosity
+EtasFe0     =  1e15;                    % reference iron crystal viscosity
+
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
@@ -155,15 +157,15 @@ BCA         = {'',''};                 % boundary condition on advection (top/bo
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                       % maximum iteration count
-CFL         = 1/50;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+maxit       = 25;                       % maximum iteration count
+CFL         = 1/10;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
-
+dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 %% start model
 % % create output directory
