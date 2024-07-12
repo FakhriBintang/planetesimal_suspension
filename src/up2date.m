@@ -13,7 +13,7 @@ rho    = 1./(xFe.*(fsFe./rhosFe + flFe./rholFe) ...
     + xSi.*(fsSi./rhosSi + flSi./rholSi));
 rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
-[gz, gzP] = gravity(rho,zW);
+[gz, gzP] = gravity(rho,zW,gmin);
 
 
 %% convert weight to volume fractions
