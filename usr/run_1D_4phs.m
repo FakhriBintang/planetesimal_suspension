@@ -3,12 +3,12 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  'test_high';     % run identifier
-outpath         =  '../out/';
-restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+RunID           =  'test_gravity';     % run identifier
+outpath         =  ['../out/', RunID];
+restart         =  12244;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  200;                     % output every 'nop' grid steps of transport
+nop             = 1;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -165,7 +165,7 @@ TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi'
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
-
+dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 %% start model
 % % create output directory
@@ -210,8 +210,31 @@ kmin        = 1e-8;                    % minimum diffusivity
 %         if ~exist(outpath, 'dir'); mkdir(outpath); end 
 % 
 % end
+% 
+% if restart
+%     if     restart < 0  % restart from last continuation frame
+%         name    = [outpath,'/',RunID,'_cont.mat'];
+%         name_h  = [outpath,'/',RunID,'_hist.mat'];
+%     elseif restart > 0
+%         name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
+%         name_h  = [outpath,'/',RunID,'_hist.mat'];
+% 
+%     end
+% end
 
-% add path to source directory
+if ~exist(outpath, 'dir'); mkdir(outpath); end
+
+if restart
+    if     restart < 0  % restart from last continuation frame
+        name    = [outpath,'/',RunID,'_cont.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+    elseif restart > 0
+        name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+
+    end
+end
+
 addpath('../src')
 addpath('../src/cbrewer/')
 
@@ -221,8 +244,7 @@ cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
 infile = ['run_1D_4phs.m'];
-name    = [outpath,'/',RunID,'_cont.mat'];
-name_h  = [outpath,'/',RunID,'_hist.mat']; 
+
 % print run header
 fprintf(1,'\n\n************************************************************\n');
 fprintf(1,    '*****  planetesimal  |  %s  |  %s  *****\n'         ,RunID,datetime);

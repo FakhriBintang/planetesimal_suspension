@@ -4,10 +4,10 @@
 clear ; close all
 
 RunID           =  '2D_cooling_jul';     % run identifier
-outpath         =  ['../out/', RunID] ;
-restart         =  252;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+outpath         =  ['../out/' RunID] ;
+restart         =  -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
+save_op         =  0;                       % switch on to save output files
 nop             =  500;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
@@ -169,7 +169,7 @@ dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 
 
 %% start model
 % % create output directory
-if ~exist(outpath, 'dir'); mkdir(outpath); end
+% if ~exist(outpath, 'dir'); mkdir(outpath); end
 
 % [~,systemname]  = system('hostname');
 % systemname(end) = [];
@@ -212,8 +212,16 @@ if ~exist(outpath, 'dir'); mkdir(outpath); end
 %         if ~exist(outpath, 'dir'); mkdir(outpath); end 
 % 
 % end
-name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
-name_h  = [outpath,'/',RunID,'_hist.mat']; 
+if restart
+    if     restart < 0  % restart from last continuation frame
+        name    = [outpath,'/',RunID,'_cont.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+    elseif restart > 0
+        name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+
+    end
+end
 
 % add path to source directory
 addpath('../src')

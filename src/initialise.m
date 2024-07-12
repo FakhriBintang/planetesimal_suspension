@@ -367,7 +367,7 @@ if restart
         step    = step+1;
 
     else % continuation file does not exist, start from scratch
-        fprintf('\n   !!! restart file does not exist !!! \n   => starting run from scratch %s \n\n',runID);
+        fprintf('\n   !!! restart file does not exist !!! \n   => starting run from scratch %s \n\n',RunID);
         solve_fluidmech;
         up2date;
         history;

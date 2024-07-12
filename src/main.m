@@ -72,7 +72,7 @@ while time <= tend && step <= maxstep
             if iter == 0
                 resnorm0 = resnorm+TINY;
             end
-            if ~mod(iter,1); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+            if ~mod(iter,10); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end
@@ -88,7 +88,7 @@ while time <= tend && step <= maxstep
         end
         iter = iter+1;
     end
-
+    fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
     % update mass and energy errors
     history;
     Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1)./10;
