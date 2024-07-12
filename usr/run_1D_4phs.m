@@ -80,8 +80,9 @@ aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx0         =  1e-3;                 % solid grain size [m]
 df0         =  1e-3;                 % metal droplet size [m]
 dm0         =  1e-3;                 % melt film size [m]
-gz0         =  0.1;                  % z-gravity
-gx0         =  0;               	 % x-gravity
+gz0         =  0.1/2;                % initial z-gravity
+gx0         =  0;               	 % initial x-gravity
+gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;

@@ -80,8 +80,9 @@ aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx0         =  1e-3;                 % solid grain size [m]
 df0         =  1e-3;                 % metal droplet size [m]
 dm0         =  1e-3;                 % melt film size [m]
-gz0         =  0.1;                  % z-gravity
-gx0         =  0;               	 % x-gravity
+gz0         =  0.1/2;                % initial z-gravity
+gx0         =  0;               	 % initial x-gravity
+gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
@@ -212,7 +213,6 @@ dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 
 % 
 % end
 
-outpath = ['../out/',RunID];
 if ~exist(outpath, 'dir'); mkdir(outpath); end
 
 if restart
@@ -235,7 +235,7 @@ cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
-infile = ['run_1D_4phs.m'];
+infile = ['run_1D_heating.m'];
 
 % print run header
 fprintf(1,'\n\n************************************************************\n');

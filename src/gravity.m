@@ -1,4 +1,4 @@
-function [gz, gzP] = gravity(rho,zW)
+function [gz, gzP] = gravity(rho,zW,gmin)
     rw = flip(zW)'; % convert depth to radial distance
     % %% trapezoidal method
     % rhoW = (rho(1:end-1,:)+ rho(2:end,:))./2;
@@ -10,7 +10,6 @@ function [gz, gzP] = gravity(rho,zW)
 
     %% calculate graavity
     G = 6.672e-11;
-    gmin = 0.01;
     % gz_t = G.*m_trapz./(rw.^2); gz_t(isnan(gz_t)) = 0;
     gz = G.*m_sh./(rw.^2);   gz(isnan(gz)) = 0; gz = gz+gmin;
     % gzU = (gz(1:end-1,1:end-1)+gz(2:end,1:end-1)+gz(1:end-1,2:end)+gz(2:end,2:end))./4;

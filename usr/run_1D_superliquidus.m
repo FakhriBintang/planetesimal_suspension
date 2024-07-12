@@ -4,7 +4,7 @@
 clear ; close all
 
 RunID           =  'test_high';     % run identifier
-outpath         =  '../out/';
+outpath         =  ['../out/',RunID] ;
 restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
@@ -80,8 +80,9 @@ aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx0         =  1e-3;                 % solid grain size [m]
 df0         =  1e-3;                 % metal droplet size [m]
 dm0         =  1e-3;                 % melt film size [m]
-gz0         =  0.1;                  % z-gravity
-gx0         =  0;               	 % x-gravity
+gz0         =  0.1/2;                % initial z-gravity
+gx0         =  0;               	 % initial x-gravity
+gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
@@ -209,6 +210,19 @@ kmin        = 1e-8;                    % minimum diffusivity
 % 
 % end
 
+if ~exist(outpath, 'dir'); mkdir(outpath); end
+
+if restart
+    if     restart < 0  % restart from last continuation frame
+        name    = [outpath,'/',RunID,'_cont.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+    elseif restart > 0
+        name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+
+    end
+end
+
 % add path to source directory
 addpath('../src')
 addpath('../src/cbrewer/')
@@ -218,7 +232,7 @@ cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
-infile = ['run_1D_4phs.m'];
+infile = ['run_1D_superliquidus.m'];
 name    = [outpath,'/',RunID,'_cont.mat'];
 name_h  = [outpath,'/',RunID,'_hist.mat']; 
 % print run header
