@@ -117,9 +117,12 @@ if plot_op
         plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,5,5)
-        plot(mean(Hr(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
-        title('$H_r [W / m^{-3}$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        plot(mean(gzP(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        title('$g_z [ms^{-2}]$',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
+        % plot(mean(Hr(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        % title('$H_r [W / m^{-3}$K]',TX{:},FS{:}); set(gca,TL{:},TS{:});
+        % ylabel('Depth [km]',TX{:},FS{:});
 
         fh4 = figure(4); clf;
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
@@ -476,10 +479,10 @@ if save_op
         print(fh4,name,'-dpng','-r300','-image');
         name = [outpath '/',RunID,'_consv_',num2str(floor(step/nop))]; % figure 5
         print(fh5,name,'-dpng','-r300','-image');
-        if step>0
-        name = [outpath '/',RunID,'_diagnostics_',num2str(floor(step/nop))]; % figure 5
-        print(fh18,name,'-dpng','-r300','-image');
-        end
+        % if step>0
+        % name = [outpath '/',RunID,'_diagnostics_',num2str(floor(step/nop))]; % figure 5
+        % print(fh18,name,'-dpng','-r300','-image');
+        % end
 
     else  % save 2D plots
 

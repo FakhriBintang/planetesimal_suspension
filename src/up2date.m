@@ -13,6 +13,8 @@ rho    = 1./(xFe.*(fsFe./rhosFe + flFe./rholFe) ...
     + xSi.*(fsSi./rhosSi + flSi./rholSi));
 rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
+[gz, gzP] = gravity(rho,zW);
+
 
 %% convert weight to volume fractions
 phisFe = max(0,min(1,xFe.* fsFe .* rho ./ rhosFe));
@@ -25,6 +27,7 @@ philSi = max(0,min(1,xSi.* flSi .* rho ./ rholSi));
 % get pure phase viscosity
 % Simple Arrhenian model for a melt of fixed composition
 etas   = ((etasSi.*phisSi)+(etasFe.*phisFe))./(phisSi+phisFe); % weighted average of solid viscosities
+etas(isnan(etas)) = EtasSi0;
 etalSi = EtalSi0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTSi));
 etalFe = EtalFe0 .* exp(Em./(8.3145.*T)-Em./(8.3145.*perTFe));
 
@@ -149,10 +152,10 @@ kT    = (xFe.*kTFe + xSi.*kTSi);                                           % mag
 ks    = kT./T;                                                             % entropy conductivity
 % ksW   = kW.*rho.*Cp./T;                                                    % turbulent eddy entropy conductivity
 % kc    = kW;                                                                % turbulent eddy composition diffusivity
-kwlFe = abs((rholFe-rho).*gz0.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
-kwsFe = abs((rhosFe-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
-kwlSi = abs((rholSi-rho).*gz0.*Ksgr_m.*dm*10) + kmin;
-kwsSi = abs((rhosSi-rho).*gz0.*Ksgr_x.*dx*10) + kmin;
+kwlFe = abs((rholFe-rho).*gzP.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
+kwsFe = abs((rhosFe-rho).*gzP.*Ksgr_x.*dx*10) + kmin;
+kwlSi = abs((rholSi-rho).*gzP.*Ksgr_m.*dm*10) + kmin;
+kwsSi = abs((rhosSi-rho).*gzP.*Ksgr_x.*dx*10) + kmin;
 klFe  = philFe.*kwlFe;
 ksFe  = phisFe.*kwsFe;
 klSi  = philSi.*kwlSi;
