@@ -33,7 +33,7 @@ xW          =  xP;                              % Horizontal coordinates of z-fa
 zW          =  zC;                              % Vertical   coordinates of z-face nodes [m]
 xU          =  xC;                              % Horizontal coordinates of x-face nodes [m]
 zU          =  zP;                              % Vertical   coordinates of x-face nodes [m]
-
+rp          =  flip(zP');
 % set 2D coordinate grids
 [XC,ZC] = meshgrid(xC,zC);              % corner nodes grid
 [XP,ZP] = meshgrid(xP,zP);              % centre nodes grid
@@ -52,15 +52,15 @@ inx = 2:length(xP)-1;
 
 % get smoothed initialisation field
 rng(67);
-rp = randn(nzP,nxP);
+pert = randn(nzP,nxP);
 for i = 1:round(smth)
-    rp(2:end-1,2:end-1) = rp(2:end-1,2:end-1) + diff(rp(:,2:end-1),2,1)./8 ...
-                                              + diff(rp(2:end-1,:),2,2)./8;
-    rp([1 end],:)       = rp([2 end-1],:);
-    rp(:,[1 end])       = rp(:,[2 end-1]);
+    pert(2:end-1,2:end-1) = pert(2:end-1,2:end-1) + diff(pert(:,2:end-1),2,1)./8 ...
+                                              + diff(pert(2:end-1,:),2,2)./8;
+    pert([1 end],:)       = pert([2 end-1],:);
+    pert(:,[1 end])       = pert(:,[2 end-1]);
 end
-rp              = rp./max(abs(rp(:)));
-rp              = rp - mean(mean(rp(2:end-1,2:end-1)));
+pert              = pert./max(abs(pert(:)));
+pert              = pert - mean(mean(pert(2:end-1,2:end-1)));
 
 
 %% setup material property arrays
@@ -147,10 +147,10 @@ end
 Tp = T;  % initial condition sets potential temperature [k]
 
 % set initial component weight fraction [kg/kg]
-xFe = xFe0 + dxFe.*rp; % Fe system
+xFe = xFe0 + dxFe.*pert; % Fe system
 xSi = 1 - xFe;         % Si system
-cFe = zeros(size(xFe)) + cFe0 + dcFe.*rp; % Fe component
-cSi = zeros(size(xSi)) + cSi0 + dcSi.*rp - cSimin; % Si component
+cFe = zeros(size(xFe)) + cFe0 + dcFe.*pert; % Fe component
+cSi = zeros(size(xSi)) + cSi0 + dcSi.*pert - cSimin; % Si component
 Pt = 0;
 
 Hr  = Hr0.*zeros(size(T));

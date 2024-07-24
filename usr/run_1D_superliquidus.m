@@ -20,6 +20,7 @@ tend            =  5e6*yr;                  % model stopping time [s]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
+mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
 D               =  50000;                  % domain depth
 Nz              =  500;                     % number of real x/z block nodes
 Nx              = 1;
@@ -90,7 +91,8 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasSi0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasFe0     =  1e19;
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
@@ -164,6 +166,7 @@ TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi'
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
+dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 
 %% start model
