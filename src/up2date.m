@@ -13,8 +13,9 @@ rho    = 1./(xFe.*(fsFe./rhosFe + flFe./rholFe) ...
     + xSi.*(fsSi./rhosSi + flSi./rholSi));
 rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
+if selfgrav
 [gz, gzP] = gravity(rho,zW,gmin);
-
+end
 
 %% convert weight to volume fractions
 phisFe = max(0,min(1,xFe.* fsFe .* rho ./ rhosFe));
@@ -118,10 +119,17 @@ seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 
 %% velocity divergence and volume source
 % update velocity divergence
-Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                           % get velocity divergence
-                       + ddx(U(2:end-1,:),h);
-Div_V([1 end],:) = Div_V([2 end-1],:);                                     % apply boundary conditions
-Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
+if mode == 'spherical'
+    Div_V(2:end-1,2:end-1) = 1./(rp(2:end-1).^2)...
+                        .*ddz((rw.^2).*W(:,2),h);                       % get velocity divergence
+    Div_V([1 end],:) = Div_V([2 end-1],:);                                 % apply boundary conditions
+    Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
+else
+    Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                       % get velocity divergence
+                           + ddx(U(2:end-1,:),h);
+    Div_V([1 end],:) = Div_V([2 end-1],:);                                 % apply boundary conditions
+    Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
+end
 
 
 %% strain rates and velocity magnitude

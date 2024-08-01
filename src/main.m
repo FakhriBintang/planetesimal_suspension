@@ -62,8 +62,11 @@ while time <= tend && step <= maxstep
         solve_thermochem;
 
         % solve fluid-mechanical equations
-        solve_fluidmech;
-
+        if mode == 'spherical'
+            solve_fluidmech_sp;
+        else
+            solve_fluidmech;
+        end
         % update non-linear parameters and auxiliary variables
         up2date;
 
@@ -72,7 +75,7 @@ while time <= tend && step <= maxstep
             if iter == 0
                 resnorm0 = resnorm+TINY;
             end
-            if ~mod(iter,10); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+            if ~mod(iter,1); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end

@@ -399,10 +399,12 @@ if ~exist('fh3','var'); fh3 = figure(3);
         ylabel('consv. $n_{Al}^{26}$',TX{:},FS{:}); set(gca,TL{:},TS{:})
     end
     xlabel('Time [yr]',TX{:},FS{:});
+
+    drawnow
 end
 
 %% diagnose thermal spike in 4 phs
-% if step>0
+if step>0
 % fh18 = figure(18); clf;
 % subplot(1,4,1)
 % plot(mean(T(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
@@ -425,38 +427,38 @@ end
 % title('dTdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
 % drawnow
 % 
-% fh88 = figure(88); clf;
-% subplot(1,5,1)
-% plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
-% title('dSdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
-% ylabel('Depth [km]',TX{:},FS{:});
-% subplot(1,5,2)
-% plot(dCSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
-% plot(dCFedt,zP(2:end-1)./1000,'LineWidth',2);
-% title('dCdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
-% legend('Si', 'Fe')
-% subplot(1,5,3)
-% plot(dXSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
-% plot(dXFedt,zP(2:end-1)./1000,'LineWidth',2);
-% title('dXdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
-% legend('Si', 'Fe')
-% subplot(1,5,4)
-% plot(dFsSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
-% plot(dFlSidt,zP(2:end-1)./1000,'LineWidth',2);
-% plot(dFsFedt,zP(2:end-1)./1000,'LineWidth',2);
-% plot(dFlFedt,zP(2:end-1)./1000,'LineWidth',2);
-% title('dFdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
-% legend('Si s','Si l', 'Fe s', 'Fe l')
-% subplot(1,5,5)
-% plot(advn_FsSi,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
-% plot(advn_FlSi,zP(2:end-1)./1000,'LineWidth',2);
-% plot(advn_FsFe,zP(2:end-1)./1000,'LineWidth',2);
-% plot(advn_FlFe,zP(2:end-1)./1000,'LineWidth',2);
-% plot(advn_RHO,zP(2:end-1)./1000,'LineWidth',2);
-% title('adv F',TX{:},FS{:}); set(gca,TL{:},TS{:});
-% legend('sSi', 'lSi', 'sFe', 'lFe', 'RHO')
-% drawnow
-% end
+fh88 = figure(88); clf;
+subplot(1,5,1)
+plot(dSdt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+title('dSdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+ylabel('Depth [km]',TX{:},FS{:});
+subplot(1,5,2)
+plot(dCSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dCFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dCdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si', 'Fe')
+subplot(1,5,3)
+plot(dXSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dXFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dXdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si', 'Fe')
+subplot(1,5,4)
+plot(dFsSidt,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(dFlSidt,zP(2:end-1)./1000,'LineWidth',2);
+plot(dFsFedt,zP(2:end-1)./1000,'LineWidth',2);
+plot(dFlFedt,zP(2:end-1)./1000,'LineWidth',2);
+title('dFdt',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('Si s','Si l', 'Fe s', 'Fe l')
+subplot(1,5,5)
+plot(advn_FsSi,zP(2:end-1)./1000,'LineWidth',2); hold on; axis ij tight; box on;
+plot(advn_FlSi,zP(2:end-1)./1000,'LineWidth',2);
+plot(advn_FsFe,zP(2:end-1)./1000,'LineWidth',2);
+plot(advn_FlFe,zP(2:end-1)./1000,'LineWidth',2);
+plot(advn_RHO,zP(2:end-1)./1000,'LineWidth',2);
+title('adv F',TX{:},FS{:}); set(gca,TL{:},TS{:});
+legend('sSi', 'lSi', 'sFe', 'lFe', 'RHO')
+drawnow
+end
 
 %% save output
 if save_op

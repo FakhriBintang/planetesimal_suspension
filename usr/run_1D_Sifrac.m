@@ -1,14 +1,13 @@
 % planetesimal sill rainfall: user control script
-% no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close all
+clear ;%close all
 
 RunID           =  'test_high';     % run identifier
-outpath         =  '../out/';
+outpath         =  ['../out/',RunID] ;
 restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  200;                     % output every 'nop' grid steps of transport
+nop             =  1;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -17,12 +16,14 @@ maxstep         =  1e7;                     % maximum number of time steps
 tend            =  5e6*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  1e-7*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  50000;                  % domain depth
-Nz              =  500;                     % number of real x/z block nodes
-Nx              = 1;
+selfgrav        =  0;                       % self gravity
+mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
+D               =  10000;                  % domain depth
+Nz              =  250;                     % number of real x/z block nodes
+Nx              =  1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -31,8 +32,8 @@ L               =  h*Nx;
 
 % set initial system and component fractions
 xFe0            =  0;                     % Fe-FeS system fraction
-cFe0            =  0.12;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
-cSi0            =  0.49;                    % Si system fertile component fraction [wt% SiO2]
+cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
+cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
 
 % set parameters
 dxFe            = -0.0e-3;                  % amplitude of initial random perturbation to iron system
@@ -58,9 +59,9 @@ PhDgFe  = [6.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1400+273.15;                                % reference/top potential temperature [k]
+T0      =  1500+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1400+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1500+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -80,8 +81,9 @@ aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx0         =  1e-3;                 % solid grain size [m]
 df0         =  1e-3;                 % metal droplet size [m]
 dm0         =  1e-3;                 % melt film size [m]
-gz0         =  0.1;                  % z-gravity
-gx0         =  0;               	 % x-gravity
+gz0         =  0.1;                % initial z-gravity
+gx0         =  0;               	 % initial x-gravity
+gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
@@ -89,7 +91,8 @@ P0 = 0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtaSol0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasSi0     =  1e15;                    % reference silicate/iron crystal viscosity
+EtasFe0     =  1e19;
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
 
 AAP         =  [ 0.25, 0.25, 0.25; ...
@@ -150,7 +153,7 @@ end
 
 %% set solver options
 % advection scheme
-ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+ADVN        = 'tvdim';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
@@ -163,6 +166,7 @@ TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi'
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
+dscale      = 0;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 
 %% start model
@@ -209,6 +213,19 @@ kmin        = 1e-8;                    % minimum diffusivity
 % 
 % end
 
+if ~exist(outpath, 'dir'); mkdir(outpath); end
+
+if restart
+    if     restart < 0  % restart from last continuation frame
+        name    = [outpath,'/',RunID,'_cont.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+    elseif restart > 0
+        name = [outpath,'/',RunID,'_',num2str(restart),'.mat'];
+        name_h  = [outpath,'/',RunID,'_hist.mat'];
+
+    end
+end
+
 % add path to source directory
 addpath('../src')
 addpath('../src/cbrewer/')
@@ -218,7 +235,7 @@ cm1 =        cbrewer('seq','YlOrRd',30) ; % sequential colour map
 cm2 = flipud(cbrewer('div','RdBu'  ,30)); % divergent colour map
 load ocean.mat;
 
-infile = ['run_1D_4phs.m'];
+infile = ['run_1D_superliquidus.m'];
 name    = [outpath,'/',RunID,'_cont.mat'];
 name_h  = [outpath,'/',RunID,'_hist.mat']; 
 % print run header

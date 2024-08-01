@@ -20,9 +20,10 @@ tend            =  5e6*yr;                  % model stopping time [s]
 dt              =  1e-2*yr;                 % (initial) time step [s]
 
 %% set model domain
+selfgrav        =  0;                       % self gravity
 mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
 D               =  50000;                  % domain depth
-Nz              =  500;                     % number of real x/z block nodes
+Nz              =  300;                     % number of real x/z block nodes
 Nx              = 1;
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates

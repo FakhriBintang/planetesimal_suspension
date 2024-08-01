@@ -23,7 +23,11 @@ NP          =  nxP*nzP;                         % total number of corner nodes
 NW          =  nxW*nzW;                         % total number of z-face nodes
 NU          =  nxU*nzU;                         % total number of x-face nodes
 NDOF        =  NP+NW+NU;                        % total number of all degrees of freedum
+if mode == 'spherical'
+    % change dimensionz to z by 1 for 1D spherical fluid mechanics
+    NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
 
+end
 % set coordinate vectors
 xC          =  0:h:L;                           % Horizontal coordinates of corner nodes [m]
 zC          =  0:h:D;                           % Vertical   coordinates of corner nodes [m]
@@ -34,6 +38,7 @@ zW          =  zC;                              % Vertical   coordinates of z-fa
 xU          =  xC;                              % Horizontal coordinates of x-face nodes [m]
 zU          =  zP;                              % Vertical   coordinates of x-face nodes [m]
 rp          =  flip(zP');
+rw          =  flip(zW');
 % set 2D coordinate grids
 [XC,ZC] = meshgrid(xC,zC);              % corner nodes grid
 [XP,ZP] = meshgrid(xP,zP);              % centre nodes grid
@@ -42,10 +47,20 @@ rp          =  flip(zP');
 
 
 %% setup mapping arrays
-Map         =  reshape(1:NP,nzP,nxP);
-MapW        =  reshape(1:NW,nzW,nxW);
-MapU        =  reshape(1:NU,nzU,nxU) + NW;
-MapP        =  reshape(1:NP,nzP,nxP);
+
+if mode == 'spherical'
+    % change dimensionz to z by 1 for 1D spherical fluid mechanics
+    NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
+    Map         =  reshape(1:NP,nzP,1);
+    MapW        =  reshape(1:NW,nzW,1);
+    % MapU        =  reshape(1:NU,nzU,1) + NW;
+    MapP        =  reshape(1:NP,nzP,1);
+else
+    Map         =  reshape(1:NP,nzP,nxP);
+    MapW        =  reshape(1:NW,nzW,nxW);
+    MapU        =  reshape(1:NU,nzU,nxU) + NW;
+    MapP        =  reshape(1:NP,nzP,nxP);
+end
 
 inz = 2:length(zP)-1;
 inx = 2:length(xP)-1;
@@ -295,8 +310,11 @@ hasliqFe = fsFe<1;
 
 %% update nonlinear material properties
 up2date;
-solve_fluidmech;
-
+if mode == 'spherical'
+    solve_fluidmech_sp;
+else
+    solve_fluidmech;
+end
 %% check reynold's number
 % Velbar = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
 %          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2));
@@ -375,7 +393,11 @@ if restart
     end
 else
     % complete, plot, and save initial condition
-    solve_fluidmech;
+    if mode == 'spherical'
+        solve_fluidmech_sp;
+    else
+        solve_fluidmech;
+    end
     up2date;
     history;
     output;
