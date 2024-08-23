@@ -54,7 +54,7 @@ while time <= tend && step <= maxstep
     resnorm   = 1;
     resnorm0  = resnorm;
     iter      = 0;
-
+    WWBG = [];
 
     % non-linear iteration loop
     while resnorm/resnorm0 >= reltol && resnorm >= abstol && iter <= maxit
@@ -62,20 +62,22 @@ while time <= tend && step <= maxstep
         solve_thermochem;
 
         % solve fluid-mechanical equations
-        if mode == 'spherical'
-            solve_fluidmech_sp;
-        else
-            solve_fluidmech;
+        switch mode
+            case 'spherical'; solve_fluidmech_sp;
+            otherwise; solve_fluidmech;
         end
         % update non-linear parameters and auxiliary variables
         up2date;
-
+        
         if ~bnchm
             resnorm = resnorm_TC + resnorm_VP;
             if iter == 0
                 resnorm0 = resnorm+TINY;
             end
-            if ~mod(iter,1); fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+            if ~mod(iter,3) 
+                fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
+                figure(35);
+                plot(W(:,2),zW); hold on; axis ij tight;
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end
@@ -91,9 +93,13 @@ while time <= tend && step <= maxstep
         end
         iter = iter+1;
     end
+    figure(95); clf; plot(WWBG);
     fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
     % update mass and energy errors
-    history;
+    switch mode 
+    case 'spherical'; history_sp;
+    otherwise; history;
+    end
     Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1)./10;
 
     fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));
@@ -113,7 +119,6 @@ while time <= tend && step <= maxstep
         error('Error, nan detected')
     end
     % increment time
-    dt;
     step = step + 1;
     time = time + dt;
 

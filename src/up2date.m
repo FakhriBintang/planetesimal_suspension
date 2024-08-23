@@ -14,7 +14,7 @@ rho    = 1./(xFe.*(fsFe./rhosFe + flFe./rholFe) ...
 rho([1 end],:) = rho([2 end-1],:);  rho(:,[1 end]) = rho(:,[2 end-1]);
 
 if selfgrav
-[gz, gzP] = gravity(rho,zW,gmin);
+[gz, gzP] = gravity(rho,rw,rho0);
 end
 
 %% convert weight to volume fractions
@@ -119,12 +119,13 @@ seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 
 %% velocity divergence and volume source
 % update velocity divergence
-if mode == 'spherical'
+switch mode
+    case 'spherical'
     Div_V(2:end-1,2:end-1) = 1./(rp(2:end-1).^2)...
                         .*ddz((rw.^2).*W(:,2),h);                       % get velocity divergence
     Div_V([1 end],:) = Div_V([2 end-1],:);                                 % apply boundary conditions
     Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
-else
+    otherwise
     Div_V(2:end-1,2:end-1) = ddz(W(:,2:end-1),h) ...                       % get velocity divergence
                            + ddx(U(2:end-1,:),h);
     Div_V([1 end],:) = Div_V([2 end-1],:);                                 % apply boundary conditions

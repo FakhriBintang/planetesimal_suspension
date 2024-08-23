@@ -1,4 +1,4 @@
-function [adv, advscl] = advect_sp (f, u, w, h, rp, scheme, dim, BC, mode)
+function [adv, advscl] = advect_sp (f, u, w, h, rp, scheme, dim, BC)
 %
 % [adv, advscl] = advect(f, u, w, h, scheme, dim, BC)
 %
@@ -36,12 +36,13 @@ function [adv, advscl] = advect_sp (f, u, w, h, rp, scheme, dim, BC, mode)
 % u         STAGGERED horiz velocity field [Nz x Nx+1, or Nphs x Nz x Nx+1]
 % w         STAGGERED vert  velocity field [Nz+1 x Nx, or Nphs x Nz+1 x Nx]
 % h         grid spacing
+% rp         radial position from centre of planetesimal (IF mode ='spherical'), otherwise, collapsed to 1 and ignored
 % scheme    info about advection scheme [1 or 2-element cell]
 %               1st element is the advection scheme name
 %               if 2nd element='vdf', returns v grad(f), otherwise returns div(f v)
 % dim       which dimensions correspond to z,x [2-element array]
 % BC        boundary conditions on z,x [2-element cell]
-%
+
 % OUTPUT
 % adv       div(v x f) or v grad(f) depending on scheme{2}, same size as f
 %
@@ -57,26 +58,19 @@ xdim = dim(2);  xBC = BC{2};
 [umpos, umneg, uppos, upneg] = facevels(u, xdim);
 [wmpos, wmneg, wppos, wpneg] = facevels(w, zdim);
 
-switch mode
-    case 'spherical'
-        % adjust input quantity based on spherical coordinates
-        % only resolves in 1D on the z axis, x components omitted
-        
-        % cell-centered value
-        fcc = (rp.^2).*f(:);
 
-    otherwise
-        % cell-centered value
-        fcc = f;
-end
+% cell-centered value, radius applied
+% fr = f; fcc = f;
+fr  = (rp.^2).*f(:);
+fcc = (rp.^2).*f(:);
       
 % in this switch, define phase fractions at the cell faces, split into
 % positive and negative flux components
 switch scheme{1}
     case 'centr'
         % centered differences, prone to num dispersion
-        [fxm, fxp] = makestencil(f, xdim, xBC);
-        [fzm, fzp] = makestencil(f, zdim, zBC);
+        [fxm, fxp] = makestencil(fr, xdim, xBC);
+        [fzm, fzp] = makestencil(fr, zdim, zBC);
         
         fxppos = (fcc+fxp)./2;      fxpneg = (fcc+fxp)./2;
         fxmpos = (fcc+fxm)./2;      fxmneg = (fcc+fxm)./2;
@@ -86,8 +80,8 @@ switch scheme{1}
     case 'upwd1'
         % upwind differences, prone to num diffusion
         % flux conservative approach, split velocities into + and -
-        [fxm, fxp] = makestencil(f, xdim, xBC);
-        [fzm, fzp] = makestencil(f, zdim, zBC);
+        [fxm, fxp] = makestencil(fr, xdim, xBC);
+        [fzm, fzp] = makestencil(fr, zdim, zBC);
         
         fxppos = fcc;      fxpneg = fxp;
         fxmpos = fxm;      fxmneg = fcc;
@@ -97,8 +91,8 @@ switch scheme{1}
     case 'quick'
         % quick scheme == 3rd order upwind
         % flux conservative approach, split velocities into + and -
-        [fxm, fxp, fxmm, fxpp] = makestencil(f, xdim, xBC);
-        [fzm, fzp, fzmm, fzpp] = makestencil(f, zdim, zBC);
+        [fxm, fxp, fxmm, fxpp] = makestencil(fr, xdim, xBC);
+        [fzm, fzp, fzmm, fzpp] = makestencil(fr, zdim, zBC);
         
         fxppos = (2*fxp + 5*fcc - fxm )./6;      fxpneg = (2*fcc + 5*fxp - fxpp)./6;
         fxmpos = (2*fcc + 5*fxm - fxmm)./6;      fxmneg = (2*fxm + 5*fcc - fxp )./6;
@@ -107,8 +101,8 @@ switch scheme{1}
         
     case 'fromm'
         % Fromm scheme
-        [fxm, fxp, fxmm, fxpp] = makestencil(f, xdim, xBC);
-        [fzm, fzp, fzmm, fzpp] = makestencil(f, zdim, zBC);
+        [fxm, fxp, fxmm, fxpp] = makestencil(fr, xdim, xBC);
+        [fzm, fzp, fzmm, fzpp] = makestencil(fr, zdim, zBC);
         
         fxppos = fcc + (fxp-fxm )./4;      fxpneg = fxp + (fcc-fxpp)./4;
         fxmpos = fxm + (fcc-fxmm)./4;      fxmneg = fcc + (fxm-fxp )./4;
@@ -139,17 +133,12 @@ adv = (uppos.*fxppos + upneg.*fxpneg - umpos.*fxmpos - umneg.*fxmneg)./h + ...
 % if you only want the advection term, remove f x div(v)
 % v x grad(f) = div (f v) - f x div(v)
 if strcmp(scheme{2}, 'vdf')
-    fdv = f.*(diff(u,1,xdim)./h + diff(w,1,zdim)./h);       % f x div(v)
+    fdv = fr.*(diff(u,1,xdim)./h + diff(w,1,zdim)./h);       % f x div(v)
     adv = adv - fdv;                                        % v x grad(f)
 end
 
-switch mode
-    case 'spherical'
-        adv = adv./(rp.^2);
-
-    otherwise
-
-end
+% correct for sphericity
+adv = adv./(rp.^2);
 
 if nargout>1
     % return advection scale for calculating time step

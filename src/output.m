@@ -104,7 +104,7 @@ if plot_op
         plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
         plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
         plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2);
-        plot(mean(-W(:,2:end-1),2)*yr,zW,'k','LineWidth',2); axis ij tight; box on;
+        plot(mean(-W(:,2:end-1),2)*yr,zW./1000,'k','LineWidth',2); axis ij tight; box on;
         title('$W$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,5,2)

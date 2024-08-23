@@ -1,28 +1,31 @@
 % planetesimal sill rainfall: user control script
 % no sticky air/space; no self gravity
 % equal grid spacing
-clear ; close all
+clear ; %close all
 
-RunID           =  'test_high';     % run identifier
-outpath         =  ['../out/', RunID];
-restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+RunID           =  '1D_spherical_heating';     % run identifier
+outpath         =  ['../out/',RunID] ;
+restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  100;                     % output every 'nop' grid steps of transport
+nop             =  5;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
 maxstep         =  1e7;                     % maximum number of time steps
-tend            =  5e6*yr;                  % model stopping time [s]
+tend            =  1e9*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  1e-7*yr;                 % (initial) time step [s]
 
 %% set model domain
-D               =  50000;                  % domain depth
-Nz              =  400;                     % number of real x/z block nodes
-Nx              = 1;
+selfgrav        =  0;                       % self gravity
+mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
+D               =  100000;                  % domain depth
+Nz              =  100;                     % number of real x/z block nodes
+Nx              =  1;
+rmin            =  100;                     % minimum radius if spherical
 % [do not modify]
 h               =  D/Nz;                     % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -80,12 +83,14 @@ aT          =  3e-5;                 % thermal expansivity silicate [1/K]
 dx0         =  1e-3;                 % solid grain size [m]
 df0         =  1e-3;                 % metal droplet size [m]
 dm0         =  1e-3;                 % melt film size [m]
-gz0         =  0.1/2;                % initial z-gravity
+gz0         =  0.1;                % initial z-gravity
 gx0         =  0;               	 % initial x-gravity
 gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
+% reference density at lower boundary
+rho0 = rholFe0;
 
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
@@ -153,7 +158,7 @@ end
 
 %% set solver options
 % advection scheme
-ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+ADVN        = 'centr';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations

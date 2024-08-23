@@ -85,6 +85,8 @@ gx0         =  0;               	 % x-gravity
 
 % Reference pressure
 P0 = 0;
+% Reference density at bottom boundary
+rho0 = rhosFe0;
 
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]

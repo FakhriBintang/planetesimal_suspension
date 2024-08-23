@@ -1,3 +1,5 @@
+%% backup
+
 % Wi = W; Ui = U; Pi = P;
 % profile on
 
@@ -13,7 +15,7 @@ if ~bnchm && step>0
 end
 
 %% assemble coefficients for matrix velocity diagonal and right-hand side
-IIL  = [];       % equation indeces into A
+IIL  = [];       % equation indeces into A 
 JJL  = [];       % variable indeces into A
 AAL  = [];       % coefficients for A
 IIR  = [];       % equation indeces into R
@@ -39,14 +41,14 @@ IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
 ii = MapW(1,2:end-1); jj = ii;
 aa = zeros(size(ii));
 IIL = [IIL; ii(:)]; JJL = [JJL; jj(:)];   AAL = [AAL; aa(:)+1];
-aa = zeros(size(ii)) - WBG(1,2:end-1); 
+aa = zeros(size(ii)) - 2.*WBG(1,2:end-1); 
 IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
 
 % bottom boundary
 ii = MapW(end,2:end-1); jj = ii;
 aa = zeros(size(ii));
 IIL = [IIL; ii(:)]; JJL = [JJL; jj(:)];   AAL = [AAL; aa(:)+1];
-aa = zeros(size(ii)) - WBG(end,2:end-1);
+aa = zeros(size(ii)) ;%- WBG(end,2:end-1);
 IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
 
 
@@ -60,7 +62,7 @@ EtaP1 = Eta (2:end-2,2:end-1); EtaP2 = Eta (3:end-1,2:end-1);
 jj1 = MapW(1:end-2,2:end-1); jj2 = MapW(3:end,2:end-1); jj3 = MapW(2:end-1,1:end-2); jj4 = MapW(2:end-1,3:end);
 
 aa = - 2/3*(EtaP1+EtaP2)/h^2 - 1/2*(EtaC1+EtaC2)/h^2;
-IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)               ];      % W on stencil centre
+IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)           ];      % W on stencil centre
 IIL = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; 2/3*EtaP1(:)/h^2];      % W one above
 IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; 2/3*EtaP2(:)/h^2];      % W one below
 IIL = [IIL; ii(:)]; JJL = [JJL; jj3(:)];   AAL = [AAL; 1/2*EtaC1(:)/h^2];      % W one to the left
@@ -258,8 +260,12 @@ AAR = [AAR; rr(:)];
 KP = sparse(IIL,JJL,AAL,NP,NP);
 RP = sparse(IIR,ones(size(IIR)),AAR,NP,1);
 
-nzp = round((nzP-2)/2)+1;
+% nzp = nzP-1;
+% nxp = round((nxP-2)/2)+1;
+nzp = 2;
 nxp = round((nxP-2)/2)+1;
+% nzp = round((nzP-2)/2)+1;
+% nxp = round((nxP-2)/2)+1;
 DD(MapP(nzp,nxp),:) = 0;
 KP(MapP(nzp,nxp),:) = 0;
 KP(MapP(nzp,nxp),MapP(nzp,nxp)) = 1;

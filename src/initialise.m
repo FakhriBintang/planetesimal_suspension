@@ -18,16 +18,19 @@ nxW         =  Nx+2;                            % number of z-face nodes in x-di
 nzW         =  Nz+1;                            % number of z-face nodes in z-direction
 nxU         =  Nx+1;                            % number of x-face nodes in x-direction
 nzU         =  Nz+2;                            % number of x-face nodes in z-direction
-NC          =  nxC*nzC;                         % total number of corner nodes
-NP          =  nxP*nzP;                         % total number of corner nodes
-NW          =  nxW*nzW;                         % total number of z-face nodes
-NU          =  nxU*nzU;                         % total number of x-face nodes
-NDOF        =  NP+NW+NU;                        % total number of all degrees of freedum
-if mode == 'spherical'
-    % change dimensionz to z by 1 for 1D spherical fluid mechanics
-    NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
 
+switch mode
+    case 'spherical'
+        % change dimensionz to z by 1 for 1D spherical fluid mechanics
+        NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
+    otherwise
+        NC          =  nxC*nzC;                         % total number of corner nodes
+        NP          =  nxP*nzP;                         % total number of corner nodes
+        NW          =  nxW*nzW;                         % total number of z-face nodes
+        NU          =  nxU*nzU;                         % total number of x-face nodes
+        NDOF        =  NP+NW+NU;                        % total number of all degrees of freedum
 end
+
 % set coordinate vectors
 xC          =  0:h:L;                           % Horizontal coordinates of corner nodes [m]
 zC          =  0:h:D;                           % Vertical   coordinates of corner nodes [m]
@@ -37,8 +40,7 @@ xW          =  xP;                              % Horizontal coordinates of z-fa
 zW          =  zC;                              % Vertical   coordinates of z-face nodes [m]
 xU          =  xC;                              % Horizontal coordinates of x-face nodes [m]
 zU          =  zP;                              % Vertical   coordinates of x-face nodes [m]
-rp          =  flip(zP');
-rw          =  flip(zW');
+
 % set 2D coordinate grids
 [XC,ZC] = meshgrid(xC,zC);              % corner nodes grid
 [XP,ZP] = meshgrid(xP,zP);              % centre nodes grid
@@ -47,19 +49,24 @@ rw          =  flip(zW');
 
 
 %% setup mapping arrays
-
-if mode == 'spherical'
-    % change dimensionz to z by 1 for 1D spherical fluid mechanics
-    NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
-    Map         =  reshape(1:NP,nzP,1);
-    MapW        =  reshape(1:NW,nzW,1);
-    % MapU        =  reshape(1:NU,nzU,1) + NW;
-    MapP        =  reshape(1:NP,nzP,1);
-else
-    Map         =  reshape(1:NP,nzP,nxP);
-    MapW        =  reshape(1:NW,nzW,nxW);
-    MapU        =  reshape(1:NU,nzU,nxU) + NW;
-    MapP        =  reshape(1:NP,nzP,nxP);
+%% apply radius if using spherical coordiantes
+rp          =  ones(size(zP))';
+rw          =  ones(size(zW))';
+switch mode
+    case'spherical'
+        rp          =  flip(rmin-h/2:h:D+h/2+rmin)';
+        rw          =  (rp(1:end-1)+rp(2:end))./2;
+        % change dimensionz to z by 1 for 1D spherical fluid mechanics
+        NC = nzC; NP = nzP; NW = nzW; NU = nxU; NDOF = NP+NW+NU;
+        Map         =  reshape(1:NP,nzP,1);
+        MapW        =  reshape(1:NW,nzW,1);
+        % MapU        =  reshape(1:NU,nzU,1) + NW;
+        MapP        =  reshape(1:NP,nzP,1);
+    case'cartesian'
+        Map         =  reshape(1:NP,nzP,nxP);
+        MapW        =  reshape(1:NW,nzW,nxW);
+        MapU        =  reshape(1:NU,nzU,nxU) + NW;
+        MapP        =  reshape(1:NP,nzP,nxP);
 end
 
 inz = 2:length(zP)-1;
@@ -310,10 +317,9 @@ hasliqFe = fsFe<1;
 
 %% update nonlinear material properties
 up2date;
-if mode == 'spherical'
-    solve_fluidmech_sp;
-else
-    solve_fluidmech;
+switch mode
+    case 'spherical'; solve_fluidmech_sp;
+    otherwise; solve_fluidmech;
 end
 %% check reynold's number
 % Velbar = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
@@ -324,7 +330,10 @@ end
 
 
 %% initialise recording of model history
-history;
+switch mode 
+    case 'spherical'; history_sp;
+    otherwise; history;
+end
 
 %% initialise counting variables
 RUN.frame   = 0;      % initialise output frame count
@@ -388,18 +397,22 @@ if restart
         fprintf('\n   !!! restart file does not exist !!! \n   => starting run from scratch %s \n\n',RunID);
         solve_fluidmech;
         up2date;
-        history;
+        switch mode      
+            case 'spherical'; history_sp;     
+            otherwise; history; end
         output;
     end
 else
     % complete, plot, and save initial condition
-    if mode == 'spherical'
-        solve_fluidmech_sp;
-    else
-        solve_fluidmech;
+    switch mode
+        case 'spherical'; solve_fluidmech_sp;
+        otherwise; solve_fluidmech;
     end
     up2date;
-    history;
+    switch mode
+        case 'spherical'; history_sp;
+        otherwise; history;
+    end
     output;
     step = step+1;
 end
