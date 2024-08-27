@@ -1,4 +1,4 @@
-function [dff] = diffus(mode,a,k,h,rp)
+function [dff] = diffus(a,k,h)
 % a = quantity
 % k = diffusivity
 % h = grid spacing

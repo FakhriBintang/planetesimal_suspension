@@ -16,7 +16,7 @@ HST.n26Al (stp)      = n26Al; end
 % m0      = rho0*4*pi()/3*rw(end)^3; % mass of bottom boundary
 HST.sumM  (stp)      = sum(RHO(2:end-1,2)*4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3)); % mass of sphere above boundary
 HST.sumS  (stp)      = sum((  S(2:end-1,2)+S0(2:end-1,2))...
-                                       *4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3));
+                                         *4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3));
 HST.sumXFe(stp)      = sum(XFe(2:end-1,2)*4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3));
 HST.sumXSi(stp)      = sum(XSi(2:end-1,2)*4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3));
 HST.sumCFe(stp)      = sum(XFe(2:end-1,2)*4*pi()/3.*(rw(1:end-1).^3-rw(2:end).^3));
@@ -33,8 +33,8 @@ dsumXSidt   = XSi(2,2)*WBG(1).*SArea;
 dsumCFedt   = CFe(2,2)*WBG(1).*SArea;
 dsumCSidt   = CSi(2,2)*WBG(1).*SArea;
 
-if stp>=2; HST.DM(stp  ) = HST.DM(max(1,stp-1)  ) + dsumMdt*dt; else; HST.DM(stp  ) = 0; end  % [kg]
-if stp>=2; HST.DS(stp  ) = HST.DS(max(1,stp-1)  ) + dsumSdt*dt; else; HST.DS(stp  ) = 0; end  % [kg]
+% if stp>=2; HST.DM(stp  ) = HST.DM(max(1,stp-1)  ) + dsumMdt*dt; else; HST.DM(stp  ) = 0; end  % [kg]
+% if stp>=2; HST.DS(stp  ) = HST.DS(max(1,stp-1)  ) + dsumSdt*dt; else; HST.DS(stp  ) = 0; end  % [kg]
 if step>=2
 HST.dM  (stp) = (a2*HST.dM  (stp-1) + a3*HST.dM  (max(1,stp-2)) + (b1*dsumMdt   + b2*dsumMdto   + b3*dsumMdtoo  )*dt)/a1; 
 HST.dS  (stp) = (a2*HST.dS  (stp-1) + a3*HST.dS  (max(1,stp-2)) + (b1*dsumSdt   + b2*dsumSdto   + b3*dsumSdtoo  )*dt)/a1; 
@@ -52,8 +52,8 @@ else
 end
 
 % Record conservation error (mass - mass change)/initial mass
-HST.EM  (stp)     = (HST.sumM  (stp) - HST.DM  (stp))./HST.sumM  (1) - 1;
-HST.ES  (stp)     = (HST.sumS  (stp) - HST.DS  (stp))./HST.sumS  (1) - 1;
+HST.EM  (stp)     = (HST.sumM  (stp) - HST.dM  (stp))./HST.sumM  (1) - 1;
+HST.ES  (stp)     = (HST.sumS  (stp) - HST.dS  (stp))./HST.sumS  (1) - 1;
 HST.EXFe(stp)     = (HST.sumXFe(stp) - HST.dXFe(stp))./HST.sumXFe(1) - 1;
 HST.EXSi(stp)     = (HST.sumXSi(stp) - HST.dXSi(stp))./HST.sumXSi(1) - 1;
 HST.ECSi(stp)     = (HST.sumCSi(stp) - HST.dCSi(stp))./HST.sumCSi(1) - 1;

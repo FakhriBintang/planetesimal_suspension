@@ -5,11 +5,11 @@ if ~bnchm && step>0
     % update volume source
     res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt - (b1*advn_RHO + b2*advn_RHOo + b3*advn_RHOoo);  % get residual of mixture mass conservation
     % volume source and background velocity passed to fluid-mechanics solver
-    upd_rho = - alpha*res_rho./rho(2:end-1,2:end-1)/b1 + beta*upd_rho;
+    upd_rho = - 1*res_rho./rho(2:end-1,2:end-1)/b1 + 0*upd_rho;
     VolSrc  = Div_V(2:end-1,2:end-1) + upd_rho;  % correct volume source term by scaled residual
     % set variable boundary condition
     m_VolSrc = sum(VolSrc.*(rw(1:end-1).^3-rw(2:end).^3))./sum((rw(1:end-1).^3-rw(2:end).^3));
-    WBG    = m_VolSrc .* (D-ZW);
+    WBG    = alpha*(m_VolSrc .* (D-ZW)) + (1-alpha)*WBG;
 end
 
 %% assemble coefficients for matrix velocity diagonal and right-hand side
@@ -60,10 +60,10 @@ IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; (1.*EP2./(RWI.^2)./(h^2))
 % IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; 2  ./(RWI.^2)./(h^2).*(RP2.^2).*EP2];     % W one below
 
 % what shall we do with a drunken sailor...
-if ~bnchm
-    aa = -ddz(rho(2:end-1,2),h).*gz(2:end-1,2).*dt/2;
-    IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)];
-end
+% if ~bnchm
+%     aa = -ddz(rho(2:end-1,2),h).*gz(2:end-1,2).*dt;
+%     IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)];
+% end
 % z-RHS vector
 if ~bnchm
     rhoBF =    (rho(2:end-2,2) + rho(3:end-1,2))/2 - rhoRef;
@@ -96,6 +96,7 @@ IIL  = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; aa(:)+1/h];     % P one 
 
 GG  = sparse(IIL,JJL,AAL,NW,NP);
 
+
 %% assemble coefficients for divergence operator
 IIL  = [];       % equation indeces into A
 JJL  = [];       % variable indeces into A
@@ -120,6 +121,7 @@ IIL = [IIL; ii(:)]; JJL = [JJL; jj4(:)];   AAL = [AAL; aa(:)+1./(RPI.^2)/h.*(RW2
 % assemble coefficient matrix
 DD = sparse(IIL,JJL,AAL,NP,NW);
 
+
 %% assemble coefficients for matrix pressure diagonal and right-hand side
 IIL  = [];       % equation indeces into A
 JJL  = [];       % variable indeces into A
@@ -140,7 +142,7 @@ IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; aa(:)-1];
 ii = MapP(2:end-1);
 
 % coefficients multiplying matrix pressure P
-aa = zeros(size(ii));
+aa  = zeros(size(ii));% + eps*h^2./Eta(inz,inx);
 IIL = [IIL; ii(:)]; JJL = [JJL; ii(:)];    AAL = [AAL; aa(:)];  % P on stencil centre
 
 % RHS
@@ -156,11 +158,11 @@ KP = sparse(IIL,JJL,AAL,NP,NP);
 RP = sparse(IIR,ones(size(IIR)),AAR,NP,1);
 
 %anchor zero pressure at the top
-nzp = round(nzP/2);
+nzp = 2;
 % nzp = round((nzP-2)/2)+1;
 DD(MapP(nzp),:) = 0;
 KP(MapP(nzp),:) = 0;
-KP(MapP(nzp),MapP(nzp)) = 1;
+KP(MapP(nzp),MapP(nzp)) = KP(MapP(nzp),MapP(nzp)) + h^2./Eta(1,1);
 RP(MapP(nzp),:) = 0;
 if bnchm; RP(MapP(nzp),:) = P_mms(nzp); end
 
@@ -171,7 +173,7 @@ LL =  [ KV -GG ; ...
 RR = [RV; RP];
 
 SCL = sqrt(abs(diag(LL)));
-SCL = diag(sparse(1./(SCL+1)));
+SCL = diag(sparse(1./( SCL + sqrt(h^2./geomean(Eta(:))) )));
 
 LL  = SCL*LL*SCL;
 RR  = SCL*RR;

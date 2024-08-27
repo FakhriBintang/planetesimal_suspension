@@ -8,7 +8,7 @@ outpath         =  ['../out/',RunID] ;
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  50;                     % output every 'nop' grid steps of transport
+nop             =  1;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -124,7 +124,7 @@ dEntrFe     = -250;                     % iron-sulfide entropy of crystallisatio
 
 
 %% set heating parameters (if turned on)
-radheat = 0;
+radheat     =  0;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
@@ -168,7 +168,7 @@ CFL         = 1/5;                    % (physical) time stepping courant number 
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       = 0.80;                    % iterative step size parameter
+alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.10;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;

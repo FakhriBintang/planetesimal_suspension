@@ -31,7 +31,7 @@ advn_S = - advect(rp(inz,:).^2.*FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,
 %          - advect_simple(mode,FlSi(:,2).*slSi(:,2),WlSi(:,2),'',h,rp) + ...
 %          - advect_simple(mode,FsFe(:,2).*ssFe(:,2),WsFe(:,2),'',h,rp) + ...
 %          - advect_simple(mode,FlFe(:,2).*slFe(:,2),WlFe(:,2),'',h,rp);
-diff_S   = diffus(mode,T,ks.*rp.^2,h,rp)./rp(inz,:).^2;
+diff_S   = diffus(T,ks.*rp.^2,h)./rp(inz,:).^2;
 
 diss_T = EntProd./T(inz,inx);
 
@@ -240,8 +240,8 @@ T   = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp ...
 Tp  = T0.*exp((S - FsFe.*dEntrFe - FsSi.*dEntrSi)./(FlFe+FsFe+FlSi+FsSi)./Cp);
 
 % update system fractions
-xFe = max(0,min(1-SMALL, XFe./RHO));
-xSi = max(0,min(1-SMALL, XSi./RHO ));
+xFe = max(0,min(1, XFe./RHO));
+xSi = max(0,min(1, XSi./RHO ));
 
 hasFe   = xFe>SMALL;
 hasSi   = xSi>SMALL;
