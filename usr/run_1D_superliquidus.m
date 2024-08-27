@@ -17,17 +17,17 @@ maxstep         =  1e7;                     % maximum number of time steps
 tend            =  1e4*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-7*yr;                 % (initial) time step [s]
+dt              =  1e-3*yr;                 % (initial) time step [s]
 
 %% set model domain
 selfgrav        =  1;                       % self gravity
 mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
-D               =  100000;                  % domain depth
-Nz              =  500;                     % number of real x/z block nodes
+D               =  10e3;                   % domain depth
+Nz              =  300;                     % number of real x/z block nodes
 Nx              =  1;
-rmin            =  100;                     % minimum radius if spherical
+rmin            =  0;                    % minimum radius if spherical
 % [do not modify]
-h               =  D/Nz;                     % spacing of x/z  coordinates
+h               =  D/Nz;                    % spacing of x/z  coordinates
 L               =  h*Nx;
 
 %% set thermochemical parameters
@@ -159,7 +159,7 @@ end
 %% set solver options
 % advection scheme
 ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
+BCA         = {'closed','closed'};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
@@ -168,8 +168,8 @@ CFL         = 1/5;                    % (physical) time stepping courant number 
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
-alpha       = 0.50;                    % iterative step size parameter
-beta        = 0.05;                    % iterative damping parameter
+alpha       = 0.80;                    % iterative step size parameter
+beta        = 0.10;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 

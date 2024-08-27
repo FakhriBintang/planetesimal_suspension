@@ -5,11 +5,10 @@ if ~bnchm && step>0
     % update volume source
     res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt - (b1*advn_RHO + b2*advn_RHOo + b3*advn_RHOoo);  % get residual of mixture mass conservation
     % volume source and background velocity passed to fluid-mechanics solver
-    VolSrc  = Div_V(2:end-1,2:end-1) - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;  % correct volume source term by scaled residual
-    upd_rho =       - alpha*res_rho./rho(2:end-1,2:end-1) + beta*upd_rho;
+    upd_rho = - alpha*res_rho./rho(2:end-1,2:end-1)/b1 + beta*upd_rho;
+    VolSrc  = Div_V(2:end-1,2:end-1) + upd_rho;  % correct volume source term by scaled residual
     % set variable boundary condition
-    m_VolSrc = 1./sum(rp(2:end-1).^2).*sum(VolSrc.*(rp(2:end-1).^2)) ;
-    % m_VolSrc2 = sum(VolSrc.*(rw(1:end-1).^3-rw(2:end).^3))./(rw(1)^3-rw(end)^3)
+    m_VolSrc = sum(VolSrc.*(rw(1:end-1).^3-rw(2:end).^3))./sum((rw(1:end-1).^3-rw(2:end).^3));
     WBG    = m_VolSrc .* (D-ZW);
 end
 
@@ -25,7 +24,7 @@ AAR  = [];       % forcing entries for RHS
 ii = MapW(1); jj = ii;
 aa = zeros(size(ii));
 IIL = [IIL; ii(:)]; JJL = [JJL; jj(:)];   AAL = [AAL; aa(:)+1];
-aa = zeros(size(ii)) - 2*WBG(1,2); 
+aa = zeros(size(ii)) - WBG(1,2); 
 IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
 
 % bottom boundary
@@ -41,7 +40,7 @@ ii    = MapW(2:end-1);
 %       above(-1)      ||        below(+1)/(0)
 EP1 = Eta (2:end-2,2); EP2 = Eta (3:end-1,2);
 RP1 = rp  (2:end-2);   RP2 = rp  (3:end-1);
-RW1   = rw  (1:end-2);   RW2   = rw  (3:end);
+RW1 = rw  (1:end-2);   RW2 = rw  (3:end);
 % internal
 RWI   = rw (2:end-1);
  
@@ -91,11 +90,6 @@ ii  = MapW(2:end-1);
 %             top              ||          bottom
 jj1 = MapP(2:end-2); jj2 = MapP(3:end-1);
 
-%       above          ||       (below)
-RW1   = rw  (1:end-1);   RW2   = rw  (2:end);
-% internal
-RPI   = rp (2:end-1);
-
 aa  = zeros(size(ii));
 IIL  = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; aa(:)-1/h];     % P one to the top
 IIL  = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; aa(:)+1/h];     % P one to the bottom
@@ -109,6 +103,11 @@ AAL  = [];       % coefficients for A
 
 %internal points
 ii = MapP(2:end-1);
+
+%       above          ||       (below)
+RW1   = rw  (1:end-1);   RW2   = rw  (2:end);
+% internal
+RPI   = rp (2:end-1);
 
 % coefficients multiplying velocities U, W
 %         top W             ||          bottom W
@@ -157,7 +156,7 @@ KP = sparse(IIL,JJL,AAL,NP,NP);
 RP = sparse(IIR,ones(size(IIR)),AAR,NP,1);
 
 %anchor zero pressure at the top
-nzp = 2;
+nzp = round(nzP/2);
 % nzp = round((nzP-2)/2)+1;
 DD(MapP(nzp),:) = 0;
 KP(MapP(nzp),:) = 0;
@@ -273,7 +272,7 @@ if ~bnchm
     dtadvn =  h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
     dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp);                         % stable time step for T diffusion
 
-    dt = min(min(dtdiff,CFL * dtadvn),dtmax);                      % fraction of minimum stable time step
+    dt = min(1.01*dto,min(min(dtdiff,CFL * dtadvn),dtmax));                      % fraction of minimum stable time step
 
     if dt==dtmax
         dtlimit = 'max step limited';

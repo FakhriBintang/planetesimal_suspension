@@ -76,8 +76,8 @@ while time <= tend && step <= maxstep
             end
             if ~mod(iter,3) 
                 fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
-                figure(35);
-                plot(W(:,2),zW); hold on; axis ij tight;
+                % figure(35);
+                % plot(W(:,2),zW); hold on; axis ij tight;
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end
@@ -93,7 +93,7 @@ while time <= tend && step <= maxstep
         end
         iter = iter+1;
     end
-    figure(95); clf; plot(WWBG);
+    % figure(95); clf; plot(WWBG);
     fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
     % update mass and energy errors
     switch mode 

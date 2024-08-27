@@ -41,8 +41,8 @@ df = df0.*(1-philFe).^dscale;
 kv = permute(cat(3,etas,etalSi,etalFe),[3,1,2]);
 Mv = permute(repmat(kv,1,1,1,3),[4,1,2,3])./permute(repmat(kv,1,1,1,3),[1,4,2,3]);
 
-dd = max(1e-6,min(1-1e-6,permute(cat(3,dx ,dm ,df ),[3,1,2])));
-ff = max(1e-6,min(1-1e-6,permute(cat(3,phisSi+phisFe,philSi,philFe),[3,1,2])));
+dd = max(1e-16,min(1-1e-16,permute(cat(3,dx ,dm ,df ),[3,1,2])));
+ff = max(1e-16,min(1-1e-16,permute(cat(3,phisSi+phisFe,philSi,philFe),[3,1,2])));
 FF = permute(repmat(ff,1,1,1,3),[4,1,2,3]);
 Sf = (FF./BBP).^(1./CCP);  Sf = Sf./sum(Sf,2);
 Xf = sum(AAP.*Sf,2).*FF + (1-sum(AAP.*Sf,2)).*Sf;
@@ -121,8 +121,7 @@ seglFe(:,[1 end]) = sds*seglFe(:,[2 end-1]);
 % update velocity divergence
 switch mode
     case 'spherical'
-    Div_V(2:end-1,2:end-1) = 1./(rp(2:end-1).^2)...
-                        .*ddz((rw.^2).*W(:,2),h);                       % get velocity divergence
+    Div_V(2:end-1,2:end-1) = 1./(rp(2:end-1).^2).*ddz((rw.^2).*W(:,2),h);  % get velocity divergence
     Div_V([1 end],:) = Div_V([2 end-1],:);                                 % apply boundary conditions
     Div_V(:,[1 end]) = Div_V(:,[2 end-1]);
     otherwise
