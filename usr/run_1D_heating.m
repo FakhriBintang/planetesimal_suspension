@@ -3,12 +3,12 @@
 % equal grid spacing
 clear ; %close all
 
-RunID           =  '1D_spherical_heating';     % run identifier
+RunID           =  '1D_spherical_heating_dscale0';     % run identifier
 outpath         =  ['../out/',RunID] ;
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  1;                     % output every 'nop' grid steps of transport
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -128,7 +128,7 @@ radheat = 1;
 Hr0         =  0e-4;                    % constant Radiogenic heat productivity [W/kg]
 % Dynamic radiogenic heating rate
 if radheat
-    t_form      = 1*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
+    t_form      = 0*yr*1e6;     % planetesimal formation time after CAI, recommend no more than 2 half lives
     mr_Al       = 27;           % atomic mass of Al [g/mol]
     AV          = 6.022e23;     % avogadros number [mol^{-1}]
     nAl_C       = 2.62e23;      % chondritic abundance of Al [kg^{-1}]
@@ -164,14 +164,14 @@ TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 1/5;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 1e3*yr;                   % maximum time step
+CFL         = 1/10;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 5e2*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-9;                    % minimum diffusivity
-dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
+dscale      = 0;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 
 %% start model

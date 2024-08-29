@@ -8,7 +8,7 @@ outpath         =  ['../out/',RunID] ;
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
 save_op         =  0;                       % switch on to save output files
-nop             =  1;                     % output every 'nop' grid steps of transport
+nop             =  50;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing

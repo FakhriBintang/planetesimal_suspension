@@ -387,6 +387,10 @@ if restart
         dsumXSidt   = 0; dsumXSidto = dsumXSidt;
         dsumCFedt   = 0; dsumCFedto = dsumCFedt;
         dsumCSidt   = 0; dsumCSidto = dsumCSidt;
+
+        if radheat
+           n26Al = n26Al0*exp(-(t_form+time)/tauAl);
+        end
       
         % output;
 
