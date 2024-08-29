@@ -1,194 +1,24 @@
 % Wi = W; Ui = U; Pi = P;
 % profile on
 
-if ~bnchm && step>0
-    % update volume source
-    res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt - (b1*advn_RHO + b2*advn_RHOo + b3*advn_RHOoo);  % get residual of mixture mass conservation
-    % volume source and background velocity passed to fluid-mechanics solver
-    upd_rho = - 1*res_rho./rho(2:end-1,2:end-1)/b1 + 0*upd_rho;
-    VolSrc  = Div_V(2:end-1,2:end-1) + upd_rho;  % correct volume source term by scaled residual
-    % set variable boundary condition
-    m_VolSrc = sum(VolSrc.*(rw(1:end-1).^3-rw(2:end).^3))./sum((rw(1:end-1).^3-rw(2:end).^3));
-    WBG    = alpha*(m_VolSrc .* (D-ZW)) + (1-alpha)*WBG;
-end
+% update velocity
+if step>0
+res_rho   = (a1*rho(inz,inx) - a2*rhoo(inz,inx) - a3*rhooo(inz,inx))./dt - (b1*advn_RHO + b2*advn_RHOo + b3*advn_RHOoo);  % get residual of mixture mass conservation
+% volume source and background velocity passed to fluid-mechanics solver
+upd_rho = - alpha*res_rho./rho(2:end-1,2:end-1)/b1 + beta*upd_rho;
+VolSrc  = Div_V(2:end-1,2:end-1) + upd_rho;  % correct volume source term by scaled residual
+W(:,2) = -flipud([0; cumsum(flipud(VolSrc.*rp(inz,:).^2).*h)])./rw.^2;
 
-%% assemble coefficients for matrix velocity diagonal and right-hand side
-IIL  = [];       % equation indeces into A left
-JJL  = [];       % variable indeces into A left
-AAL  = [];       % coefficients for A left
-IIR  = [];       % equation indeces into RHS
-AAR  = [];       % forcing entries for RHS
-
-% assemble coefficients of z-stress divergence
-% top boundary
-ii = MapW(1); jj = ii;
-aa = zeros(size(ii));
-IIL = [IIL; ii(:)]; JJL = [JJL; jj(:)];   AAL = [AAL; aa(:)+1];
-aa = zeros(size(ii)) - WBG(1,2); 
-IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
-
-% bottom boundary
-ii = MapW(end); jj = ii;
-aa = zeros(size(ii));
-IIL = [IIL; ii(:)]; JJL = [JJL; jj(:)];   AAL = [AAL; aa(:)+1];
-aa = zeros(size(ii)); % - WBG(end);
-IIR = [IIR; ii(:)]; AAR = [AAR; aa(:)];
-
-
-% internal points
-ii    = MapW(2:end-1);
-%       above(-1)      ||        below(+1)/(0)
-EP1 = Eta (2:end-2,2); EP2 = Eta (3:end-1,2);
-RP1 = rp  (2:end-2);   RP2 = rp  (3:end-1);
-RW1 = rw  (1:end-2);   RW2 = rw  (3:end);
-% internal
-RWI   = rw (2:end-1);
- 
-% coefficients multiplying z-velocities W
-%       top(-1)    ||     bottom(+1)(0)   ||
-jj1 = MapW(1:end-2); jj2 = MapW(3:end); 
-
-aa = (1.*EP2./(RWI.^2)./(h^2)).*((RWI.^2)./3 - (RP2.^2)) ...
-    +(1.*EP1./(RWI.^2)./(h^2)).*((RWI.^2)./3 - (RP1.^2));
-IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)               ];      % W on stencil centre
-IIL = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; (1.*EP1./(RWI.^2)./(h^2)).*((RP1.^2)-(RW1.^2)./3)];     % W one above (i-1)
-IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; (1.*EP2./(RWI.^2)./(h^2)).*((RP2.^2)-(RW2.^2)./3)];     % W one below (i+1
-
-% aa = - 2./(RWI.^2)./(h^2).*((RP2.^2).*EP2 + (RP1.^2).*EP1);
-% IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)               ];      % W on stencil centre
-% IIL = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; 2  ./(RWI.^2)./(h^2).*(RP1.^2).*EP1];     % W one above 
-% IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; 2  ./(RWI.^2)./(h^2).*(RP2.^2).*EP2];     % W one below
-
-% what shall we do with a drunken sailor...
-% if ~bnchm
-%     aa = -ddz(rho(2:end-1,2),h).*gz(2:end-1,2).*dt;
-%     IIL = [IIL; ii(:)]; JJL = [JJL;  ii(:)];   AAL = [AAL; aa(:)];
-% end
-% z-RHS vector
-if ~bnchm
-    rhoBF =    (rho(2:end-2,2) + rho(3:end-1,2))/2 - rhoRef;
-    if nxP<=10; rhoBF = repmat(mean(rhoBF,2),1,nxW-2); end
-end
-
-% rr = - (rhoBF - mean(rhoBF,2)) .* gz(2:end-1,2:end-1);
-rr = - (rhoBF ) .* gz(2:end-1,2);
-
-IIR = [IIR; ii(:)];  AAR = [AAR; rr(:)];
-
-% assemble coefficient matrix & right-hand side vector
-% KV = sparse(IIL,JJL,AAL,NW,NW);
-KV = sparse(IIL,JJL,AAL,NW,NW);
-RV = sparse(IIR,ones(size(IIR)),AAR);
-
-
-%% assemble coefficients for gradient operator
-% reset global lists for vectorised assembly
-IIL  = [];   JJL  = [];   AAL  = [];
-
-% Z-Stokes equation
-ii  = MapW(2:end-1);
-%             top              ||          bottom
-jj1 = MapP(2:end-2); jj2 = MapP(3:end-1);
-
-aa  = zeros(size(ii));
-IIL  = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; aa(:)-1/h];     % P one to the top
-IIL  = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; aa(:)+1/h];     % P one to the bottom
-
-GG  = sparse(IIL,JJL,AAL,NW,NP);
-
-
-%% assemble coefficients for divergence operator
-IIL  = [];       % equation indeces into A
-JJL  = [];       % variable indeces into A
-AAL  = [];       % coefficients for A
-
-%internal points
-ii = MapP(2:end-1);
-
-%       above          ||       (below)
-RW1   = rw  (1:end-1);   RW2   = rw  (2:end);
-% internal
-RPI   = rp (2:end-1);
-
-% coefficients multiplying velocities U, W
-%         top W             ||          bottom W
-jj3 = MapW(1:end-1); jj4 = MapW(2:end);
-
-aa = zeros(size(ii));
-IIL = [IIL; ii(:)]; JJL = [JJL; jj3(:)];   AAL = [AAL; aa(:)-1./(RPI.^2)/h.*(RW1.^2)];  % W one above
-IIL = [IIL; ii(:)]; JJL = [JJL; jj4(:)];   AAL = [AAL; aa(:)+1./(RPI.^2)/h.*(RW2.^2)];  % W one below
-
-% assemble coefficient matrix
-DD = sparse(IIL,JJL,AAL,NP,NW);
-
-
-%% assemble coefficients for matrix pressure diagonal and right-hand side
-IIL  = [];       % equation indeces into A
-JJL  = [];       % variable indeces into A
-AAL  = [];       % coefficients for A
-IIR  = [];       % equation indeces into R
-AAR  = [];       % forcing entries for R
-
-% boundary points
-ii  = [MapP(1).'; MapP(end  ).']; % top & bottom
-jj1 = ii;
-jj2 = [MapP(2).'; MapP(end-1).'];
-
-aa = zeros(size(ii));
-IIL = [IIL; ii(:)]; JJL = [JJL; jj1(:)];   AAL = [AAL; aa(:)+1];
-IIL = [IIL; ii(:)]; JJL = [JJL; jj2(:)];   AAL = [AAL; aa(:)-1];
-
-% internal points
-ii = MapP(2:end-1);
-
-% coefficients multiplying matrix pressure P
-aa  = zeros(size(ii));% + eps*h^2./Eta(inz,inx);
-IIL = [IIL; ii(:)]; JJL = [JJL; ii(:)];    AAL = [AAL; aa(:)];  % P on stencil centre
-
-% RHS
-rr = - VolSrc;
-if bnchm; rr = rr + src_P_mms(2:end-1); end
-
-IIR = [IIR; ii(:)];
-AAR = [AAR; rr(:)];
-
-
-% assemble coefficient matrix and right-hand side vector
-KP = sparse(IIL,JJL,AAL,NP,NP);
-RP = sparse(IIR,ones(size(IIR)),AAR,NP,1);
-
-%anchor zero pressure at the top
-nzp = 2;
-% nzp = round((nzP-2)/2)+1;
-DD(MapP(nzp),:) = 0;
-KP(MapP(nzp),:) = 0;
-KP(MapP(nzp),MapP(nzp)) = KP(MapP(nzp),MapP(nzp)) + h^2./Eta(1,1);
-RP(MapP(nzp),:) = 0;
-if bnchm; RP(MapP(nzp),:) = P_mms(nzp); end
-
-%% assemble global coefficient matrix and right-hand side vector
-LL =  [ KV -GG ; ...
-       -DD  KP ];
-
-RR = [RV; RP];
-
-SCL = sqrt(abs(diag(LL)));
-SCL = diag(sparse(1./( SCL + sqrt(h^2./geomean(Eta(:))) )));
-
-LL  = SCL*LL*SCL;
-RR  = SCL*RR;
-
-%% Solve linear system of equations for vx, vz, P
-SOL = SCL*(LL\RR);  % update solution
-
-
-% Read out solution
-% map solution vector to 2D arrays
-W(:,2)  = full(reshape(SOL(MapW(:)),nzW,1));         % matrix z-velocity
-P(:,2)  = full(reshape(SOL(MapP(:)+ NW),nzP,1));         % matrix dynamic pressure
+% update pressure
+Div_tz = ddz(rp.^2.*tzz(:,2:end-1),h)./rw.^2;           % z-stress divergence
+rhoBF  =    (rho(1:end-1,2) + rho(2:end,2))/2 - rhoRef;
+PrsSrc = - (rhoBF ) .* gz(:,2) - Div_tz;
+P(:,2) = full(flipud(cumsum(flipud([PrsSrc;0])*h)));
 
 W(:,1) = W(:,2); W(:,end) = W(:,2);
 P(:,1) = P(:,2); P(:,end) = P(:,2);
+end
+
 UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
 WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
 
@@ -272,7 +102,7 @@ if ~bnchm
 
     %% update physical time step
     dtadvn =  h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
-    dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp);                         % stable time step for T diffusion
+    dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp)*0.75;                         % stable time step for T diffusion
 
     dt = min(1.01*dto,min(min(dtdiff,CFL * dtadvn),dtmax));                      % fraction of minimum stable time step
 
