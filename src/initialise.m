@@ -388,8 +388,15 @@ if restart
         dsumCFedt   = 0; dsumCFedto = dsumCFedt;
         dsumCSidt   = 0; dsumCSidto = dsumCSidt;
 
+        %reset history record to current step
+        HST.time = HST.time(1:step); HST.n26Al = HST.n26Al(1:step); HST.sumM = HST.sumM(1:step); HST.sumS = HST.sumS(1:step);
+        HST.sumXFe  = HST.sumXFe(1:step); HST.sumXSi = HST.sumXSi(1:step); HST.sumCFe = HST.sumCFe(1:step); HST.sumCSi = HST.sumCSi(1:step);
+        HST.dM = HST.dM(1:step); HST.dS = HST.dS(1:step); HST.dXFe = HST.dXFe(1:step); HST.dXSi = HST.dXSi(1:step);
+        HST.dCFe = HST.dCFe(1:step); HST.dCSi = HST.dCSi(1:step); HST.EM = HST.EM(1:step); HST.ES = HST.ES(1:step);
+        HST.EXFe = HST.EXFe(1:step); HST.EXSi = HST.EXSi(1:step); HST.ECFe = HST.ECFe(1:step); HST.ECSi = HST.ECSi(1:step); 
         if radheat
-           n26Al = n26Al0*exp(-(t_form+time)/tauAl);
+           n26Al = HST.n26Al(end); % n26Al0*exp(-(t_form+time)/tauAl);
+           n26Alo      = n26Al;
         end
       
         % output;
