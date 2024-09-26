@@ -3,31 +3,32 @@
 % equal grid spacing
 clear ; close all
 
-RunID           =  'test_gravity';     % run identifier
-outpath         =  ['../out/', RunID];
+RunID           =  'spherical_4phs_topcooling_Sep';     % run identifier
+outpath         =  ['../out/',RunID] ;
 restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
-plot_op         =  10;                       % switch on to plot live output
-save_op         =  0;                       % switch on to save output files
-nop             = 10;                     % output every 'nop' grid steps of transport
+plot_op         =  1;                       % switch on to plot live output
+save_op         =  1;                       % switch on to save output files
+nop             =  500;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
 maxstep         =  1e7;                     % maximum number of time steps
-tend            =  5e6*yr;                  % model stopping time [s]
+tend            =  1e4*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-2*yr;                 % (initial) time step [s]
+dt              =  5e-3*yr;                 % (initial) time step [s]
 
 %% set model domain
-selfgrav        =  0;                       % self gravity
-mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
-D               =  50000;                  % domain depth
-Nz              =  300;                     % number of real x/z block nodes
-Nx              = 1;
+selfgrav        =  1;                       % self gravity
+mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
+D               =  10e3;                   % domain depth
+Nz              =  400;                     % number of real x/z block nodes
+Nx              =  1;
 % [do not modify]
-h               =  D/Nz;                     % spacing of x/z  coordinates
+h               =  D/Nz;                    % spacing of x/z  coordinates
 L               =  h*Nx;
+rmin            =  h;                    % minimum radius if spherical
 
 %% set thermochemical parameters
 
@@ -61,7 +62,7 @@ clap    = 1e-7;                                     % Clapeyron slope for P-depe
 
 % set temperature initial condition
 T0      =  1400+273.15;                                % reference/top potential temperature [k]
-Ttop0   =  T0;                                      % isothermal top reference temperature 
+Ttop0   =  0 + 273.15;                                      % isothermal top reference temperature 
 T1      =  1400+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
@@ -88,6 +89,7 @@ gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
+rho0 = rholFe0;
 
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
@@ -156,17 +158,17 @@ end
 %% set solver options
 % advection scheme
 ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
-BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
+BCA         = {'closed','closed'};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 50;                       % maximum iteration count
-CFL         = 1/50;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+maxit       = 100;                       % maximum iteration count
+CFL         = 1/20;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       = 0.50;                    % iterative step size parameter
-beta        = 0.05;                    % iterative damping parameter
+beta        = 0.10;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 

@@ -3,12 +3,12 @@
 % equal grid spacing
 clear ;%close all
 
-RunID           =  'spherical_superliquidus_1';     % run identifier
+RunID           =  'spherical_superliquidus_Aug29';     % run identifier
 outpath         =  ['../out/',RunID] ;
-restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         =  -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  0;                       % switch on to save output files
-nop             =  50;                     % output every 'nop' grid steps of transport
+save_op         =  1;                       % switch on to save output files
+nop             =  200;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -23,12 +23,12 @@ dt              =  1e-3*yr;                 % (initial) time step [s]
 selfgrav        =  1;                       % self gravity
 mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
 D               =  10e3;                   % domain depth
-Nz              =  300;                     % number of real x/z block nodes
+Nz              =  500;                     % number of real x/z block nodes
 Nx              =  1;
-rmin            =  0;                    % minimum radius if spherical
 % [do not modify]
 h               =  D/Nz;                    % spacing of x/z  coordinates
 L               =  h*Nx;
+rmin            =  h;                    % minimum radius if spherical
 
 %% set thermochemical parameters
 

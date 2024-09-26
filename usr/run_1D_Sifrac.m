@@ -2,11 +2,11 @@
 % equal grid spacing
 clear ;%close all
 
-RunID           =  'test_high';     % run identifier
+RunID           =  '1D_spherical_Sifrac_d05';     % run identifier
 outpath         =  ['../out/',RunID] ;
-restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         = -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  0;                       % switch on to save output files
+save_op         =  1;                       % switch on to save output files
 nop             =  1;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
@@ -16,17 +16,18 @@ maxstep         =  1e7;                     % maximum number of time steps
 tend            =  5e6*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-7*yr;                 % (initial) time step [s]
+dt              =  1e-3*yr;                 % (initial) time step [s]
 
 %% set model domain
-selfgrav        =  0;                       % self gravity
-mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
-D               =  10000;                  % domain depth
-Nz              =  250;                     % number of real x/z block nodes
+selfgrav        =  1;                       % self gravity
+mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
+D               =  10e3;                   % domain depth
+Nz              =  500;                     % number of real x/z block nodes
 Nx              =  1;
 % [do not modify]
-h               =  D/Nz;                     % spacing of x/z  coordinates
+h               =  D/Nz;                    % spacing of x/z  coordinates
 L               =  h*Nx;
+rmin            =  h;                    % minimum radius if spherical
 
 %% set thermochemical parameters
 
@@ -87,6 +88,8 @@ gmin        =  0.01;                 % minimum gravity
 
 % Reference pressure
 P0 = 0;
+% reference density
+rho0 = 3500;
 
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
@@ -153,20 +156,20 @@ end
 
 %% set solver options
 % advection scheme
-ADVN        = 'tvdim';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
+ADVN        = 'weno5';                 % advection scheme ('centr','upw1','quick','fromm','weno3','weno5','tvdim')
 BCA         = {'',''};                 % boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 1/50;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+CFL         = 1/10;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
-kmin        = 1e-8;                    % minimum diffusivity
-dscale      = 0;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
+kmin        = 1e-9;                    % minimum diffusivity
+dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
 
 
 %% start model

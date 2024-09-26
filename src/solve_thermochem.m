@@ -6,7 +6,7 @@ end
 
 
 % test smaller tiny criterion
-SMALL = 1e-6; % TINY^0.5;
+SMALL = 1e-3; % TINY^0.5;
 
 % store previous iteration (diagnostic)
 Ti    = T;

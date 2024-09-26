@@ -250,6 +250,7 @@ XFe   = FsFe + FlFe;
 XSi   = FsSi + FlSi;
 RHO   = XFe + XSi;                                          % dynamic density
 
+n26Al = 0
 if radheat
 % initialise radiogenic isotopes 
 Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
