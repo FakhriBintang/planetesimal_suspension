@@ -3,12 +3,12 @@
 % equal grid spacing
 clear ;%close all
 
-RunID           =  'spherical_superliquidus_Aug29';     % run identifier
+RunID           =  'regularisation_superliquidus_test';     % run identifier
 outpath         =  ['../out/',RunID] ;
-restart         =  -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         =  0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  200;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  1000;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -17,7 +17,7 @@ maxstep         =  1e7;                     % maximum number of time steps
 tend            =  1e4*yr;                  % model stopping time [s]
 
 % [do not modify]
-dt              =  1e-3*yr;                 % (initial) time step [s]
+dt              =  1/2e-4*yr;                 % (initial) time step [s]
 
 %% set model domain
 selfgrav        =  1;                       % self gravity
@@ -163,7 +163,7 @@ BCA         = {'closed','closed'};                 % boundary condition on advec
 TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-4;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-8;                     % absolute residual tolerance for nonlinear iterations
-maxit       = 100;                       % maximum iteration count
+maxit       = 50;                       % maximum iteration count
 CFL         = 1/5;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
 dtmax       = 1e3*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
@@ -172,51 +172,9 @@ alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.10;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
-
+mixReg      = 1;                       % mixing regularisation (1 = on; 0 = minor eddy)  
 
 %% start model
-% % create output directory
-% [~,systemname]  = system('hostname');
-% systemname(end) = [];
-% 
-% switch systemname
-%     case 'Horatio'
-%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-%     otherwise
-%         outpath = ['../out/',RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-% end
-% % initialise restart frame if switched on
-% if restart
-%     if     restart < 0  % restart from last continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_cont.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_cont.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     elseif restart > 0  % restart from specified continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     end
-%     % make new output folder for restart
-%     outpath = [outpath,'/_cont'];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
-% 
-% end
 
 if ~exist(outpath, 'dir'); mkdir(outpath); end
 

@@ -38,7 +38,8 @@ zU          =  zP;                              % Vertical   coordinates of x-fa
 [XW,ZW] = meshgrid(xW,zW);              % z-face nodes grid
 [XU,ZU] = meshgrid(xU,zU);              % x-face nodes grid
 
-
+rp          =  ones(size(zP))';
+rw          =  ones(size(zW))';
 %% setup mapping arrays
 Map         =  reshape(1:NP,nzP,nxP);
 MapW        =  reshape(1:NW,nzW,nxW);
@@ -67,33 +68,56 @@ WP          = zeros(nzP,nxP);
 UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
 WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
 
+% %% setup deformation property arrays
+% SOLups = zeros(nzP,nxP);               % velocity divergence on centre nodes
+% SOLexx = zeros(nzP,nxP);               % x-normal strain rate on centre nodes
+% SOLezz = zeros(nzP,nxP);               % z-normal strain rate on centre nodes
+% SOLexz = zeros(nzC,nxC);               % xz-shear strain rate on corner nodes
+% SOLeII = zeros(nzP,nxP);               % strain rate magnitude on centre nodes
+% SOLtxx = zeros(nzP,nxP);               % x-normal stress on centre nodes
+% SOLtzz = zeros(nzP,nxP);               % z-normal stress on centre nodes
+% SOLtxz = zeros(nzC,nxC);               % xz-shear stress on corner nodes
+% SOLtII = zeros(nzP,nxP);               % stress magnitude on centre nodes
+
 %% setup deformation property arrays
-SOLups = zeros(nzP,nxP);               % velocity divergence on centre nodes
-SOLexx = zeros(nzP,nxP);               % x-normal strain rate on centre nodes
-SOLezz = zeros(nzP,nxP);               % z-normal strain rate on centre nodes
-SOLexz = zeros(nzC,nxC);               % xz-shear strain rate on corner nodes
-SOLeII = zeros(nzP,nxP);               % strain rate magnitude on centre nodes
-SOLtxx = zeros(nzP,nxP);               % x-normal stress on centre nodes
-SOLtzz = zeros(nzP,nxP);               % z-normal stress on centre nodes
-SOLtxz = zeros(nzC,nxC);               % xz-shear stress on corner nodes
-SOLtII = zeros(nzP,nxP);               % stress magnitude on centre nodes
+ups = zeros(nzP,nxP);               % velocity divergence on centre nodes
+exx = zeros(nzP,nxP);               % x-normal strain rate on centre nodes
+ezz = zeros(nzP,nxP);               % z-normal strain rate on centre nodes
+exz = zeros(nzC,nxC);               % xz-shear strain rate on corner nodes
+eII = zeros(nzP,nxP);               % strain rate magnitude on centre nodes
+txx = zeros(nzP,nxP);               % x-normal stress on centre nodes
+tzz = zeros(nzP,nxP);               % z-normal stress on centre nodes
+txz = zeros(nzC,nxC);               % xz-shear stress on corner nodes
+tII = zeros(nzP,nxP);               % stress magnitude on centre nodes
 
 
 %% setup heating rates
-dSdt     = zeros(Nz,Nx);            % entropy rate of change
-dXFedt   = zeros(Nz,Nx);            % Iron system rate of change 
-dXSidt   = zeros(Nz,Nx);            % Si system rate of change 
-dCSidt   = zeros(Nz,Nx);            % Silicate component density rate of change
-dCFedt   = zeros(Nz,Nx);            % Iron component density rate of change
-dFFedt   = zeros(Nz,Nx);            % Iron melt fraction rate of change
-dFSidt   = zeros(Nz,Nx);            % Silicate melt fraction rate of change
-diff_S   = zeros(Nz,Nx);            % Heat dissipation rate
-diss_T   = zeros(Nz,Nx);            % Temperature diffusion rate
-diff_CSi = zeros(Nz,Nx);            % Silicate component diffusion rate
-diff_CFe = zeros(Nz,Nx);            % Iron component diffusion rate
-Div_V    = zeros(Nz+2,Nx+2);        % Stokes velocity divergence
-Div_rhoV = zeros(Nz,Nx);            % Mixture mass flux divergence
-VolSrc   = zeros(Nz,Nx);            % volume source term
+dndt        = 0;
+dSdt        = zeros(Nz,Nx);             % entropy rate of change
+dXFedt      = zeros(Nz,Nx);             % Iron system rate of change 
+dXSidt      = zeros(Nz,Nx);             % Si system rate of change 
+dCSidt      = zeros(Nz,Nx);             % Silicate component density rate of change
+dCFedt      = zeros(Nz,Nx);             % Iron component density rate of change
+dFsFedt     = zeros(Nz,Nx);             % Iron solid fraction rate of change
+dFsSidt     = zeros(Nz,Nx);             % Silicate solid fraction rate of change
+dFlFedt     = zeros(Nz,Nx);             % Iron liquid fraction rate of change
+dFlSidt     = zeros(Nz,Nx);             % Silicate liquid fraction rate of change
+diff_S      = zeros(Nz,Nx);             % Heat dissipation rate
+diss_T      = zeros(Nz,Nx);             % Temperature diffusion rate
+diff_CSi    = zeros(Nz,Nx);             % Silicate component diffusion rate
+diff_CFe    = zeros(Nz,Nx);             % Iron component diffusion rate
+Div_V       = zeros(Nz+2,Nx+2);         % Stokes velocity divergence
+advn_RHO    = zeros(Nz,Nx);             % Mixture mass flux divergence
+advn_FsFe   = zeros(Nz,Nx);             % iron solid fraction advection 
+advn_FlFe   = zeros(Nz,Nx);             % iron liquid fraction advection 
+advn_FsSi   = zeros(Nz,Nx);             % silicate solid fraction advection 
+advn_FlSi   = zeros(Nz,Nx);             % silicate liquid fraction advection 
+VolSrc      = zeros(Nz,Nx);             % volume source term
+
+etasSi = zeros(nzP,nxP) + EtasSi0;
+etasFe = zeros(nzP,nxP) + EtasFe0;
+Eta = ones(nzP,nxP);
+rho = zeros(nzP,nxP)+rholSi0;
 
 % initialise counting variables
 RUN.frame = 0;      % initialise output frame count
@@ -129,8 +153,8 @@ Tp = T;  % initial condition sets potential temperature [C]
 % set initial component weight fraction [kg/kg]
 xFe = xFe0 + dxFe.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 );
 xSi = 1 - xFe;         % Si system
-cFe = zeros(size(xFe)) + cFe0 + dcFe; % Fe component
-cSi = zeros(size(xSi)) + cSi0 + dcSi - cSimin; % Si component
+cFe = zeros(size(xFe)) + cFe0 + dcFe.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 ); % Fe component
+cSi = zeros(size(xSi)) + cSi0 + dcSi.*exp(-(XP-xT).^2./rT.^2 - (ZP-zT).^2./rT.^2 ) - cSimin; % Si component
 
 
 % initialise total pressure
@@ -161,7 +185,7 @@ while res > tol
     flFe = 1-fsFe;  
     flSi = 1-fsSi;
     
-    up2date;
+    % up2date;
 
     segsSi(:) = 0;
     segsFe(:) = 0;
@@ -227,30 +251,44 @@ GSi = 0.*flSi;
 
 
 %% initialise previous solution and auxiliary fields
-So    = S;
-XFeo  = XFe;
-XSio  = XSi;
-CSio  = CSi;
-CFeo  = CFe;
-FsFeo  = FsFe;
-FsSio  = FsSi;
-dSdto = dSdt;
-dXFedto = dXFedt;
-dXSidto = dXSidt;
-dCFedto = dCFedt;
-dCSidto = dCSidt;
-dFFedto = dFFedt;
-dFSidto = dFSidt;
-rhoo    = rho;
-Div_rhoVo = Div_rhoV;
-Div_Vo  = Div_V;
-dto     = dt;
-dsumMdt    = 0; dsumMdto = dsumMdt;
-dsumSdt    = 0; dsumSdto = dsumSdt;
-dsumXFedt  = 0; dsumXFedto = dsumXFedt;
-dsumXSidt  = 0; dsumXSidto = dsumXSidt;
-dsumCFedt  = 0; dsumCFedto = dsumCFedt;
-dsumCSidt  = 0; dsumCSidto = dsumCSidt;
+So          = S;
+XFeo        = XFe;
+XSio        = XSi;
+CSio        = CSi;
+CFeo        = CFe;
+FsFeo       = FsFe;
+FsSio       = FsSi;
+FlFeo       = FlFe;
+FlSio       = FlSi;
+dSdto       = dSdt;
+dXFedto     = dXFedt;
+dXSidto     = dXSidt;
+dCFedto     = dCFedt;
+dCSidto     = dCSidt;
+dFsFedto    = dFsFedt;
+dFsSidto    = dFsSidt;
+dFlFedto    = dFlFedt;
+dFlSidto    = dFlSidt;
+rhoo        = rho;
+advn_RHOo   = advn_RHO;   
+Div_Vo      = Div_V;
+dto         = dt;
+upd_S       = 0.*dSdt;
+upd_XFe     = 0.*dXFedt;
+upd_XSi     = 0.*dXSidt;
+upd_CFe     = 0.*dCFedt;
+upd_CSi     = 0.*dCSidt;
+upd_FsFe    = 0.*dFsFedt;
+upd_FsSi    = 0.*dFsSidt;
+upd_FlFe    = 0.*dFlFedt;
+upd_FlSi    = 0.*dFlSidt;
+upd_rho     = 0.*dSdt;
+dsumMdt     = 0; dsumMdto = dsumMdt;
+dsumSdt     = 0; dsumSdto = dsumSdt;
+dsumXFedt   = 0; dsumXFedto = dsumXFedt;
+dsumXSidt   = 0; dsumXSidto = dsumXSidt;
+dsumCFedt   = 0; dsumCFedto = dsumCFedt;
+dsumCSidt   = 0; dsumCSidto = dsumCSidt;
 
 %% temp additional auxilary fields
 hassolSi = flSi<1;
@@ -267,13 +305,13 @@ NAl     = zeros(nzP,nxP);
 NAl     = NAl + nAl*rAl0 .* mean(rho(:)); % initial NAl per m^3
 dNdt = zeros(nzP,nxP);
 
-Hr  = Hr0.*ones(size(S(2:end-1,2:end-1)));
+Hr  = Hr0.*zeros(size(T));
 
 if radheat; Hr = Hr + Hr0; end
 
 %% initialise previous solution and auxiliary fields
 rhoo      = rho;
-Div_rhoVo = Div_rhoV;
+% Div_rhoVo = Div_rhoV;
 
 %% update nonlinear material properties
 up2date;
@@ -298,7 +336,7 @@ resnorm_VP = 0
 
 %% initialise recording of model history
 history;
-output;
+% output;
 
 %% initialise counting variables
 RUN.frame = 0;      % initialise output frame count

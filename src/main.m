@@ -1,4 +1,6 @@
 % planetesimal: main model routine
+
+
 while time <= tend && step <= maxstep
     % print time step header
     fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
@@ -64,7 +66,7 @@ while time <= tend && step <= maxstep
         % solve fluid-mechanical equations
         switch mode
             case 'spherical'; solve_fluidmech_sp;
-            otherwise; solve_fluidmech;
+            otherwise; if Nx==1; solve_fluidmech_sp; else; solve_fluidmech; end
         end
         % update non-linear parameters and auxiliary variables
         up2date;
@@ -74,10 +76,8 @@ while time <= tend && step <= maxstep
             if iter == 0
                 resnorm0 = resnorm+TINY;
             end
-            if ~mod(iter,3) 
-                fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
-                % figure(35);
-                % plot(W(:,2),zW); hold on; axis ij tight;
+            if ~mod(iter,10) 
+                % fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
             end
             % 
             % figure(100); if iter==1; clf; else; hold on; end
@@ -91,26 +91,31 @@ while time <= tend && step <= maxstep
             %      plot(iter,log10(normFSi)   ,'*b','MarkerSize',15); box on; axis tight;
             % drawnow;
         end
-        iter = iter+1;
+       iter = iter+1;
     end
+
     % figure(95); clf; plot(WWBG);
     fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
     % update mass and energy errors
-    switch mode 
-    case 'spherical'; history_sp;
-    otherwise; history;
+    if ~ restart
+    switch mode
+        case 'spherical'; history_sp;
+        otherwise; history;
     end
-    Re     = D*rho(2:end-1,2:end-1).*Vel(2:end-1,2:end-1)./Eta(2:end-1,2:end-1)./10;
+    end
 
-    fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));
-    fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
-    fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
-    fprintf(1,'         min c_{Si}   =  %1.4f;    mean c_{Si}   = %1.4f;    max c_{Si}   = %1.4f;   [wt]\n'   ,min(cSi(:)  ),mean(cSi(:)  ),max(cSi(:)  ));
-    fprintf(1,'         min Re   =  %1.4f;    mean Re   = %1.4f;    max Re   = %1.4f;   [wt]\n'   ,min(Re(:)  ),mean(Re(:)  ),max(Re(:)  ));
-    fprintf(1,'         min sumX=  %4.1f;    mean sumX= %4.1f;    max sumX= %4.1f;   [kg/m3]\n'  ,min(XFe(:)+XSi(:)),mean(XFe(:)+XSi(:))   ,max(XFe(:)+XSi(:)));
-    fprintf(1,'         min rho =  %4.1f;    mean rho = %4.1f;    max rho = %4.1f;   [kg/m3]\n'  ,min(rho(:)),mean(rho(:))   ,max(rho(:)));
     if ~mod(step,nop) %round(2*nop/CFL))
         output
+
+        fprintf(1,'         min T   =  %4.1f;    mean T   = %4.1f;    max T   = %4.1f;   [deg k]\n' ,min(T(:)),mean(T(:)),max(T(:)));
+        fprintf(1,'         min x_{Fe}   =  %1.4f;    mean x_{Fe}   = %1.4f;    max x_{Fe}   = %1.4f;   [wt]\n'   ,min(xFe(:)  ),mean(xFe(:)  ),max(xFe(:)  ));
+        fprintf(1,'         min c_{Fe}   =  %1.4f;    mean c_{Fe}   = %1.4f;    max c_{Fe}   = %1.4f;   [wt]\n'   ,min(cFe(:)  ),mean(cFe(:)  ),max(cFe(:)  ));
+        fprintf(1,'         min c_{Si}   =  %1.4f;    mean c_{Si}   = %1.4f;    max c_{Si}   = %1.4f;   [wt]\n'   ,min(cSi(:)  ),mean(cSi(:)  ),max(cSi(:)  ));
+        fprintf(1,'         min Re   =  %1.4f;    mean Re   = %1.4f;    max Re   = %1.4f;   [wt]\n'   ,min(Re(:)  ),mean(Re(:)  ),max(Re(:)  ));
+        fprintf(1,'         min sumX=  %4.1f;    mean sumX= %4.1f;    max sumX= %4.1f;   [kg/m3]\n'  ,min(XFe(:)+XSi(:)),mean(XFe(:)+XSi(:))   ,max(XFe(:)+XSi(:)));
+        fprintf(1,'         min rho =  %4.1f;    mean rho = %4.1f;    max rho = %4.1f;   [kg/m3]\n'  ,min(rho(:)),mean(rho(:))   ,max(rho(:)));
+
+
     end
 
     % break script for NaN

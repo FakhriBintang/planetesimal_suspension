@@ -135,6 +135,10 @@ diff_CSi    = zeros(Nz,Nx);             % Silicate component diffusion rate
 diff_CFe    = zeros(Nz,Nx);             % Iron component diffusion rate
 Div_V       = zeros(Nz+2,Nx+2);         % Stokes velocity divergence
 advn_RHO    = zeros(Nz,Nx);             % Mixture mass flux divergence
+advn_FsFe   = zeros(Nz,Nx);             % iron solid fraction advection 
+advn_FlFe   = zeros(Nz,Nx);             % iron liquid fraction advection 
+advn_FsSi   = zeros(Nz,Nx);             % silicate solid fraction advection 
+advn_FlSi   = zeros(Nz,Nx);             % silicate liquid fraction advection 
 VolSrc      = zeros(Nz,Nx);             % volume source term
 
 % initialise counting variables
@@ -190,6 +194,7 @@ rholFe = rholFe0.*(1 - aT.*(T-perTFe) - gCFe.*(clFe-cphsFe1));
 
 etasSi = zeros(nzP,nxP) + EtasSi0;
 etasFe = zeros(nzP,nxP) + EtasFe0;
+Eta = ones(nzP,nxP);
 
 a1      = 1; a2 = 0; a3 = 0; b1 = 1; b2 = 0; b3 = 0;
 res = 1e3;
@@ -250,7 +255,7 @@ XFe   = FsFe + FlFe;
 XSi   = FsSi + FlSi;
 RHO   = XFe + XSi;                                          % dynamic density
 
-n26Al = 0
+n26Al = 0;
 if radheat
 % initialise radiogenic isotopes 
 Alfrac      = (cSi-cphsSi1)/(cphsSi2-cphsSi1);
@@ -290,7 +295,7 @@ dFsSidto    = dFsSidt;
 dFlFedto    = dFlFedt;
 dFlSidto    = dFlSidt;
 rhoo        = rho;
-advn_RHOo   = advn_RHO;
+advn_RHOo   = advn_RHO;   
 Div_Vo      = Div_V;
 dto         = dt;
 upd_S       = 0.*dSdt;
@@ -318,9 +323,15 @@ hasliqFe = fsFe<1;
 
 %% update nonlinear material properties
 up2date;
+% solve fluid-mechanical equations
 switch mode
     case 'spherical'; solve_fluidmech_sp;
-    otherwise; solve_fluidmech;
+    otherwise 
+        if Nx==1 
+            solve_fluidmech_sp; 
+        else 
+            solve_fluidmech; 
+        end
 end
 %% check reynold's number
 % Velbar = abs(sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
@@ -349,7 +360,7 @@ if restart
         %path specified in the run script
         fprintf('\n   restart from %s \n\n',name);
         load(name);
-        load(name_h);
+        % load(name_h);
 
         SOL = [W(:);U(:);P(:)];
         RHO = FlFe+FlSi+FsFe+FsSi;
@@ -390,20 +401,28 @@ if restart
         dsumCSidt   = 0; dsumCSidto = dsumCSidt;
 
         %reset history record to current step
-        HST.time = HST.time(1:step); HST.n26Al = HST.n26Al(1:step); HST.sumM = HST.sumM(1:step); HST.sumS = HST.sumS(1:step);
-        HST.sumXFe  = HST.sumXFe(1:step); HST.sumXSi = HST.sumXSi(1:step); HST.sumCFe = HST.sumCFe(1:step); HST.sumCSi = HST.sumCSi(1:step);
-        HST.dM = HST.dM(1:step); HST.dS = HST.dS(1:step); HST.dXFe = HST.dXFe(1:step); HST.dXSi = HST.dXSi(1:step);
-        HST.dCFe = HST.dCFe(1:step); HST.dCSi = HST.dCSi(1:step); HST.EM = HST.EM(1:step); HST.ES = HST.ES(1:step);
-        HST.EXFe = HST.EXFe(1:step); HST.EXSi = HST.EXSi(1:step); HST.ECFe = HST.ECFe(1:step); HST.ECSi = HST.ECSi(1:step); 
+        % HST.time = step; if radheat; HST.n26Al = n26Al; end; HST.sumM = HST.sumM(step); HST.sumS = HST.sumS(step);
+        % HST.sumXFe  = HST.sumXFe(1:step); HST.sumXSi = HST.sumXSi(1:step); HST.sumCFe = HST.sumCFe(1:step); HST.sumCSi = HST.sumCSi(1:step);
+        % HST.dM = HST.dM(1:step); HST.dS = HST.dS(1:step); HST.dXFe = HST.dXFe(1:step); HST.dXSi = HST.dXSi(1:step);
+        % HST.dCFe = HST.dCFe(1:step); HST.dCSi = HST.dCSi(1:step); HST.EM = HST.EM(1:step); HST.ES = HST.ES(1:step);
+        % HST.EXFe = HST.EXFe(1:step); HST.EXSi = HST.EXSi(1:step); HST.ECFe = HST.ECFe(1:step); HST.ECSi = HST.ECSi(1:step); 
+
+        % HST.time = step; if radheat; HST.n26Al = n26Al; end; HST.sumM = HST.sumM(step); HST.sumS = HST.sumS(step);
+        % HST.sumXFe  = HST.sumXFe(1:step); HST.sumXSi = HST.sumXSi(1:step); HST.sumCFe = HST.sumCFe(1:step); HST.sumCSi = HST.sumCSi(1:step);
+        % HST.dM = HST.dM(1:step); HST.dS = HST.dS(1:step); HST.dXFe = HST.dXFe(1:step); HST.dXSi = HST.dXSi(1:step);
+        % HST.dCFe = HST.dCFe(1:step); HST.dCSi = HST.dCSi(1:step); HST.EM = HST.EM(1:step); HST.ES = HST.ES(1:step);
+        % HST.EXFe = HST.EXFe(1:step); HST.EXSi = HST.EXSi(1:step); HST.ECFe = HST.ECFe(1:step); HST.ECSi = HST.ECSi(1:step);
+
         if radheat
-           n26Al = HST.n26Al(end); % n26Al0*exp(-(t_form+time)/tauAl);
+           % n26Al = HST.n26Al(end); % n26Al0*exp(-(t_form+time)/tauAl);
            n26Alo      = n26Al;
         end
       
         % output;
 
         time    = time+dt;
-        step    = step+1;
+        step = 1;
+        % step    = step+1;
 
     else % continuation file does not exist, start from scratch
         fprintf('\n   !!! restart file does not exist !!! \n   => starting run from scratch %s \n\n',RunID);

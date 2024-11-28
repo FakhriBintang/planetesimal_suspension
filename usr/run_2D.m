@@ -20,6 +20,8 @@ tend            =  5e6*yr;                  % model stopping time [s]
 dt              =  1e-9*yr;                 % (initial) time step [s]
 
 %% set model domain
+selfgrav        =  0;                       % self gravity
+mode            = 'cartesian';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
 D               =  1000;                  % domain depth
 Nz              =  120;                     % number of real x/z block nodes
 Nx              = 120;
@@ -168,6 +170,7 @@ alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
+mixReg      = 0;                       % mixing regularisation (1 = on; 0 = minor eddy)  
 
 %% start model
 % % create output directory

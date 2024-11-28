@@ -3,17 +3,17 @@
 % equal grid spacing
 clear ; %close all
 
-RunID           =  '50km_spherical_heating_t0';     % run identifier
+RunID           =  '100km_0myr_fixed';     % run identifier
 outpath         =  ['../out/',RunID] ;
-restart         =  20;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         =  1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  500;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
 yr              =  3600*24*365.25;          % seconds per year
-maxstep         =  1e7;                     % maximum number of time steps
+maxstep         =  1e9;                     % maximum number of time steps
 tend            =  1e7*yr;                  % model stopping time [s]
 
 % [do not modify]
@@ -22,8 +22,8 @@ dt              =  1e2*yr;                 % (initial) time step [s]
 %% set model domain
 selfgrav        =  1;                       % self gravity
 mode            = 'spherical';              % cartesian or spherical coordinates; note spherical is only resolved in 1D
-D               =  50e3;                  % domain depth
-Nz              =  400;                     % number of real x/z block nodes
+D               =  100e3;                  % domain depth
+Nz              =  250;                     % number of real x/z block nodes
 Nx              =  1;
 h               =  D/Nz;                     % spacing of x/z  coordinates
 L               =  h*Nx;
@@ -94,7 +94,7 @@ rho0 = rholFe0;
 % rheology parameters
 EtalSi0     =  1e2;                     % reference silicate melt viscosity [Pas]
 EtalFe0     =  1e1;                     % reference metal melt viscosity [Pas]
-EtasSi0     =  1e18;                    % reference silicate crystal viscosity
+EtasSi0     =  1e20;                    % reference silicate crystal viscosity
 EtasFe0     =  1e15;                    % reference iron crystal viscosity
 
 Em          =  150e3;                   % activation energy melt viscosity [J/mol]
@@ -163,59 +163,18 @@ TINY        = 1e-16;                    % tiny number to safeguard [0,1] limits
 reltol    	= 1e-6;                     % relative residual tolerance for nonlinear iterations
 abstol      = 1e-9;                     % absolute residual tolerance for nonlinear iterations
 maxit       = 50;                       % maximum iteration count
-CFL         = 1/20;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
-dtmax       = 0.5e2*yr;                   % maximum time step
+CFL         = 1/10;                    % (physical) time stepping courant number (multiplies stable step) [0,1]
+dtmax       = 1e2*yr;                   % maximum time step
 etamin      = 1e-1;                      % regularisation factor for viscosity
 TINT        = 'bd3i';                   % time integration scheme ('bwei','cnsi','bd3i','bd3s')
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-8;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
+mixReg      = 1;                       % mixing regularisation (1 = on; 0 = minor eddy)  
 
 
 %% start model
-% % create output directory
-% [~,systemname]  = system('hostname');
-% systemname(end) = [];
-% 
-% switch systemname
-%     case 'Horatio'
-%         outpath = ['/media/43TB_RAID_Array/fbintang/test_out/out/', RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-%     otherwise
-%         outpath = ['../out/',RunID];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end
-% end
-% % initialise restart frame if switched on
-% if restart
-%     if     restart < 0  % restart from last continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_cont.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_cont.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     elseif restart > 0  % restart from specified continuation frame
-%         switch systemname
-%             case 'Horatio'
-%                 name    = [outpath,'/',RunID,'_',num2str(restart),'.mat']; 
-%                 name_h  = [outpath,'/',RunID,'_hist.mat']; 
-%             otherwise % must specify full output directory, not necessarily nestled in the same model folder
-%                 name = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_',num2str(restart),'.mat'];
-%                 name_h = ['/Users/fbintang/Library/CloudStorage/OneDrive-UniversityofGlasgow/Diagnostics/4phs_spike/'...
-%                     ,RunID,'/',RunID,'_hist.mat'];
-%         end
-%     end
-%     % make new output folder for restart
-%     outpath = [outpath,'/_cont'];
-%         if ~exist(outpath, 'dir'); mkdir(outpath); end 
-% 
-% end
 
 if ~exist(outpath, 'dir'); mkdir(outpath); end
 

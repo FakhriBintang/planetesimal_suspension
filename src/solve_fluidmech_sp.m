@@ -1,4 +1,3 @@
-% Wi = W; Ui = U; Pi = P;
 % profile on
 
 % update velocity
@@ -22,10 +21,6 @@ end
 UP(:,2:end-1) = (U(:,1:end-1)+U(:,2:end))./2;
 WP(2:end-1,:) = (W(1:end-1,:)+W(2:end,:))./2;
 
-% get residual of fluid mechanics equations from iterative update
-% resnorm_VP = norm((W - Wi).*any(W(:)>1e-12),2)./(norm(W,2)+TINY) ...
-%            + norm((U - Ui).*any(U(:)>1e-12),2)./(norm(U,2)+TINY) ...
-%            + norm(P - Pi,2)./(norm(P,2)+TINY);
 resnorm_VP = 0;
 if ~bnchm
     % set phase diffusion speeds
@@ -101,18 +96,26 @@ if ~bnchm
 
 
     %% update physical time step
+    maxcmp = 0.01;
     dtadvn =  h/2   /max(abs([UlSi(:);WlSi(:);UsSi(:);WsSi(:);UlFe(:);WlFe(:);UsFe(:);WsFe(:)])); % stable timestep for advection
-    dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp)*0.75;                         % stable time step for T diffusion
-
-    dt = min(1.01*dto,min(min(dtdiff,CFL * dtadvn),dtmax));                      % fraction of minimum stable time step
-
-    if dt==dtmax
-        dtlimit = 'max step limited';
-    elseif dtdiff<dtadvn
-        dtlimit = 'diffusion limited';
-    else
-        dtlimit = 'advection limited';
+    % dtdiff = (h/2)^2/max(max(ks(:).*T(:))./rho(:)./Cp)*0.5;                         % stable time step for T diffusion
+    dtdiff = (h/2)^2/max([kc(:);klSi(:);ksSi(:);klFe(:);ksFe(:);(kT(:)+ks(:).*T(:))./rho(:)./Cp(:)])/2 ;
+    if step>0
+    dtc = maxcmp./max(abs([advn_FsFe(:)./rho(2:end-1,2);advn_FlFe(:)./rho(2:end-1,2);advn_FsSi(:)./rho(2:end-1,2);advn_FlSi(:)./rho(2:end-1,2)]));
+    else; dtc = dtadvn;
     end
+
+    dt = min(1.01*dto,min(min([dtdiff,CFL * dtadvn,dtc]),dtmax));                      % fraction of minimum stable time step
+    
+    [~,mindtm] = min([dtdiff; CFL * dtadvn; dtc; dtmax]);
+
+switch mindtm
+    % case 1 ; dtlimit = 'step change limited';
+    case 1 ; dtlimit = 'diffusion limited';
+    case 2 ; dtlimit = 'advection limited';
+    case 3 ; dtlimit = 'phase change limited';
+    case 4 ; 'max step limited';
+end
 end
 % profile report
 % profile off

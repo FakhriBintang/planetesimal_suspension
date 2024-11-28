@@ -6,7 +6,9 @@ dsumXFedtoo = dsumXFedto; dsumXFedto = dsumXFedt;
 dsumXSidtoo = dsumXSidto; dsumXSidto = dsumXSidt;
 dsumCFedtoo = dsumCFedto; dsumCFedto = dsumCFedt;
 dsumCSidtoo = dsumCSidto; dsumCSidto = dsumCSidt;
+
 stp = max(1,step);
+
 HST.time(stp) = time;
 
 % record conserved masses at current timestep

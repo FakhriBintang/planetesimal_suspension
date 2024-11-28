@@ -4,10 +4,10 @@ clear ;%close all
 
 RunID           =  '1D_spherical_Sifrac_d05';     % run identifier
 outpath         =  ['../out/',RunID] ;
-restart         = -1;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
+restart         = 0;                   % restart from file (0: new run; <1: restart from last; >1: restart from specified frame)
 plot_op         =  1;                       % switch on to plot live output
-save_op         =  1;                       % switch on to save output files
-nop             =  1;                     % output every 'nop' grid steps of transport
+save_op         =  0;                       % switch on to save output files
+nop             =  100;                     % output every 'nop' grid steps of transport
 bnchm           =  0;                       % manufactured solution benchmark on fluid mechanics solver
 
 %% set model timing
@@ -32,7 +32,7 @@ rmin            =  h;                    % minimum radius if spherical
 %% set thermochemical parameters
 
 % set initial system and component fractions
-xFe0            =  0;                     % Fe-FeS system fraction
+xFe0            =  1;                     % Fe-FeS system fraction
 cFe0            =  0.15;                    % Fe-FeS fertile component fraction ([wt% S], maximum 0.35 for pure FeS
 cSi0            =  0.47;                    % Si system fertile component fraction [wt% SiO2]
 
@@ -60,9 +60,9 @@ PhDgFe  = [6.0,4.0,1.2,1.2];                        % iron hase diagram curvatur
 clap    = 1e-7;                                     % Clapeyron slope for P-dependence of melting T [degC/Pa]
 
 % set temperature initial condition
-T0      =  1500+273.15;                                % reference/top potential temperature [k]
+T0      =  1300+273.15;                                % reference/top potential temperature [k]
 Ttop0   =  T0;                                      % isothermal top reference temperature 
-T1      =  1500+273.15;                                % bottom potential temperature (if different from top) [k]
+T1      =  1300+273.15;                                % bottom potential temperature (if different from top) [k]
 Tbot0   =  T1;                                      % isothermal bottom reference temperature 
 rT      =  D/6;                                     % radius of hot plume [m]
 zT      =  D*0.5;                                   % z-position of hot plume [m]
@@ -170,8 +170,7 @@ alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
 kmin        = 1e-9;                    % minimum diffusivity
 dscale      = 0.5;                      % phase dimension scaler; 0 = constant, 0.5 = sqrt, 1 = linear, 2 = quadratic;
-
-
+mixReg      = 0;                       % mixing regularisation (1 = on; 0 = minor eddy)  
 %% start model
 % % create output directory
 % [~,systemname]  = system('hostname');

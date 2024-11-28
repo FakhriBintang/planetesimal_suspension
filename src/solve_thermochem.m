@@ -19,18 +19,11 @@ FlFei = FlFe;
 FlSii = FlSi;
 
 %% update heat content (entropy)
-% advn_S = - advect_sp(FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA) ...  % heat advection
-%          - advect_sp(FsFe(inz,inx).*ssFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA) ...
-%          - advect_sp(FlSi(inz,inx).*slSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA) ...
-%          - advect_sp(FlFe(inz,inx).*slFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_S = - advect(rp(inz,:).^2.*FsSi(inz,inx).*ssSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2 ...  % heat advection
          - advect(rp(inz,:).^2.*FsFe(inz,inx).*ssFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2 ...
          - advect(rp(inz,:).^2.*FlSi(inz,inx).*slSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2 ...
          - advect(rp(inz,:).^2.*FlFe(inz,inx).*slFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_S = - advect_simple(mode,FsSi(:,2).*ssSi(:,2),WsSi(:,2),'',h,rp) + ...
-%          - advect_simple(mode,FlSi(:,2).*slSi(:,2),WlSi(:,2),'',h,rp) + ...
-%          - advect_simple(mode,FsFe(:,2).*ssFe(:,2),WsFe(:,2),'',h,rp) + ...
-%          - advect_simple(mode,FlFe(:,2).*slFe(:,2),WlFe(:,2),'',h,rp);
+
 diff_S   = diffus(T,ks.*rp.^2,h)./rp(inz,:).^2;
 
 diss_T = EntProd./T(inz,inx);
@@ -77,45 +70,19 @@ end
 %% update composition
 
 % update fertile chemical components
-% advn_CSi = - advect_sp(FsSi(inz,inx).*csSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA) ...
-%            - advect_sp(FlSi(inz,inx).*clSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_CSi = - advect(rp(inz,:).^2.*FsSi(inz,inx).*csSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2 ...
            - advect(rp(inz,:).^2.*FlSi(inz,inx).*clSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_CSi = -advect_simple(mode,FsSi(:,2).*csSi(:,2),WsSi(:,2),'',h,rp) + ...
-           % -advect_simple(mode,FlSi(:,2).*clSi(:,2),WlSi(:,2),'',h,rp);
 
-% kclSi    = FlSi.*kc;
-% kcsSi    = FsSi.*kc;
-% qclSiz   = - (kclSi(1:end-1,:)+kclSi(2:end,:))./2 .* ddz(clSi,h);
-% qclSix   = - (kclSi(:,1:end-1)+kclSi(:,2:end))./2 .* ddx(clSi,h);
-% qcsSiz   = - (kcsSi(1:end-1,:)+kcsSi(2:end,:))./2 .* ddz(csSi,h);
-% qcsSix   = - (kcsSi(:,1:end-1)+kcsSi(:,2:end))./2 .* ddx(csSi,h);
-% diff_CSi = - ddz(qclSiz(:,2:end-1),h)  ...                                 % heat diffusion
-%            - ddx(qclSix(2:end-1,:),h)  ...
-%            - ddz(qcsSiz(:,2:end-1),h)  ...                                 % heat diffusion
-%            - ddx(qcsSix(2:end-1,:),h);
+% diff_CSi   =  diffus(CSi,kc.*rp.^2,h)./rp(inz,:).^2; % regularised chemical diffusion
+diff_CSi   = 0;
+dCSidt   = advn_CSi + diff_CSi;
 
-dCSidt   = advn_CSi; % + diff_CSi;
-
-% advn_CFe = - advect_sp(FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA) ...
-%            - advect_sp(FlFe(inz,inx).*clFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_CFe = - advect(rp(inz,:).^2.*FsFe(inz,inx).*csFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2 ...
            - advect(rp(inz,:).^2.*FlFe(inz,inx).*clFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_CFe = -advect_simple(mode,FsFe(:,2).*csFe(:,2),WsFe(:,2),'',h,rp) + ...
-           % -advect_simple(mode,FlFe(:,2).*clFe(:,2),WlFe(:,2),'',h,rp);
 
-% kclFe    = FlFe.*kc;
-% kcsFe    = FsFe.*kc;
-% qclFez   = - (kclFe(1:end-1,:)+kclFe(2:end,:))./2 .* ddz(clFe,h);
-% qclFex   = - (kclFe(:,1:end-1)+kclFe(:,2:end))./2 .* ddx(clFe,h);
-% qcsFez   = - (kcsFe(1:end-1,:)+kcsFe(2:end,:))./2 .* ddz(csFe,h);
-% qcsFex   = - (kcsFe(:,1:end-1)+kcsFe(:,2:end))./2 .* ddx(csFe,h);
-% diff_CFe = - ddz(qclFez(:,2:end-1),h)  ...                                 % heat diffusion
-%            - ddx(qclFex(2:end-1,:),h)  ...
-%            - ddz(qcsFez(:,2:end-1),h)  ...                                 % heat diffusion
-%            - ddx(qcsFex(2:end-1,:),h);
-
-dCFedt   = advn_CFe; % + diff_CFe;
+% diff_CFe   =  diffus(CSi,kc.*rp.^2,h)./rp(inz,:).^2; % regularised chemical diffusion
+diff_CFe   = 0;
+dCFedt   = advn_CFe + diff_CFe;
 
 % update solution
 % residual of entropy evolution
@@ -172,13 +139,11 @@ GlSi        = ((XSi.*flSiq-FlSi)./(4.*dt));
 
 % advn_FsFe   = - advect_sp(FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_FsFe   = - advect(rp(inz,:).^2.*FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_FsFe     = -advect_simple(mode,FsFe(:,2),WsFe(:,2),'',h,rp);
 dFsFedt     = advn_FsFe + GsFe(inz,inx);
 res_FsFe    = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
 
 % advn_FsSi   = - advect_sp(FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_FsSi   = - advect(rp(inz,:).^2.*FsSi(inz,inx),UsSi(inz,:),WsSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_FsSi   = -advect_simple(mode,FsSi(:,2),WsSi(:,2),'',h,rp);
 dFsSidt     = advn_FsSi + GsSi(inz,inx);                                       % total rate of change
 res_FsSi    = (a1*FsSi(inz,inx)-a2*FsSio(inz,inx)-a3*FsSioo(inz,inx))/dt - (b1*dFsSidt + b2*dFsSidto + b3*dFsSidtoo);
 
@@ -198,14 +163,12 @@ FsSi = max(0, FsSi );
 % GFel = -GFes;
 % advn_FlFe   = - advect_sp(FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_FlFe   = - advect(rp(inz,:).^2.*FlFe(inz,inx),UlFe(inz,:),WlFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_FlFe     = -advect_simple(mode,FlFe(:,2),WlFe(:,2),'',h,rp);
 dFlFedt       = advn_FlFe + GlFe(inz,inx);
 res_FlFe = (a1*FlFe(inz,inx)-a2*FlFeo(inz,inx)-a3*FlFeoo(inz,inx))/dt - (b1*dFlFedt + b2*dFlFedto + b3*dFlFedtoo);
 
 % GSil = -GSis;
 % advn_FlSi   = - advect_sp(FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,rp(inz),{ADVN,''},[1,2],BCA);
 advn_FlSi   = - advect(rp(inz,:).^2.*FlSi(inz,inx),UlSi(inz,:),WlSi(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
-% advn_FlSi   = -advect_simple(mode,FlSi(:,2),WlSi(:,2),'',h,rp);
 dFlSidt     = advn_FlSi + GlSi(inz,inx);                                       % total rate of change
 res_FlSi = (a1*FlSi(inz,inx)-a2*FlSio(inz,inx)-a3*FlSioo(inz,inx))/dt - (b1*dFlSidt + b2*dFlSidto + b3*dFlSidtoo);
 

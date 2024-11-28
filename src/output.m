@@ -114,7 +114,8 @@ if plot_op
         plot(mean(rho(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
         title('$\bar{\rho}$ [kg/m$^3$]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,5,4)
-        plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
+        plot(mean(log10(Eta(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on; hold on;
+        plot(mean(log10(Eta0(2:end-1,2:end-1)),2),zP(2:end-1)./1000,'LineWidth',2);
         title('$\bar{\eta}$ [log$_{10}$ Pas]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,5,5)
         plot(mean(gzP(2:end-1,2:end-1),2),zP(2:end-1)./1000,'LineWidth',2); axis ij tight; box on;
@@ -127,17 +128,17 @@ if plot_op
         fh4 = figure(4); clf;
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
         subplot(1,4,1)
-        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on; 
+        plot(mean(-(philFe(1:end-1,2:end-1)+philFe(2:end,2:end-1))/2.*seglFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); axis ij tight; box on; 
         title('$w_{\Delta,Fe}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         ylabel('Depth [km]',TX{:},FS{:});
         subplot(1,4,2)
-        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(phisFe(1:end-1,2:end-1)+phisFe(2:end,2:end-1))/2.*segsFe(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Fe}^s$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,3)
-        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(philSi(1:end-1,2:end-1)+philSi(2:end,2:end-1))/2.*seglSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Si}^\ell$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
         subplot(1,4,4)
-        plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW,'LineWidth',2); axis ij tight; box on;
+        plot(mean(-(phisSi(1:end-1,2:end-1)+phisSi(2:end,2:end-1))/2.*segsSi(:,2:end-1),2)*yr,zW./1000,'LineWidth',2); axis ij tight; box on;
         title('$w_{\Delta,Si}^s$ [m/yr]',TX{:},FS{:}); set(gca,TL{:},TS{:});
 
         % plot conserved quantities
@@ -253,9 +254,9 @@ if plot_op
         sgtitle(['time = ',num2str(time/yr,3),' [yr]'],TX{:},FS{:},'Color','k');
 
         %% plot phase
-if ~exist('fh3','var'); fh3 = figure(3);
-    else; set(0, 'CurrentFigure', fh3); clf;
-    end 
+        if ~exist('fh3','var'); fh3 = figure(3);
+        else; set(0, 'CurrentFigure', fh3); clf;
+        end
     colormap(ocean);
     fh = axb + 2*axh + 1*avs + axt;
     fw = axl + 2*axw + 1*ahs + axr;
@@ -360,7 +361,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     ylim([TFe1 TSi2]-273.15)
     title('SiO$_2$ Phase Diagram','Interpreter','latex','FontSize',18)
     xlabel('Major component [wt\% SiO$_2$]','Interpreter','latex','FontSize',15)
-    ylabel('Temperature [$^\circ$k]','Interpreter','latex','FontSize',15)
+    ylabel('Temperature [$^\circ$C]','Interpreter','latex','FontSize',15)
     set(gca,TL{:},TS{:});
 
     subplot(1,2,2)
@@ -376,6 +377,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
 
 
     %% plot conserved quantities
+    if ~ restart
     fh10 = figure(10); clf;
     % mass/energy conservation
     subplot(6,1,1)
@@ -401,6 +403,7 @@ if ~exist('fh3','var'); fh3 = figure(3);
     xlabel('Time [yr]',TX{:},FS{:});
 
     drawnow
+    end
 end
 
 %% diagnose thermal spike in 4 phs
@@ -503,8 +506,6 @@ if save_op
 
     name = [outpath '/',RunID,'_phsdg',num2str(floor(step/nop))]; % figure 9 phase diagram
     print(fh9,name,'-dpng','-r300','-image');
-    name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
-    print(fh10,name,'-dpng','-r300','-image');
 
     name = [outpath '/',RunID,'_',num2str(step/nop)];
     save(name,'U','W','P','Pt','xFe','xSi','cFe','cSi','csFe','clFe','csSi','clSi',...
@@ -520,13 +521,17 @@ if save_op
         'Ksgr_x','Ksgr_f','Ksgr_m','xP','zP','xU','zU','xW','zW',...
         'So','XFeo','XSio','CFeo','CSio','FsFeo','FsSio',...
         'rhoo','T','yr','nxP','nzP','time','step','Hr','n26Al');
-    name = [outpath,'/',RunID,'_hist'];
-    save(name,'HST');
-
-    if (step==0 || restart)
-        logfile = [outpath '/',RunID,'.log'];
-        if exist(logfile,'file'); delete(logfile); end
-        diary(logfile)
+    if ~ restart
+        name = [outpath '/',RunID,'_consv',num2str(floor(step/nop))]; % figure 10 conserved quantities
+        print(fh10,name,'-dpng','-r300','-image');
+        name = [outpath,'/',RunID,'_hist'];
+        save(name,'HST');
     end
+
+    % if (step==0 || restart)
+    %     logfile = [outpath '/',RunID,'.log'];
+    %     if exist(logfile,'file'); delete(logfile); end
+    %     diary(logfile)
+    % end
 end
 

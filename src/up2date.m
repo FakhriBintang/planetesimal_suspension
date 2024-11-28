@@ -55,18 +55,13 @@ Cv   = ff.*(1-ff)./dd.^2.*kv.*thtv;
 Ksgr = ff./Cv;
 
 % compose effective viscosity, segregation coefficients
-Eta  = squeeze(sum(ff.*kv.*thtv,1));                                   % effective magma viscosity
+Eta0  = squeeze(sum(ff.*kv.*thtv,1));                                   % effective magma viscosity
 
 
 %% update segregation cofficients
 Ksgr_x = squeeze(Ksgr(1,:,:)) + TINY^2;  Ksgr_x([1 end],:) = Ksgr_x([2 end-1],:);  Ksgr_x(:,[1 end]) = Ksgr_x(:,[2 end-1]); % crystal
 Ksgr_m = squeeze(Ksgr(2,:,:)) + TINY^2;  Ksgr_m([1 end],:) = Ksgr_m([2 end-1],:);  Ksgr_m(:,[1 end]) = Ksgr_m(:,[2 end-1]); % silicate melt
 Ksgr_f = squeeze(Ksgr(3,:,:)) + TINY^2;  Ksgr_f([1 end],:) = Ksgr_f([2 end-1],:);  Ksgr_f(:,[1 end]) = Ksgr_f(:,[2 end-1]); % iron melt
-% % dampen liquid segregation at low crystalinities
-% Ksgr_m = Ksgr_m.*(1-philSi).^1; 
-% Ksgr_f = Ksgr_f.*(1-philFe).^1; 
-% Ksgr_m = max(TINY^2,Ksgr_m);
-% Ksgr_f = max(TINY^2,Ksgr_f);
 
 %% segregation coefficients for compaction length calculation
 % Cv_m = squeeze(Cv(2,:,:)); % silicate melt
@@ -148,38 +143,52 @@ eII(2:end-1,2:end-1) = (0.5.*(exx(2:end-1,2:end-1).^2 + ezz(2:end-1,2:end-1).^2 
 eII([1 end],:) = eII([2 end-1],:);
 eII(:,[1 end]) = eII(:,[2 end-1]);
 
-Vel(2:end-1,2:end-1) = sqrt(((W(1:end-1,2:end-1)+W(2:end,2:end-1))/2).^2 ...
-                          + ((U(2:end-1,1:end-1)+U(2:end-1,2:end))/2).^2);
+% velocity magnitude
+Delta_cnv = h;
+[~,drhodzz] = gradient(rho,h);
+drhodz = max(0,-drhodzz); % + 1e-6.*rho;
+Vel = drhodz.*gzP.*Delta_cnv.^3./Eta;
+
 Vel([1 end],:) = Vel([2 end-1],:);
 Vel(:,[1 end]) = Vel(:,[2 end-1]);
 
 
 %% update diffusion parameters
-% kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
+if mixReg
+    kW = Vel.*Delta_cnv;         % convective mixing diffusivity
+else
+    kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
+end
+    Pr = 3;
+Sc = 3;
+
 kT    = (xFe.*kTFe + xSi.*kTSi);                                           % magma thermal conductivity
-ks    = kT./T;                                                             % entropy conductivity
-% ksW   = kW.*rho.*Cp./T;                                                    % turbulent eddy entropy conductivity
-% kc    = kW;                                                                % turbulent eddy composition diffusivity
+% ks    = (kW+kT)./T;                                                             % entropy conductivity
+ks    = (kW./Pr + kmin).*rho.*Cp./T;  
+kc  =  kW./Sc + kmin;   
 kwlFe = abs((rholFe-rho).*gzP.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
 kwsFe = abs((rhosFe-rho).*gzP.*Ksgr_x.*dx*10) + kmin;
 kwlSi = abs((rholSi-rho).*gzP.*Ksgr_m.*dm*10) + kmin;
 kwsSi = abs((rhosSi-rho).*gzP.*Ksgr_x.*dx*10) + kmin;
-klFe  = philFe.*kwlFe;
-ksFe  = phisFe.*kwsFe;
-klSi  = philSi.*kwlSi;
-ksSi  = phisSi.*kwsSi;
+klFe  = philFe.*(kwlFe+kW);
+ksFe  = phisFe.*(kwsFe+kW);
+klSi  = philSi.*(kwlSi+kW);
+ksSi  = phisSi.*(kwsSi+kW);
 
 
 %% Regularise and limit viscosity
-Eta = Eta + etamin;
-etamax = 1e+8.*min(Eta(:));                                                % set max eta for 1e8 max range
-Eta    = (1./etamax + 1./Eta).^(-1);                                       % limit viscosity range
-Eta([1 end],:) = Eta([2 end-1],:);
+Eta = (kW.*rho + Eta0)/2 + Eta/2;
+
+etamax = 1e+8.*max(min(Eta(:)),etamin);                                                % set max eta for 1e8 max range
+Eta    = 1./(1./etamax + 1./Eta) + etamin;                                       % limit viscosity range
+% Eta([1 end],:) = Eta([2 end-1],:);
 Eta(:,[1 end]) = Eta(:,[2 end-1]);
 EtaC = (Eta(1:end-1,1:end-1).*Eta(2:end,1:end-1) ...           % viscosity in cell corners
      .* Eta(1:end-1,2:end  ).*Eta(2:end,2:end  )).^0.25;
 
-
+%% Update dimensionless numbers
+Ra     = Vel.*D/10./((kT+ks.*T) ./rho./Cp);
+Re     = Vel.*D/10./( Eta       ./rho    );
 %% update stresses
 txx = Eta .* exx;                                                          % x-normal stress
 tzz = Eta .* ezz;                                                          % z-normal stress
@@ -202,4 +211,3 @@ EntProd = ks(2:end-1,2:end-1).*(grdTz(2:end-1,2:end-1).^2 + grdTx(2:end-1,2:end-
     +  philFe(2:end-1,2:end-1)./Ksgr_f(2:end-1,2:end-1) .* ((seglFe(1:end-1,2:end-1)+seglFe(2:end,2:end-1))./2).^2  ...
     +  phisSi(2:end-1,2:end-1)./Ksgr_x(2:end-1,2:end-1) .* ((segsSi(1:end-1,2:end-1)+segsSi(2:end,2:end-1))./2).^2  ...
     +  philSi(2:end-1,2:end-1)./Ksgr_m(2:end-1,2:end-1) .* ((seglSi(1:end-1,2:end-1)+seglSi(2:end,2:end-1))./2).^2;
-
