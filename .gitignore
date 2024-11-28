@@ -14,3 +14,5 @@ Fe_melting/cal/McDonough_1995_2/alphameltsdate
 src/radioactive_decay.m
 src/radioactive_decay.m
 src/radioactive_decay.m
+*.png
+usr/compiles_Al.m
