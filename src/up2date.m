@@ -145,8 +145,8 @@ eII(:,[1 end]) = eII(:,[2 end-1]);
 
 % velocity magnitude
 Delta_cnv = h;
-[~,drhodzz] = gradient(rho,h);
-drhodz = max(0,-drhodzz); % + 1e-6.*rho;
+[~,drhodzz] = gradient(rho,h); [~,dTdz] = gradient(T,h);
+drhodz = max(0,-drhodzz).*(abs(dTdz)<1e-6); % Test preservation of a cooling temperature boundary
 Vel = drhodz.*gzP.*Delta_cnv.^3./Eta;
 
 Vel([1 end],:) = Vel([2 end-1],:);
@@ -154,17 +154,17 @@ Vel(:,[1 end]) = Vel(:,[2 end-1]);
 
 
 %% update diffusion parameters
-if mixReg
-    kW = Vel.*Delta_cnv;         % convective mixing diffusivity
-else
-    kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
-end
+kT    = (xFe.*kTFe + xSi.*kTSi);                                           % magma thermal conductivity
     Pr = 3;
 Sc = 3;
-
-kT    = (xFe.*kTFe + xSi.*kTSi);                                           % magma thermal conductivity
-% ks    = (kW+kT)./T;                                                             % entropy conductivity
-ks    = (kW./Pr + kmin).*rho.*Cp./T;  
+if mixReg
+    kW = Vel.*Delta_cnv;         % convective mixing diffusivity
+    % ks    = (kW./Pr + kmin).*rho.*Cp./T;
+else
+    kW    = (h/2)^2.*eII + kmin;                                               % diffusivity due to turbulent eddies
+    % ks    = (kW+kT)./T;                                                             % entropy conductivity
+end
+ks    = (kW+kT)./T;  
 kc  =  kW./Sc + kmin;   
 kwlFe = abs((rholFe-rho).*gzP.*Ksgr_f.*df*10) + kmin;                      % segregation fluctuation diffusivity
 kwsFe = abs((rhosFe-rho).*gzP.*Ksgr_x.*dx*10) + kmin;

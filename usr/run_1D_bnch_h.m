@@ -32,7 +32,7 @@ mode = 'cartesian';
 %temporary
 radheat         =  0;                    % radiogenic heating
 
-D               =  500;                  % domain depth
+D               =  10;                  % domain depth
 
 %% set thermochemical parameters
 % set initial system and component fractions
@@ -145,8 +145,8 @@ ADVN        =  'weno5';             % advection scheme ('centr','upw1','quick','
 BCA         = {'periodic','closed'};% boundary condition on advection (top/bot, sides)
 TINY        = 1e-16;                % tiny number to safeguard [0,1] limits
 lambda      = 0.5;   	            % iterative lagging for phase fractionCFL         = 0.25;   	            % Courant number to limit physical time step
-reltol    	= 1e-6;                 % relative residual tolerance for nonlinear iterations
-abstol      = 1e-9;                 % absolute residual tolerance for nonlinear iterations
+abstol      = 1e-12;                 % absolute residual tolerance for nonlinear iterations
+reltol    	= abstol/1e6;                 % relative residual tolerance for nonlinear iteration
 maxit       = 30;                   % maximum iteration count
 alpha       = 0.50;                    % iterative step size parameter
 beta        = 0.05;                    % iterative damping parameter
@@ -157,38 +157,46 @@ TINT        =  'bd3i';              % time integration scheme ('bwei','cnsi','bd
 mixReg = 0; SMALL = 1e-6;
 dscale = 0; kmin = 0; etamin = EtalSi0;
 %% test nonlinear tolerance
-NN = [50, 100, 200];
-
+NN = 25*[1, 2, 4];
+nshft = 1;
 for N = NN
     % [do not modify]
     h               =  D/N;          % spacing of x/z  coordinates
     L               =  h;
     
     % set gaussian positioning
-    rT      =  D/6;                  % radius of hot plume [m]
+    rT      =  D/8;                  % radius of hot plume [m]
     zT      =  D/2;                % z-position of hot plume [m]
     xT      =  L/2;                  % x-position of hot plume [m]
     %% set model timing
         % [do not modify]
-    dt              =  D/NN(3)/16;           % (initial) time step [s]
+    dt              =  D/NN(3)/500;           % (initial) time step [s]
 
-    tend            =  D/dt*h;              % model stopping time [s]
+    tend            =  D/NN(1)/dt*h;              % model stopping time [s]
     yr              =  3600*24*365.25;      % seconds per year
-    dtmax           =  dt;                   % maximum time step
-    maxstep         =  D/dt;                % maximum number of time steps
+    dtmax           =  dt;                  % maximum time step
+    maxstep         =  D/NN(1)/dt;                % maximum number of time steps
 
-
+    
    
 
     %% start model
- initialise_bnchm;
+    initialise_bnchm;
     Tin = T; rhoin = rho; Sin = S; FlFein = FlFe; FsFein = FsFe; FlSiin = FlSi; FsSiin = FsSi; XSiin = XSi; CFein = CFe; CSiin = CSi; xFein = xFe; xSiin = xSi;
-
+    T_out = circshift(T,N/NN(1)*nshft,1);
+    rho_out = circshift(rho,N/NN(1)*nshft,1);
+    S_out = circshift(S,N/NN(1)*nshft,1);
+    FlFe_out = circshift(FlFe,N/NN(1)*nshft,1);
+    FsFe_out = circshift(FsFe,N/NN(1)*nshft,1);
+    FlSi_out = circshift(FlSi,N/NN(1)*nshft,1);
+    FsSi_out = circshift(FsSi,N/NN(1)*nshft,1);
+    CFe_out = circshift(CFe,N/NN(1)*nshft,1);
+    CSi_out = circshift(CSi,N/NN(1)*nshft,1);
     while time <= tend && step <= maxstep
         % print time step header
-        fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
-
-        figure(100);clf
+        % fprintf(1,'\n*****  step = %d;  dt = %1.4e;  time = %1.4e yr;  %s\n\n',step,dt/yr,time/yr,dtlimit);
+        % 
+        % figure(100);clf
 
     if     strcmp(TINT,'bwei') || step==1 % first step / 1st-order backward-Euler implicit scheme
         a1 = 1; a2 = 1; a3 = 0;
@@ -227,7 +235,7 @@ for N = NN
         advn_RHOoo  = advn_RHOo;advn_RHOo   = advn_RHO;
         Div_Vo      = Div_V;
         dto         = dt;
-    To = T;
+        To = T;
         % temp
         cFeo = cFe; cSio = cSi;
 
@@ -315,10 +323,14 @@ for N = NN
             
             %% update phase fractions
             % solid
-            GsFe        = ((XFe.*fsFeq-FsFe)./(4.*dt));
-            GlFe        = ((XFe.*flFeq-FlFe)./(4.*dt));
-            GsSi        = ((XSi.*fsSiq-FsSi)./(4.*dt));
-            GlSi        = ((XSi.*flSiq-FlSi)./(4.*dt));
+            % GsFe        = ((XFe.*fsFeq-FsFe)./(4.*dt));
+            % GlFe        = ((XFe.*flFeq-FlFe)./(4.*dt));
+            % GsSi        = ((XSi.*fsSiq-FsSi)./(4.*dt));
+            % GlSi        = ((XSi.*flSiq-FlSi)./(4.*dt));
+            GsFe        = XFe.*0;
+            GlFe        = XFe.*0;
+            GsSi        = XSi.*0;
+            GlSi        = XSi.*0;
             advn_FsFe   = - advect(rp(inz,:).^2.*FsFe(inz,inx),UsFe(inz,:),WsFe(:,inx),h,{ADVN,''},[1,2],BCA)./rp(inz,:).^2;
             dFsFedt     = advn_FsFe + GsFe(inz,inx);
             res_FsFe    = (a1*FsFe(inz,inx)-a2*FsFeo(inz,inx)-a3*FsFeoo(inz,inx))/dt - (b1*dFsFedt + b2*dFsFedto + b3*dFsFedtoo);
@@ -480,9 +492,9 @@ for N = NN
                 end
                 fprintf(1,'  ---  it = %d;  abs res = %1.4e;  rel res = %1.4e  \n',iter,resnorm,resnorm/resnorm0)
 
-                figure(100); if iter==1; clf; else; hold on; end
-                plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
-                drawnow;
+                % figure(100); if iter==1; clf; else; hold on; end
+                % plot(iter,log10(resnorm_TC),'b.',iter,log10(resnorm_VP),'r.',iter,log10(resnorm),'k.','MarkerSize',15,'LineWidth',1.5); box on; axis tight;
+                % drawnow;
             end
 
             iter = iter+1;
@@ -562,21 +574,21 @@ for N = NN
         time = time + dt;
         
         figure(101)
-        plot(mean(Tin(2:end-1,2:end-1),2),zP(2:end-1),'--k',mean(T(2:end-1,2:end-1),2),zP(2:end-1),'-r'); axis ij tight; box on;
+        plot(mean(CSiin(2:end-1,2:end-1),2),zP(2:end-1),'--k',mean(CSi(2:end-1,2:end-1),2),zP(2:end-1),'-r', mean(CSi_out(2:end-1,2:end-1),2),zP(2:end-1),'--b'); axis ij tight; box on;
 
     end
 
 
 
     %% plot convergence
-    EM = norm(rho(inz,inx)-rhoin(inz,inx),'fro')./norm(rhoin(inz,inx),'fro');
-    ES = norm(S(inz,inx)-Sin(inz,inx),'fro')./norm(Sin(inz,inx),'fro');
-    EFlFe = norm(FlFe(inz,inx)-FlFein(inz,inx),'fro')./norm(FlFein(inz,inx),'fro');
-    EFsFe = norm(FsFe(inz,inx)-FsFein(inz,inx),'fro')./norm(FsFein(inz,inx),'fro');
-    EFlSi = norm(FlSi(inz,inx)-FlSiin(inz,inx),'fro')./norm(FlSiin(inz,inx),'fro');
-    EFsSi = norm(FsSi(inz,inx)-FsSiin(inz,inx),'fro')./norm(FsSiin(inz,inx),'fro');
-    ECFe = norm(CFe(inz,inx)-CFein(inz,inx),'fro')./norm(CFein(inz,inx),'fro');
-    ECSi = norm(CSi(inz,inx)-CSiin(inz,inx),'fro')./norm(CSiin(inz,inx),'fro');
+    EM = norm(rho(inz,inx)-rho_out(inz,inx),'fro')./norm(rhoin(inz,inx),'fro');
+    ES = norm(S(inz,inx)-S_out(inz,inx),'fro')./norm(Sin(inz,inx),'fro');
+    EFlFe = norm(FlFe(inz,inx)-FlFe_out(inz,inx),'fro')./norm(FlFein(inz,inx),'fro');
+    EFsFe = norm(FsFe(inz,inx)-FsFe_out(inz,inx),'fro')./norm(FsFein(inz,inx),'fro');
+    EFlSi = norm(FlSi(inz,inx)-FlSi_out(inz,inx),'fro')./norm(FlSiin(inz,inx),'fro');
+    EFsSi = norm(FsSi(inz,inx)-FsSi_out(inz,inx),'fro')./norm(FsSiin(inz,inx),'fro');
+    ECFe = norm(CFe(inz,inx)-CFe_out(inz,inx),'fro')./norm(CFein(inz,inx),'fro');
+    ECSi = norm(CSi(inz,inx)-CSi_out(inz,inx),'fro')./norm(CSiin(inz,inx),'fro');
 
     % fh14 = figure(14);
     % subplot(6,1,1);
@@ -612,7 +624,7 @@ for N = NN
     set(gca,'TicklabelInterpreter','latex','FontSize',12)
     xlabel('grid spacing [m]','Interpreter','latex','FontSize',16)
     ylabel('rel. numerical error rate [1/s]','Interpreter','latex','FontSize',16)
-    title('Global conservation in space','Interpreter','latex','FontSize',20)
+    title('Spatial accuracy convergence','Interpreter','latex','FontSize',20)
 
     if N == NN(1)
         p9 = loglog(D./NN,ES.*((D./NN)./(D./NN(1))).^1,'k-','LineWidth',2); hold on  % plot trend for comparison
